@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { FormEvent, useState } from "react";
 
 const fields = [
@@ -42,6 +43,7 @@ export function ContactForm() {
         throw new Error(result.error || "We couldn't send your enquiry. Please try again.");
       }
 
+      track("contact_form_submit_success");
       form.reset();
       setStatus({ type: "success", message: "Thank you. Your enquiry has been sent successfully." });
     } catch (error) {

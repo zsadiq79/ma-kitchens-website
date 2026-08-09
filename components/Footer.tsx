@@ -1,6 +1,9 @@
+import { TrackedLink } from "@/components/TrackedLink";
+
 const socialLinks = [
   {
     label: "Instagram",
+    eventName: "instagram_click" as const,
     href: "https://www.instagram.com/makitchens_au/",
     icon: (
       <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
@@ -12,6 +15,7 @@ const socialLinks = [
   },
   {
     label: "Facebook",
+    eventName: "facebook_click" as const,
     href: "https://www.facebook.com/profile.php?id=61576357527949",
     icon: (
       <svg aria-hidden="true" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -45,16 +49,17 @@ export function Footer() {
           <p className="text-xs font-medium uppercase tracking-[0.25em] text-cream/45">Social</p>
           <div className="mt-3 flex gap-3">
             {socialLinks.map((link) => (
-              <a
+              <TrackedLink
                 key={link.label}
                 aria-label={`${link.label} (opens in a new tab)`}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/25 text-xs font-medium text-cream/75 transition hover:border-cream hover:text-white"
                 href={link.href}
+                eventName={link.eventName}
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 {link.icon}
-              </a>
+              </TrackedLink>
             ))}
           </div>
         </div>
