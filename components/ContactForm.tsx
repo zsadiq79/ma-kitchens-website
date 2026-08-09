@@ -7,12 +7,12 @@ const fields = [
 
 export function ContactForm() {
   return (
-    <form className="grid gap-5 rounded-[2rem] border border-ink/10 bg-cream p-6 shadow-2xl shadow-ink/5 md:grid-cols-2 md:p-8">
+    <form className="grid gap-5 border-t border-ink/15 pt-8 sm:grid-cols-2 md:border-l md:border-t-0 md:pl-10 md:pt-0 lg:pl-14">
       {fields.map((field) => (
         <label key={field.id} className="grid gap-2 text-sm uppercase tracking-[0.2em] text-ink/60" htmlFor={field.id}>
           {field.label}
           <input
-            className="rounded-full border border-ink/15 bg-white/60 px-5 py-4 text-base normal-case tracking-normal text-ink outline-none transition placeholder:text-ink/35 focus:border-clay focus:ring-4 focus:ring-clay/10"
+            className="min-w-0 rounded-full border border-ink/20 bg-white/45 px-5 py-3.5 text-base normal-case tracking-normal text-ink outline-none transition placeholder:text-ink/35 focus:border-clay focus:ring-4 focus:ring-clay/10 sm:py-4"
             id={field.id}
             name={field.name}
             placeholder={field.label}
@@ -22,7 +22,7 @@ export function ContactForm() {
       ))}
 
       <button
-        className="mt-2 rounded-full bg-ink px-8 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-cream transition hover:bg-clay md:col-span-2 md:justify-self-start"
+        className="mt-1 w-full rounded-full bg-ink px-7 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-cream transition hover:bg-clay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay sm:w-auto sm:text-sm md:col-span-2 md:justify-self-start"
         type="button"
       >
         Register interest

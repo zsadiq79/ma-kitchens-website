@@ -9,16 +9,16 @@ const navItems = [
 export function Header() {
   return (
     <header className="bg-ink text-cream">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6 md:flex-row md:items-center md:justify-between lg:px-10">
+      <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-5 sm:px-6 md:flex-row md:items-center md:justify-between md:py-6 lg:px-10">
         <Link
           href="/"
-          className="max-w-xl font-serif text-2xl leading-tight tracking-wide md:text-3xl"
+          className="max-w-xl font-serif text-[1.65rem] leading-[1.05] tracking-wide sm:text-3xl"
         >
           Ma Kitchens: Bringing kitchens to life, one story at a time
         </Link>
 
         <nav aria-label="Main navigation">
-          <ul className="flex flex-wrap gap-x-8 gap-y-3 text-sm uppercase tracking-[0.28em] text-cream/80">
+          <ul className="flex flex-wrap gap-x-6 gap-y-3 text-xs font-medium uppercase tracking-[0.22em] text-cream/75 sm:gap-x-8 sm:text-sm sm:tracking-[0.28em]">
             {navItems.map((item) => (
               <li key={item.href}>
                 <Link className="transition hover:text-white" href={item.href}>
