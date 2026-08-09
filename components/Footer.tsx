@@ -1,4 +1,25 @@
-const socialLinks = ["Instagram", "Facebook", "LinkedIn"];
+const socialLinks = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/makitchens_au/",
+    icon: (
+      <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
+        <rect height="18" rx="5" stroke="currentColor" strokeWidth="2" width="18" x="3" y="3" />
+        <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
+        <circle cx="17.5" cy="6.5" fill="currentColor" r="1" />
+      </svg>
+    ),
+  },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61576357527949",
+    icon: (
+      <svg aria-hidden="true" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M13.5 21v-8h2.75l.41-3H13.5V8.08c0-.87.24-1.46 1.58-1.46h1.69V3.94a22.6 22.6 0 0 0-2.46-.13c-2.43 0-4.1 1.49-4.1 4.22V10H7.46v3h2.75v8h3.29Z" />
+      </svg>
+    ),
+  },
+];
 
 export function Footer() {
   return (
@@ -15,22 +36,24 @@ export function Footer() {
           <p className="text-xs font-medium uppercase tracking-[0.25em] text-cream/45">Location</p>
           <p className="mt-2">Sydney, Australia</p>
           <p className="mt-4 text-xs font-medium uppercase tracking-[0.25em] text-cream/45">Contact</p>
-          <a className="mt-2 block break-all transition hover:text-white" href="mailto:info@makitchens.com.au">
-            info@makitchens.com.au
+          <a className="mt-2 block break-all transition hover:text-white" href="mailto:admin@makitchens.com.au">
+            admin@makitchens.com.au
           </a>
         </div>
 
         <div className="border-t border-cream/15 pt-6 md:border-t-0 md:pt-0">
           <p className="text-xs font-medium uppercase tracking-[0.25em] text-cream/45">Social</p>
           <div className="mt-3 flex gap-3">
-            {socialLinks.map((label) => (
+            {socialLinks.map((link) => (
               <a
-                key={label}
-                aria-label={label}
+                key={link.label}
+                aria-label={`${link.label} (opens in a new tab)`}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/25 text-xs font-medium text-cream/75 transition hover:border-cream hover:text-white"
-                href="#"
+                href={link.href}
+                rel="noopener noreferrer"
+                target="_blank"
               >
-                {label.slice(0, 1)}
+                {link.icon}
               </a>
             ))}
           </div>
