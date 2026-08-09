@@ -1,31 +1,85 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+
 const fields = [
-  { id: "first-name", name: "firstName", label: "First name", type: "text" },
-  { id: "last-name", name: "lastName", label: "Last name", type: "text" },
-  { id: "email", name: "email", label: "Email", type: "email" },
-  { id: "phone", name: "phone", label: "Phone", type: "tel" },
+  { id: "first-name", name: "firstName", label: "First name", type: "text", autoComplete: "given-name" },
+  { id: "last-name", name: "lastName", label: "Last name", type: "text", autoComplete: "family-name" },
+  { id: "email", name: "email", label: "Email", type: "email", autoComplete: "email" },
+  { id: "phone", name: "phone", label: "Phone", type: "tel", autoComplete: "tel" },
 ];
 
+type Status = { type: "success" | "error"; message: string } | null;
+
 export function ContactForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<Status>(null);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setStatus(null);
+
+    const form = event.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const response = await fetch("/api/contact", {
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      const result = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(result.error || "We couldn't send your enquiry. Please try again.");
+      }
+
+      form.reset();
+      setStatus({ type: "success", message: "Thank you. Your enquiry has been sent successfully." });
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message: error instanceof Error ? error.message : "We couldn't send your enquiry. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
-    <form className="grid gap-5 border-t border-ink/15 pt-8 sm:grid-cols-2 md:border-l md:border-t-0 md:pl-10 md:pt-0 lg:pl-14">
+    <form className="grid gap-5 border-t border-ink/15 pt-8 sm:grid-cols-2 md:border-l md:border-t-0 md:pl-10 md:pt-0 lg:pl-14" onSubmit={handleSubmit}>
       {fields.map((field) => (
         <label key={field.id} className="grid gap-2 text-sm uppercase tracking-[0.2em] text-ink/60" htmlFor={field.id}>
           {field.label}
           <input
-            className="min-w-0 rounded-full border border-ink/20 bg-white/45 px-5 py-3.5 text-base normal-case tracking-normal text-ink outline-none transition placeholder:text-ink/35 focus:border-clay focus:ring-4 focus:ring-clay/10 sm:py-4"
+            autoComplete={field.autoComplete}
+            className="min-w-0 rounded-full border border-ink/20 bg-white/45 px-5 py-3.5 text-base normal-case tracking-normal text-ink outline-none transition placeholder:text-ink/35 focus:border-clay focus:ring-4 focus:ring-clay/10 invalid:not-placeholder-shown:border-red-700 sm:py-4"
             id={field.id}
+            maxLength={field.type === "email" ? 254 : 100}
             name={field.name}
             placeholder={field.label}
+            required
             type={field.type}
           />
         </label>
       ))}
 
+      {status && (
+        <p
+          className={`text-sm normal-case tracking-normal md:col-span-2 ${status.type === "success" ? "text-green-800" : "text-red-800"}`}
+          role={status.type === "error" ? "alert" : "status"}
+        >
+          {status.message}
+        </p>
+      )}
+
       <button
-        className="mt-1 w-full rounded-full bg-ink px-7 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-cream transition hover:bg-clay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay sm:w-auto sm:text-sm md:col-span-2 md:justify-self-start"
-        type="button"
+        className="mt-1 w-full rounded-full bg-ink px-7 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-cream transition hover:bg-clay focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:text-sm md:col-span-2 md:justify-self-start"
+        disabled={isSubmitting}
+        type="submit"
       >
-        Register interest
+        {isSubmitting ? "Sending…" : "Register interest"}
       </button>
     </form>
   );
