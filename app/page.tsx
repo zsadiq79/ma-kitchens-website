@@ -14,7 +14,7 @@ export default function Home() {
         title="Share Your Meals, Make Some Money"
       >
         <p className="body-copy font-serif text-2xl leading-8 text-ink/85 sm:text-3xl sm:leading-9">
-          If you’ve ever been told “your cooking is amazing — you should sell this!”, we’re here to help make that happen.
+          If you’ve ever been told “your cooking is amazing, you should sell this!”, we’re here to help make that happen.
         </p>
         <p className="body-copy">
           Ma Kitchens supports home cooks who are ready to turn family recipes, cultural dishes and everyday kitchen confidence into a simple food business pathway.
