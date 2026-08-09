@@ -40,11 +40,24 @@ export default function Home() {
 
       <section className="border-y border-ink/10 px-5 sm:px-6 lg:px-10">
         <div className="mx-auto grid max-w-7xl md:grid-cols-3">
-          {["Training", "Support", "Opportunities"].map((item, index) => (
-            <div key={item} className={`border-ink/10 py-9 md:px-8 md:py-12 ${index > 0 ? "border-t md:border-l md:border-t-0" : ""}`}>
-              <p className="font-serif text-3xl text-ink">{item}</p>
+          {[
+            {
+              title: "Training",
+              copy: "Practical training to help you understand food safety, preparation standards and the essentials of turning your cooking into something customers can confidently enjoy.",
+            },
+            {
+              title: "Support",
+              copy: "Ongoing guidance and community support to help you navigate the journey from your home kitchen to serving customers with confidence.",
+            },
+            {
+              title: "Opportunities",
+              copy: "Opportunities for selected cooks to showcase their food, reach local customers and build meaningful earning potential from the dishes they already love making.",
+            },
+          ].map((item, index) => (
+            <div key={item.title} className={`border-ink/10 py-9 md:px-8 md:py-12 ${index > 0 ? "border-t md:border-l md:border-t-0" : ""}`}>
+              <p className="font-serif text-3xl text-ink">{item.title}</p>
               <p className="mt-3 max-w-sm text-sm leading-6 text-ink/60 sm:text-base sm:leading-7">
-                Practical, calm guidance for cooks who want to grow at their own pace while staying connected to the food they love making.
+                {item.copy}
               </p>
             </div>
           ))}
