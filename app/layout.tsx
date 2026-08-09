@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 
 import { Footer } from "@/components/Footer";
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <Header />
         <main>{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
