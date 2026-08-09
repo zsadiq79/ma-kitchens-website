@@ -27,7 +27,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-9 px-5 py-10 sm:px-6 sm:py-12 md:grid-cols-[1.5fr_1fr_1fr] md:gap-12 lg:px-10">
         <div>
           <p className="font-serif text-4xl leading-none">Ma Kitchens</p>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-cream/65">
+          <p className="body-copy mt-4 max-w-sm text-sm leading-6 text-cream/65">
             Helping home cooks share food, culture and stories with their local community.
           </p>
         </div>

@@ -25,3 +25,10 @@ body {
   background: #111111;
   color: #f7f0e5;
 }
+
+@media (min-width: 640px) {
+  .body-copy {
+    text-align: justify;
+    text-align-last: left;
+  }
+}

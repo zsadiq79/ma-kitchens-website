@@ -14,16 +14,16 @@ export default function AboutPage() {
       priority
       title="Who we are"
     >
-      <p>
+      <p className="body-copy">
         Ma Kitchens is an Australian startup helping talented multicultural home cooks become confident food entrepreneurs.
       </p>
-      <p>
+      <p className="body-copy">
         We believe home-cooked meals carry tradition, memory and care. Our work is to help those dishes reach more tables while keeping the cook’s story at the centre.
       </p>
-      <p>
+      <p className="body-copy">
         From kitchen to customer, we support cooks with practical steps, community encouragement and a calm pathway for navigating the early stages of selling food.
       </p>
-      <p>
+      <p className="body-copy">
         The result is a growing network of local cooks sharing flavour, culture and opportunity with the communities around them.
       </p>
     </TwoColumnSection>
