@@ -3,26 +3,26 @@ const socialLinks = ["Instagram", "Facebook", "LinkedIn"];
 export function Footer() {
   return (
     <footer className="bg-ink text-cream">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-[1.5fr_1fr_1fr] lg:px-10">
+      <div className="mx-auto grid max-w-7xl gap-9 px-5 py-10 sm:px-6 sm:py-12 md:grid-cols-[1.5fr_1fr_1fr] md:gap-12 lg:px-10">
         <div>
-          <p className="font-serif text-3xl">Ma Kitchens</p>
-          <p className="mt-4 max-w-sm text-sm leading-7 text-cream/70">
+          <p className="font-serif text-4xl leading-none">Ma Kitchens</p>
+          <p className="mt-4 max-w-sm text-sm leading-6 text-cream/65">
             Helping home cooks share food, culture and stories with their local community.
           </p>
         </div>
 
-        <div className="text-sm leading-7 text-cream/75">
-          <p className="uppercase tracking-[0.28em] text-cream/50">Location</p>
-          <p className="mt-3">Sydney, Australia</p>
-          <p className="mt-4 uppercase tracking-[0.28em] text-cream/50">Contact</p>
-          <a className="mt-3 block transition hover:text-white" href="mailto:info@makitchens.com.au">
+        <div className="border-t border-cream/15 pt-6 text-sm leading-7 text-cream/75 md:border-t-0 md:pt-0">
+          <p className="text-xs font-medium uppercase tracking-[0.25em] text-cream/45">Location</p>
+          <p className="mt-2">Sydney, Australia</p>
+          <p className="mt-4 text-xs font-medium uppercase tracking-[0.25em] text-cream/45">Contact</p>
+          <a className="mt-2 block break-all transition hover:text-white" href="mailto:info@makitchens.com.au">
             info@makitchens.com.au
           </a>
         </div>
 
-        <div>
-          <p className="text-sm uppercase tracking-[0.28em] text-cream/50">Social</p>
-          <div className="mt-4 flex gap-3">
+        <div className="border-t border-cream/15 pt-6 md:border-t-0 md:pt-0">
+          <p className="text-xs font-medium uppercase tracking-[0.25em] text-cream/45">Social</p>
+          <div className="mt-3 flex gap-3">
             {socialLinks.map((label) => (
               <a
                 key={label}

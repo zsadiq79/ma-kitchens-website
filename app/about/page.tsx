@@ -6,7 +6,14 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <TwoColumnSection eyebrow="About Ma Kitchens" imageLabel="Kitchen to customer" title="Who we are">
+    <TwoColumnSection
+      eyebrow="About Ma Kitchens"
+      imageAlt="A home cook preparing fresh food in a bright kitchen"
+      imageLabel="Kitchen to customer"
+      imageSrc="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1600&q=85"
+      priority
+      title="Who we are"
+    >
       <p>
         Ma Kitchens is an Australian startup helping talented multicultural home cooks become confident food entrepreneurs.
       </p>

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  background: #f7f0e5;
+  background: #f8efe2;
   color: #111111;
 }
 
@@ -17,7 +17,7 @@ html {
 
 body {
   min-height: 100vh;
-  background: #f7f0e5;
+  background: #f8efe2;
   color: #111111;
 }
 
