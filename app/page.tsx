@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { TrackedLink } from "@/components/TrackedLink";
 import { TwoColumnSection } from "@/components/TwoColumnSection";
 
 export default function Home() {
@@ -27,14 +26,15 @@ export default function Home() {
         </p>
         <div className="pt-2">
           <p className="mb-4 font-serif text-2xl text-ink sm:text-3xl">Ready to take the first step?</p>
-          <Link
+          <TrackedLink
             className="inline-flex w-full items-center justify-center rounded-full bg-clay px-7 py-4 text-center text-xs font-bold uppercase tracking-[0.2em] text-white shadow-[0_14px_35px_-18px_rgba(138,90,68,0.9)] transition hover:-translate-y-0.5 hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay sm:w-auto sm:px-9 sm:text-sm"
             href="https://whatsapp.com/channel/0029Vb6Ct1GF1YlbaAkXCs1C"
+            eventName="whatsapp_channel_click"
             target="_blank"
             rel="noopener noreferrer"
           >
             Join our WhatsApp channel
-          </Link>
+          </TrackedLink>
         </div>
       </TwoColumnSection>
 

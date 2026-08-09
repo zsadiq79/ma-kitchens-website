@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { ContactForm } from "@/components/ContactForm";
+import { TrackedLink } from "@/components/TrackedLink";
 
 export const metadata = {
   title: "Contact | Ma Kitchens",
@@ -18,14 +17,15 @@ export default function ContactPage() {
           <p className="body-copy">
             Curious about Ma Kitchens or ready to explore selling your home-cooked food? Join our WhatsApp Channel for updates, guidance and next steps.
           </p>
-          <Link
+          <TrackedLink
             className="inline-flex w-full items-center justify-center rounded-full bg-clay px-7 py-4 text-center text-xs font-bold uppercase tracking-[0.2em] text-white shadow-[0_14px_35px_-18px_rgba(138,90,68,0.9)] transition hover:-translate-y-0.5 hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay sm:w-auto sm:px-9 sm:text-sm"
             href="https://whatsapp.com/channel/0029Vb6Ct1GF1YlbaAkXCs1C"
+            eventName="whatsapp_channel_click"
             target="_blank"
             rel="noopener noreferrer"
           >
             Join our WhatsApp channel
-          </Link>
+          </TrackedLink>
         </div>
       </div>
 
