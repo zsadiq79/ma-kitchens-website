@@ -9,6 +9,13 @@ const fields = [
   { id: "phone", name: "phone", label: "Phone", type: "tel", autoComplete: "tel" },
 ];
 
+const interestOptions = [
+  "Becoming a cook",
+  "Ordering food",
+  "Partnership / business enquiry",
+  "General enquiry",
+];
+
 type Status = { type: "success" | "error"; message: string } | null;
 
 export function ContactForm() {
@@ -64,6 +71,34 @@ export function ContactForm() {
           />
         </label>
       ))}
+
+      <label className="grid gap-2 text-sm uppercase tracking-[0.2em] text-ink/60 md:col-span-2" htmlFor="interest">
+        I&apos;m interested in
+        <select
+          className="min-w-0 rounded-full border border-ink/20 bg-white/45 px-5 py-3.5 text-base normal-case tracking-normal text-ink outline-none transition focus:border-clay focus:ring-4 focus:ring-clay/10 sm:py-4"
+          defaultValue=""
+          id="interest"
+          name="interest"
+          required
+        >
+          <option disabled value="">Select an option</option>
+          {interestOptions.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+      </label>
+
+      <label className="grid gap-2 text-sm uppercase tracking-[0.2em] text-ink/60 md:col-span-2" htmlFor="message">
+        Message <span className="normal-case tracking-normal text-ink/40">(optional)</span>
+        <textarea
+          className="min-h-32 min-w-0 resize-y rounded-3xl border border-ink/20 bg-white/45 px-5 py-3.5 text-base normal-case tracking-normal text-ink outline-none transition placeholder:text-ink/35 focus:border-clay focus:ring-4 focus:ring-clay/10 sm:py-4"
+          id="message"
+          maxLength={2000}
+          name="message"
+          placeholder="Tell us a little more"
+          rows={4}
+        />
+      </label>
 
       {status && (
         <p

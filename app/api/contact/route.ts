@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 
 const CONTACT_EMAIL = "admin@makitchens.com.au";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const INTEREST_OPTIONS = new Set([
+  "Becoming a cook",
+  "Ordering food",
+  "Partnership / business enquiry",
+  "General enquiry",
+]);
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>'"]/g, (character) => {
@@ -28,8 +34,10 @@ export async function POST(request: Request) {
   const lastName = typeof values.lastName === "string" ? values.lastName.trim() : "";
   const email = typeof values.email === "string" ? values.email.trim() : "";
   const phone = typeof values.phone === "string" ? values.phone.trim() : "";
+  const interest = typeof values.interest === "string" ? values.interest.trim() : "";
+  const message = typeof values.message === "string" ? values.message.trim() : "";
 
-  if (!firstName || !lastName || !email || !phone) {
+  if (!firstName || !lastName || !email || !phone || !interest) {
     return NextResponse.json({ error: "Please complete all required fields." }, { status: 400 });
   }
 
@@ -39,6 +47,14 @@ export async function POST(request: Request) {
 
   if ([firstName, lastName, phone].some((value) => value.length > 100)) {
     return NextResponse.json({ error: "One or more fields are too long." }, { status: 400 });
+  }
+
+  if (!INTEREST_OPTIONS.has(interest)) {
+    return NextResponse.json({ error: "Please select a valid area of interest." }, { status: 400 });
+  }
+
+  if (message.length > 2000) {
+    return NextResponse.json({ error: "The message is too long." }, { status: 400 });
   }
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -52,7 +68,7 @@ export async function POST(request: Request) {
   const response = await fetch("https://api.resend.com/emails", {
     body: JSON.stringify({
       from: fromEmail,
-      html: `<h1>New Ma Kitchens enquiry</h1><p><strong>Name:</strong> ${escapeHtml(firstName)} ${escapeHtml(lastName)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Phone:</strong> ${escapeHtml(phone)}</p>`,
+      html: `<h1>New Ma Kitchens enquiry</h1><p><strong>First Name:</strong> ${escapeHtml(firstName)}</p><p><strong>Last Name:</strong> ${escapeHtml(lastName)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Phone:</strong> ${escapeHtml(phone)}</p><p><strong>Interest:</strong> ${escapeHtml(interest)}</p><p><strong>Message:</strong><br>${escapeHtml(message || "Not provided").replace(/\r?\n/g, "<br>")}</p>`,
       reply_to: email,
       subject: `Website enquiry from ${firstName} ${lastName}`,
       to: [CONTACT_EMAIL],
