@@ -13,13 +13,13 @@ export default function Home() {
         priority
         title="Share Your Meals, Make Some Money"
       >
-        <p className="font-serif text-2xl leading-8 text-ink/85 sm:text-3xl sm:leading-9">
+        <p className="body-copy font-serif text-2xl leading-8 text-ink/85 sm:text-3xl sm:leading-9">
           If you’ve ever been told “your cooking is amazing — you should sell this!”, we’re here to help make that happen.
         </p>
-        <p>
+        <p className="body-copy">
           Ma Kitchens supports home cooks who are ready to turn family recipes, cultural dishes and everyday kitchen confidence into a simple food business pathway.
         </p>
-        <p>
+        <p className="body-copy">
           We help you start selling with practical training, gentle guidance, community support and earning opportunities designed around real home kitchens.
         </p>
         <p className="border-l border-clay/40 pl-5 font-serif text-2xl italic leading-tight text-clay sm:text-3xl">
@@ -56,7 +56,7 @@ export default function Home() {
           ].map((item, index) => (
             <div key={item.title} className={`border-ink/10 py-9 md:px-8 md:py-12 ${index > 0 ? "border-t md:border-l md:border-t-0" : ""}`}>
               <p className="font-serif text-3xl text-ink">{item.title}</p>
-              <p className="mt-3 max-w-sm text-sm leading-6 text-ink/60 sm:text-base sm:leading-7">
+              <p className="body-copy mt-3 max-w-sm text-sm leading-6 text-ink/60 sm:text-base sm:leading-7">
                 {item.copy}
               </p>
             </div>

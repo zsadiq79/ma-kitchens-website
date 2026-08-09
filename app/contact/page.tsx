@@ -15,7 +15,7 @@ export default function ContactPage() {
           Contact Us
         </h1>
         <div className="mt-6 space-y-5 text-base leading-7 text-ink/70 sm:mt-7 sm:text-lg sm:leading-8">
-          <p>
+          <p className="body-copy">
             Curious about Ma Kitchens or ready to explore selling your home-cooked food? Join our WhatsApp Channel for updates, guidance and next steps.
           </p>
           <Link
