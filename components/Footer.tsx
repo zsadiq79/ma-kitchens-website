@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { TrackedLink } from "@/components/TrackedLink";
 
 const socialLinks = [
@@ -43,6 +45,9 @@ export function Footer() {
           <a className="mt-2 block break-all transition hover:text-white" href="mailto:admin@makitchens.com.au">
             admin@makitchens.com.au
           </a>
+          <Link className="mt-3 inline-block transition hover:text-white" href="/privacy">
+            Privacy Policy
+          </Link>
         </div>
 
         <div className="border-t border-cream/15 pt-6 md:border-t-0 md:pt-0">

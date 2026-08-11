@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@vercel/analytics";
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 
 const fields = [
@@ -118,6 +119,14 @@ export function ContactForm() {
       >
         {isSubmitting ? "Sending…" : "Register interest"}
       </button>
+
+      <p className="text-xs leading-5 text-ink/55 sm:text-sm sm:leading-6 md:col-span-2">
+        By submitting this form, you agree that Ma Kitchens may collect and use the information you provide to respond to your enquiry and contact you about Ma Kitchens. See our{" "}
+        <Link className="underline decoration-ink/30 underline-offset-2 transition hover:text-ink" href="/privacy">
+          Privacy Policy
+        </Link>{" "}
+        for more information.
+      </p>
     </form>
   );
 }
