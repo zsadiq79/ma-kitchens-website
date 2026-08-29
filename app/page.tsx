@@ -54,25 +54,24 @@ export default function Home() {
             </p>
             <h1
               id="hero-heading"
-              className="max-w-2xl text-[2.75rem] font-black leading-[0.94] tracking-[-0.04em] text-ink sm:text-6xl lg:text-[4.25rem]"
+              className="max-w-2xl text-[2rem] font-medium leading-[1.05] tracking-[-0.025em] text-ink sm:text-[2.5rem] md:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem]"
             >
-              <span className="block">Home-cooked food</span>
-              <span className="block">By local cooks</span>
-              <span className="block">Delivered to you</span>
+              <span className="block whitespace-nowrap">Home-cooked food</span>
+              <span className="block whitespace-nowrap">By local cooks</span>
+              <span className="block whitespace-nowrap">Delivered to you</span>
             </h1>
             <p className="mt-7 max-w-xl text-base leading-7 text-ink/70 sm:text-lg sm:leading-8">
-              Ma Kitchens connects you with talented local home cooks making the dishes they know best — authentic
-              food prepared fresh for your order, not mass-produced in a commercial kitchen.
+              Ma Kitchens brings you authentic home-cooked food from talented local cooks, prepared fresh for your order
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                className={`${buttonStyles} homepage-customer-cta-pulse bg-clay text-white hover:bg-ink focus-visible:outline-clay`}
+                className={`${buttonStyles} homepage-customer-cta-pulse w-full bg-clay text-white hover:bg-ink focus-visible:outline-clay sm:w-72`}
                 href="/firstmeal"
               >
                 Claim your first free meal
               </Link>
               <TrackedLink
-                className={`${buttonStyles} border border-ink/30 text-ink hover:border-ink hover:bg-ink hover:text-cream focus-visible:outline-ink`}
+                className={`${buttonStyles} w-full border border-ink/30 text-ink hover:border-ink hover:bg-ink hover:text-cream focus-visible:outline-ink sm:w-72`}
                 eventName="whatsapp_channel_click"
                 href={whatsappChannelUrl}
                 rel="noopener noreferrer"
