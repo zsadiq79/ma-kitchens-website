@@ -26,7 +26,7 @@ const propositions = [
     number: "02",
     title: "Prepared for your order",
     copy: "Meals are pre-ordered and prepared fresh against confirmed demand.",
-    className: "bg-cream",
+    className: "bg-cream md:border-x-0 md:border-b-0",
   },
   {
     number: "03",
@@ -103,22 +103,34 @@ export default function Home() {
 
       <section className="px-5 py-12 sm:px-6 sm:py-16 lg:px-10" aria-labelledby="proposition-heading">
         <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-[1.35fr_0.8fr_0.8fr] md:grid-rows-2">
-          <article className="flex min-h-[430px] flex-col justify-between bg-clay p-7 text-cream sm:p-10 md:row-span-2 md:min-h-[570px] lg:p-12">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cream/65">The Ma Kitchens idea</p>
-              <h2 id="proposition-heading" className="mt-5 max-w-lg font-serif text-5xl leading-[0.95] sm:text-6xl">
-                Food that feels like home
-              </h2>
+          <article className="grid min-h-[620px] overflow-hidden bg-clay text-cream sm:min-h-[680px] md:row-span-2 md:min-h-[570px] md:grid-rows-[0.85fr_1.15fr]">
+            <div className="relative min-h-[250px] md:min-h-0">
+              <Image
+                alt="Fresh ingredients and home-cooked dishes being prepared in a welcoming kitchen"
+                className="object-cover"
+                fill
+                sizes="(max-width: 767px) calc(100vw - 40px), 44vw"
+                src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1600&q=85"
+              />
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-clay to-transparent" aria-hidden="true" />
             </div>
-            <div className="mt-12 max-w-xl space-y-4 text-base leading-7 text-cream/80 sm:text-lg sm:leading-8">
-              <p>
-                Some of the best food never makes it onto a restaurant menu. It is cooked in family kitchens, passed
-                down through generations and made by people who have spent years perfecting the dishes they love.
-              </p>
-              <p>
-                Ma Kitchens brings that food to your table by connecting local customers with selected home cooks in
-                their community.
-              </p>
+            <div className="flex flex-col justify-between p-7 pt-3 sm:p-10 sm:pt-4 lg:p-12 lg:pt-5">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cream/65">The Ma Kitchens idea</p>
+                <h2 id="proposition-heading" className="mt-4 max-w-lg font-serif text-5xl leading-[0.95] sm:text-6xl">
+                  Food that feels like home
+                </h2>
+              </div>
+              <div className="mt-8 max-w-xl space-y-4 text-base leading-7 text-cream/80">
+                <p>
+                  Some of the best food never makes it onto a restaurant menu. It is cooked in family kitchens, passed
+                  down through generations and made by people who have spent years perfecting the dishes they love.
+                </p>
+                <p>
+                  Ma Kitchens brings that food to your table by connecting local customers with selected home cooks in
+                  their community.
+                </p>
+              </div>
             </div>
           </article>
 
@@ -170,13 +182,13 @@ export default function Home() {
       </section>
 
       <section className="px-5 py-14 sm:px-6 sm:py-20 lg:px-10" aria-labelledby="why-ma-heading">
-        <div className="mx-auto grid max-w-7xl overflow-hidden bg-ink text-cream md:grid-cols-[1.45fr_0.75fr]">
+        <div className="mx-auto grid max-w-7xl overflow-hidden border border-clay/20 bg-oat/55 text-ink md:grid-cols-[1.45fr_0.75fr]">
           <div className="p-7 sm:p-10 lg:p-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cream/50">Our story</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-clay">Our story</p>
             <h2 id="why-ma-heading" className="mt-4 font-serif text-5xl leading-none sm:text-6xl">
               Why “Ma”?
             </h2>
-            <div className="mt-7 max-w-2xl space-y-4 text-base leading-7 text-cream/72 sm:text-lg sm:leading-8">
+            <div className="mt-7 max-w-2xl space-y-4 text-base leading-7 text-ink/70 sm:text-lg sm:leading-8">
               <p>Some of the best food we&apos;ve ever eaten didn&apos;t come from a restaurant. It came from Ma&apos;s kitchen.</p>
               <p>
                 The recipes passed down through families. The dishes made from memory rather than a recipe book. The
@@ -189,8 +201,11 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="flex min-h-[260px] items-end border-t border-cream/15 bg-clay p-7 sm:p-10 md:min-h-0 md:border-l md:border-t-0 lg:p-12">
-            <p className="max-w-sm font-serif text-4xl italic leading-[1.05] text-cream sm:text-5xl">
+          <div className="relative flex min-h-[280px] items-end overflow-hidden border-t border-clay/20 bg-cream p-7 sm:p-10 md:min-h-0 md:border-l md:border-t-0 lg:p-12">
+            <span className="absolute -right-8 top-0 font-serif text-[13rem] leading-none text-clay/[0.07]" aria-hidden="true">
+              Ma
+            </span>
+            <p className="relative max-w-sm border-l-2 border-clay pl-6 font-serif text-4xl italic leading-[1.05] text-clay sm:text-5xl">
               Home-cooked food, prepared with heart.
             </p>
           </div>
