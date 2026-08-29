@@ -15,10 +15,6 @@ html {
   scroll-behavior: smooth;
 }
 
-#register {
-  scroll-margin-top: 1rem;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
