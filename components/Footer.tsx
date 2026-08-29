@@ -34,7 +34,7 @@ export function Footer() {
         <div>
           <p className="font-serif text-4xl leading-none">Ma Kitchens</p>
           <p className="body-copy mt-4 max-w-sm text-sm leading-6 text-cream/65">
-            Helping home cooks share food, culture and stories with their local community.
+            Connecting local communities through home-cooked food, prepared with heart.
           </p>
         </div>
 

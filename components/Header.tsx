@@ -14,7 +14,7 @@ export function Header() {
           href="/"
           className="max-w-xl font-serif text-[1.65rem] leading-[1.05] tracking-wide sm:text-3xl"
         >
-          Ma Kitchens: Bringing kitchens to life, one story at a time
+          Ma Kitchens
         </Link>
 
         <nav aria-label="Main navigation">
