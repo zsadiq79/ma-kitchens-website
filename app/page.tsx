@@ -69,7 +69,7 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 className={`${buttonStyles} bg-clay text-white hover:bg-ink focus-visible:outline-clay`}
-                href="/contact"
+                href="/firstmeal"
               >
                 Get your first meal
               </Link>
@@ -227,7 +227,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="mt-8">
-                <Link className={`${buttonStyles} bg-clay text-white hover:bg-ink focus-visible:outline-clay`} href="/contact">
+                <Link className={`${buttonStyles} bg-clay text-white hover:bg-ink focus-visible:outline-clay`} href="/firstmeal">
                   Get your first meal
                 </Link>
               </div>
