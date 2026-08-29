@@ -54,13 +54,11 @@ export default function Home() {
             </p>
             <h1
               id="hero-heading"
-              className="max-w-2xl font-serif text-[3.35rem] leading-[0.9] tracking-[-0.035em] text-ink sm:text-6xl lg:text-[4.65rem]"
+              className="max-w-2xl text-[2.75rem] font-black leading-[0.94] tracking-[-0.04em] text-ink sm:text-6xl lg:text-[4.25rem]"
             >
-              Real home-cooked food.
-              <br />
-              Made by local cooks.
-              <br />
-              Delivered to you.
+              <span className="block">Home-cooked food</span>
+              <span className="block">By local cooks</span>
+              <span className="block">Delivered to you</span>
             </h1>
             <p className="mt-7 max-w-xl text-base leading-7 text-ink/70 sm:text-lg sm:leading-8">
               Ma Kitchens connects you with talented local home cooks making the dishes they know best — authentic
@@ -68,10 +66,10 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                className={`${buttonStyles} bg-clay text-white hover:bg-ink focus-visible:outline-clay`}
+                className={`${buttonStyles} homepage-customer-cta-pulse bg-clay text-white hover:bg-ink focus-visible:outline-clay`}
                 href="/firstmeal"
               >
-                Get your first meal
+                Claim your first free meal
               </Link>
               <TrackedLink
                 className={`${buttonStyles} border border-ink/30 text-ink hover:border-ink hover:bg-ink hover:text-cream focus-visible:outline-ink`}
@@ -228,7 +226,7 @@ export default function Home() {
               </div>
               <div className="mt-8">
                 <Link className={`${buttonStyles} bg-clay text-white hover:bg-ink focus-visible:outline-clay`} href="/firstmeal">
-                  Get your first meal
+                  Claim your first free meal
                 </Link>
               </div>
             </article>
