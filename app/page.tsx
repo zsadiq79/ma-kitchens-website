@@ -141,7 +141,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-5 py-14 sm:px-6 sm:py-20 lg:px-10" aria-labelledby="why-ma-heading">
+      <section className="px-5 pb-14 sm:px-6 sm:pb-20 lg:px-10" aria-labelledby="why-ma-heading">
         <div className="mx-auto grid max-w-7xl overflow-hidden border border-clay/20 bg-oat/55 text-ink md:grid-cols-[1.45fr_0.75fr]">
           <div className="p-7 sm:p-10 lg:p-14">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-clay">Our story</p>
