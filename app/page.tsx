@@ -90,12 +90,12 @@ export default function Home() {
               />
               <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-clay to-transparent" aria-hidden="true" />
             </div>
-            <div className="flex flex-col justify-between p-7 pt-3 sm:p-10 sm:pt-4 lg:p-12 lg:pt-5">
+            <div className="flex flex-col p-7 pt-3 sm:p-10 sm:pt-4 lg:p-12 lg:pt-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cream/65">The Ma Kitchens idea</p>
                 <h2
                   id="proposition-heading"
-                  className="mt-4 text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-[2.75rem] lg:whitespace-nowrap lg:text-[2.5rem] xl:text-[2.75rem]"
+                  className="mt-4 text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-[2.625rem] lg:whitespace-nowrap lg:text-[2.25rem] xl:text-[2.5rem]"
                 >
                   Food that feels like home
                 </h2>
@@ -112,8 +112,8 @@ export default function Home() {
             </div>
           </article>
 
-          <div className="grid gap-3 lg:grid-rows-[0.62fr_2fr]">
-            <div className="flex min-h-[150px] items-end bg-sage p-7 text-white sm:p-9 lg:min-h-0">
+          <div className="grid gap-3 lg:grid-rows-[0.45fr_2fr]">
+            <div className="flex min-h-[128px] items-end bg-sage p-7 text-white sm:p-8 lg:min-h-0">
               <h2 id="process-heading" className="text-3xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-4xl">
                 How Ma Kitchens works
               </h2>
@@ -129,7 +129,7 @@ export default function Home() {
                     {number}
                   </span>
                   <div className="mt-8">
-                    <h3 className="text-2xl font-medium leading-tight tracking-[-0.02em] text-ink sm:text-[1.7rem]">
+                    <h3 className="text-[1.375rem] font-medium leading-tight tracking-[-0.02em] text-ink sm:text-2xl">
                       {title}
                     </h3>
                     <p className="mt-3 text-sm leading-6 text-ink/65 sm:text-base sm:leading-7">{copy}</p>
