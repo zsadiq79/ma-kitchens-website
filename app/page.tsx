@@ -68,7 +68,7 @@ export default function Home() {
                 className={`${buttonStyles} homepage-customer-cta-pulse w-full bg-clay text-white hover:bg-ink focus-visible:outline-clay sm:w-72`}
                 href="/firstmeal"
               >
-                <span className="whitespace-nowrap">Claim your first</span>{" "}
+                <span className="whitespace-nowrap">Claim first</span>{" "}
                 <span className="whitespace-nowrap">free meal</span>
               </Link>
               <TrackedLink
