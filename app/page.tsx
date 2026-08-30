@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const steps = [
   ["01", "Discover", "See the dishes available from local Ma Kitchens cooks."],
   ["02", "Pre-order", "Choose what you would like and place your order in advance."],
-  ["03", "Freshly cooked", "Your cook prepares the confirmed quantity fresh for your order."],
+  ["03", "Freshly cooked", "Your cooks prepare the confirmed quantity fresh for your order."],
   ["04", "Delivered", "Ma Kitchens coordinates delivery and keeps you informed along the way."],
 ];
 
@@ -113,8 +113,8 @@ export default function Home() {
           </article>
 
           <div className="grid gap-3 lg:grid-rows-[0.45fr_2fr]">
-            <div className="flex min-h-[128px] items-end bg-sage p-7 text-white sm:p-8 lg:min-h-0">
-              <h2 id="process-heading" className="text-3xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-4xl">
+            <div className="flex min-h-[128px] items-center justify-center bg-sage p-7 text-center text-white sm:p-8 lg:min-h-0">
+              <h2 id="process-heading" className="text-[1.75rem] font-medium leading-[1.05] tracking-[-0.025em] sm:text-3xl">
                 How Ma Kitchens works
               </h2>
             </div>
