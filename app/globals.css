@@ -32,6 +32,34 @@ body {
   color: #f7f0e5;
 }
 
+@keyframes customer-cta-pulse {
+  0%,
+  28%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgb(138 90 68 / 0);
+  }
+
+  12% {
+    transform: scale(1.025);
+    box-shadow: 0 0 0 0 rgb(138 90 68 / 0.22);
+  }
+
+  28% {
+    box-shadow: 0 0 0 10px rgb(138 90 68 / 0);
+  }
+}
+
+.homepage-customer-cta-pulse {
+  animation: customer-cta-pulse 3.6s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-customer-cta-pulse {
+    animation: none;
+  }
+}
+
 @media (min-width: 640px) {
   .body-copy {
     text-align: justify;
