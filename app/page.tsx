@@ -159,12 +159,12 @@ export default function Home() {
               </p>
               <p>That&apos;s the idea behind Ma Kitchens.</p>
               <p>
-                We&apos;re creating a way for talented home cooks to share that kind of food with more people — and for
-                customers to discover food that tastes a little more like home.
+                Ma Kitchens brings the food talented home cooks make best to more people, giving customers the chance
+                to enjoy food that tastes a little more like home.
               </p>
             </div>
           </div>
-          <div className="relative flex min-h-[420px] items-end overflow-hidden border-t border-clay/20 bg-cream p-7 sm:p-10 md:min-h-0 md:border-l md:border-t-0 lg:p-12">
+          <div className="relative flex min-h-[420px] items-end overflow-hidden border-t border-clay/20 bg-cream px-8 pb-5 pt-7 sm:px-12 sm:pb-7 sm:pt-10 md:min-h-0 md:border-l md:border-t-0 lg:px-14 lg:pb-9 lg:pt-12">
             <span
               className="pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap font-serif text-[10rem] leading-none text-clay/[0.07] sm:text-[11rem]"
               aria-hidden="true"
