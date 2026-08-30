@@ -15,27 +15,6 @@ export const metadata: Metadata = {
     "Discover authentic home-cooked food prepared by talented local cooks and delivered through Ma Kitchens.",
 };
 
-const propositions = [
-  {
-    number: "01",
-    title: "Authentically home cooked",
-    copy: "Discover dishes made by people who genuinely know and love the food they prepare.",
-    className: "bg-oat/65",
-  },
-  {
-    number: "02",
-    title: "Prepared for your order",
-    copy: "Meals are pre-ordered and prepared fresh against confirmed demand.",
-    className: "bg-cream md:border-x-0 md:border-b-0",
-  },
-  {
-    number: "03",
-    title: "Delivered by Ma Kitchens",
-    copy: "We coordinate your order, payment, delivery and customer experience from start to finish.",
-    className: "bg-sage text-white",
-  },
-];
-
 const steps = [
   ["01", "Discover", "See the dishes available from local Ma Kitchens cooks."],
   ["02", "Pre-order", "Choose what you would like and place your order in advance."],
@@ -99,14 +78,14 @@ export default function Home() {
       </section>
 
       <section className="px-5 py-12 sm:px-6 sm:py-16 lg:px-10" aria-labelledby="proposition-heading">
-        <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-[1.35fr_0.8fr_0.8fr] md:grid-rows-2">
-          <article className="grid min-h-[620px] overflow-hidden bg-clay text-cream sm:min-h-[680px] md:row-span-2 md:min-h-[570px] md:grid-rows-[0.85fr_1.15fr]">
-            <div className="relative min-h-[250px] md:min-h-0">
+        <div className="mx-auto grid max-w-7xl gap-3 lg:grid-cols-[1.2fr_1fr]">
+          <article className="grid min-h-[600px] overflow-hidden bg-clay text-cream sm:min-h-[640px] lg:min-h-[620px] lg:grid-rows-[0.78fr_1.22fr]">
+            <div className="relative min-h-[250px] lg:min-h-0">
               <Image
                 alt="Fresh ingredients and home-cooked dishes being prepared in a welcoming kitchen"
                 className="object-cover"
                 fill
-                sizes="(max-width: 767px) calc(100vw - 40px), 44vw"
+                sizes="(max-width: 1023px) calc(100vw - 40px), 54vw"
                 src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1600&q=85"
               />
               <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-clay to-transparent" aria-hidden="true" />
@@ -114,7 +93,10 @@ export default function Home() {
             <div className="flex flex-col justify-between p-7 pt-3 sm:p-10 sm:pt-4 lg:p-12 lg:pt-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cream/65">The Ma Kitchens idea</p>
-                <h2 id="proposition-heading" className="mt-4 max-w-lg font-serif text-5xl leading-[0.95] sm:text-6xl">
+                <h2
+                  id="proposition-heading"
+                  className="mt-4 text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-[2.75rem] lg:whitespace-nowrap lg:text-[2.5rem] xl:text-[2.75rem]"
+                >
                   Food that feels like home
                 </h2>
               </div>
@@ -124,57 +106,38 @@ export default function Home() {
                   down through generations and made by people who have spent years perfecting the dishes they love.
                 </p>
                 <p>
-                  Ma Kitchens brings that food to your table by connecting local customers with selected home cooks in
-                  their community.
+                  Ma Kitchens brings that food from talented local cooks to your table.
                 </p>
               </div>
             </div>
           </article>
 
-          {propositions.map((item, index) => (
-            <article
-              key={item.title}
-              className={`flex min-h-[250px] flex-col justify-between border border-ink/10 p-6 sm:p-8 ${
-                index === 2 ? "md:col-span-2 md:min-h-0" : ""
-              } ${item.className}`}
-            >
-              <p className={`text-xs font-semibold tracking-[0.2em] ${index === 2 ? "text-white/60" : "text-clay"}`}>
-                {item.number}
-              </p>
-              <div className="mt-8">
-                <h3 className="font-serif text-3xl leading-none sm:text-4xl">{item.title}</h3>
-                <p className={`mt-3 max-w-md text-sm leading-6 sm:text-base sm:leading-7 ${index === 2 ? "text-white/75" : "text-ink/65"}`}>
-                  {item.copy}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+          <div className="grid gap-3 lg:grid-rows-[0.62fr_2fr]">
+            <div className="flex min-h-[150px] items-end bg-sage p-7 text-white sm:p-9 lg:min-h-0">
+              <h2 id="process-heading" className="text-3xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-4xl">
+                How Ma Kitchens works
+              </h2>
+            </div>
 
-      <section className="border-y border-ink/10 bg-oat/35 px-5 py-11 sm:px-6 lg:px-10" aria-labelledby="process-heading">
-        <div className="mx-auto max-w-7xl">
-          <h2 id="process-heading" className="font-serif text-4xl text-ink sm:text-5xl">
-            How Ma Kitchens works
-          </h2>
-          <ol className="mt-8 grid md:grid-cols-4">
-            {steps.map(([number, title, copy], index) => (
-              <li
-                key={number}
-                className={`grid grid-cols-[3rem_1fr] gap-3 border-ink/15 py-5 md:block md:px-6 md:py-1 ${
-                  index > 0 ? "border-t md:border-l md:border-t-0" : "md:pl-0"
-                }`}
-              >
-                <span className="font-serif text-3xl text-clay" aria-hidden="true">
-                  {number}
-                </span>
-                <div className="md:mt-6">
-                  <h3 className="text-xs font-bold uppercase tracking-[0.22em] text-ink">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-ink/60">{copy}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+            <ol className="grid gap-3 sm:grid-cols-2 sm:grid-rows-2">
+              {steps.map(([number, title, copy]) => (
+                <li
+                  key={number}
+                  className="flex min-h-[220px] flex-col justify-between border border-ink/10 bg-cream p-7 sm:min-h-0 sm:p-8"
+                >
+                  <span className="text-xs font-semibold tracking-[0.2em] text-clay" aria-hidden="true">
+                    {number}
+                  </span>
+                  <div className="mt-8">
+                    <h3 className="text-2xl font-medium leading-tight tracking-[-0.02em] text-ink sm:text-[1.7rem]">
+                      {title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-ink/65 sm:text-base sm:leading-7">{copy}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </section>
 
