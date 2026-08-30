@@ -145,7 +145,10 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl overflow-hidden border border-clay/20 bg-oat/55 text-ink md:grid-cols-[1.45fr_0.75fr]">
           <div className="p-7 sm:p-10 lg:p-14">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-clay">Our story</p>
-            <h2 id="why-ma-heading" className="mt-4 font-serif text-5xl leading-none sm:text-6xl">
+            <h2
+              id="why-ma-heading"
+              className="mt-4 text-4xl font-medium leading-[1.05] tracking-[-0.025em] sm:text-5xl"
+            >
               Why “Ma”?
             </h2>
             <div className="mt-7 max-w-2xl space-y-4 text-base leading-7 text-ink/70 sm:text-lg sm:leading-8">
@@ -161,11 +164,14 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="relative flex min-h-[280px] items-end overflow-hidden border-t border-clay/20 bg-cream p-7 sm:p-10 md:min-h-0 md:border-l md:border-t-0 lg:p-12">
-            <span className="absolute -right-8 top-0 font-serif text-[13rem] leading-none text-clay/[0.07]" aria-hidden="true">
+          <div className="relative flex min-h-[420px] items-end overflow-hidden border-t border-clay/20 bg-cream p-7 sm:p-10 md:min-h-0 md:border-l md:border-t-0 lg:p-12">
+            <span
+              className="pointer-events-none absolute inset-0 flex items-center justify-center whitespace-nowrap font-serif text-[10rem] leading-none text-clay/[0.07] sm:text-[11rem]"
+              aria-hidden="true"
+            >
               Ma
             </span>
-            <p className="relative max-w-sm border-l-2 border-clay pl-6 font-serif text-4xl italic leading-[1.05] text-clay sm:text-5xl">
+            <p className="relative max-w-sm border-l-2 border-clay pl-6 text-3xl font-normal leading-[1.1] tracking-[-0.02em] text-clay">
               Home-cooked food, prepared with heart.
             </p>
           </div>
