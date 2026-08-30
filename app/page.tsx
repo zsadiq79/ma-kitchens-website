@@ -172,51 +172,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-ink/10 px-5 py-12 sm:px-6 sm:py-16 lg:px-10" aria-labelledby="pathways-heading">
-        <div className="mx-auto max-w-7xl">
-          <h2 id="pathways-heading" className="max-w-3xl font-serif text-4xl leading-none sm:text-5xl">
-            There are two ways to be part of Ma Kitchens
-          </h2>
-          <div className="mt-8 grid gap-3 md:grid-cols-2">
-            <article className="flex min-h-[360px] flex-col justify-between bg-oat/70 p-7 sm:p-10">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-clay">For food lovers</p>
-                <h3 className="mt-5 max-w-lg font-serif text-4xl leading-none sm:text-5xl">Discover food made with heart</h3>
-                <p className="mt-5 max-w-lg text-base leading-7 text-ink/65">
-                  Experience authentic home-cooked dishes from talented local cooks, prepared fresh for your order.
-                </p>
-              </div>
-              <div className="mt-8">
-                <Link className={`${buttonStyles} bg-clay text-white hover:bg-ink focus-visible:outline-clay`} href="/firstmeal">
-                  Claim your first free meal
-                </Link>
-              </div>
-            </article>
-
-            <article className="flex min-h-[360px] flex-col justify-between border border-ink/15 p-7 sm:p-10">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sage">For home cooks</p>
-                <h3 className="mt-5 max-w-lg font-serif text-4xl leading-none sm:text-5xl">Cook what you love</h3>
-                <p className="mt-5 max-w-lg text-base leading-7 text-ink/65">
-                  Turn the dishes you make brilliantly into an opportunity to earn. You focus on the food while Ma
-                  Kitchens helps manage customers, orders, payments and delivery.
-                </p>
-              </div>
-              <div className="mt-8">
-                <TrackedLink
-                  className={`${buttonStyles} border border-ink text-ink hover:bg-ink hover:text-cream focus-visible:outline-ink`}
-                  eventName="whatsapp_channel_click"
-                  href={whatsappChannelUrl}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Cook with Ma Kitchens
-                </TrackedLink>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
     </>
   );
 }
