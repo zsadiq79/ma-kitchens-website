@@ -31,9 +31,10 @@ export default function FirstMealPage() {
               </p>
               <h1
                 id="firstmeal-heading"
-                className="mt-5 max-w-2xl text-[3.25rem] font-medium leading-[0.98] tracking-[-0.03em] sm:text-6xl lg:text-[4.65rem]"
+                className="mt-5 max-w-2xl text-[2.75rem] font-medium leading-[0.98] tracking-[-0.03em] sm:text-[3.25rem] lg:text-[3.75rem]"
               >
-                Your first Ma Kitchens meal is on us.
+                <span className="block md:whitespace-nowrap">Your first Ma Kitchens</span>
+                <span className="block">meal is on us.</span>
               </h1>
               <p className="mt-7 max-w-xl text-lg leading-8 text-ink/70">
                 Discover authentic home-cooked food prepared fresh by talented local cooks and delivered through Ma
@@ -65,7 +66,7 @@ export default function FirstMealPage() {
         </section>
 
         <section id="claim" className="scroll-mt-4 px-0 py-8 sm:px-6 sm:py-12 lg:px-10" aria-label="First free meal claim form">
-          <div className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-[54rem]">
             <div className="min-w-0">
               <Suspense fallback={<p className="px-5 py-16 text-center text-sm text-ink/60">Loading registration form…</p>}>
                 <TallyFirstMealForm />
@@ -99,7 +100,9 @@ export default function FirstMealPage() {
             <Link className="font-serif text-4xl" href="/">
               Ma Kitchens
             </Link>
-            <p className="mt-2 text-sm text-cream/65">Home-cooked food, prepared with heart.</p>
+            <p className="mt-4 max-w-sm text-left text-sm leading-6 text-cream/65 [word-spacing:normal]">
+              Home-cooked food, prepared with heart.
+            </p>
           </div>
           <div className="text-sm leading-7 text-cream/70">
             <a className="block hover:text-white" href="mailto:admin@makitchens.com.au">
