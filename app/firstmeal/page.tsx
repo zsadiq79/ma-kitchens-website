@@ -14,106 +14,72 @@ export const metadata: Metadata = {
 export default function FirstMealPage() {
   return (
     <div className="overflow-x-hidden bg-cream text-ink">
-      <header className="border-b border-ink/10">
-        <div className="mx-auto max-w-7xl px-5 py-5 sm:px-6 lg:px-10">
-          <Link className="font-serif text-3xl tracking-wide" href="/">
-            Ma Kitchens
-          </Link>
-        </div>
-      </header>
-
-      <main>
-        <section className="overflow-hidden border-b border-ink/10" aria-labelledby="firstmeal-heading">
-          <div className="mx-auto grid max-w-7xl items-center md:min-h-[610px] md:grid-cols-[1.02fr_0.98fr]">
-            <div className="px-5 pb-4 pt-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-clay">
-                Home-cooked food, prepared with heart
-              </p>
-              <h1
-                id="firstmeal-heading"
-                className="mt-5 max-w-2xl text-[2.75rem] font-medium leading-[0.98] tracking-[-0.03em] sm:text-[3.25rem] lg:text-[3.75rem]"
-              >
-                <span className="block md:whitespace-nowrap">Your first Ma Kitchens</span>
-                <span className="block">meal is on us.</span>
-              </h1>
-              <p className="mt-7 max-w-xl text-lg leading-8 text-ink/70">
-                Discover authentic home-cooked food prepared fresh by talented local cooks and delivered through Ma
-                Kitchens.
-              </p>
-              <a
-                className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-clay px-8 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
-                href="#claim"
-              >
-                CLAIM FIRST FREE MEAL
-              </a>
-              <p className="mt-4 max-w-xl text-xs leading-5 text-ink/60 sm:text-sm sm:leading-6">
-                Your first Ma Kitchens meal is completely free. One free serving per customer, subject to delivery area
-                and availability.
-              </p>
-            </div>
-
-            <div className="relative h-[300px] sm:h-[400px] md:h-[580px]">
-              <Image
-                alt="Ma Kitchens home-cooked meal delivery bag"
-                className="object-contain object-right"
-                fill
-                priority
-                sizes="(max-width: 767px) 100vw, 49vw"
-                src="/images/ma-kitchens-delivery-bag.png"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section id="claim" className="scroll-mt-4 px-0 py-8 sm:px-6 sm:py-12 lg:px-10" aria-label="First free meal claim form">
-          <div className="mx-auto max-w-[54rem]">
-            <div className="min-w-0">
-              <Suspense fallback={<p className="px-5 py-16 text-center text-sm text-ink/60">Loading registration form…</p>}>
-                <TallyFirstMealForm />
-              </Suspense>
-            </div>
-
-            <div className="mx-5 mt-2 border-y border-clay/25 bg-oat/40 px-5 py-7 text-center sm:mx-0 sm:px-8">
-              <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] sm:text-3xl">
-                100% satisfaction promise
-              </h2>
-              <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/70">
-                If you&apos;re not satisfied with a dish, let us know within 24 hours and we&apos;ll make it right.
-              </p>
-            </div>
-            <div className="mx-5 pt-6 text-center sm:mx-0">
-              <p className="mx-auto max-w-2xl text-xs leading-5 text-ink/55">
-                We use your information to contact you about Ma Kitchens and provide updates where you have requested
-                them.
-              </p>
-              <Link className="mt-2 inline-block text-xs font-semibold text-clay underline underline-offset-4" href="/privacy">
-                Privacy Policy
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer className="bg-ink px-5 py-9 text-cream sm:px-6 lg:px-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <Link className="font-serif text-4xl" href="/">
-              Ma Kitchens
-            </Link>
-            <p className="mt-4 max-w-sm text-left text-sm leading-6 text-cream/65 [word-spacing:normal]">
-              Connecting local communities through home-cooked food, prepared with heart.
+      <section className="overflow-hidden border-b border-ink/10" aria-labelledby="firstmeal-heading">
+        <div className="mx-auto grid max-w-7xl items-center md:min-h-[610px] md:grid-cols-[1.02fr_0.98fr]">
+          <div className="px-5 pb-4 pt-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-clay">
+              Home-cooked food, prepared with heart
+            </p>
+            <h1
+              id="firstmeal-heading"
+              className="mt-5 max-w-2xl text-[2.75rem] font-medium leading-[0.98] tracking-[-0.03em] sm:text-[3.25rem] lg:text-[3.75rem]"
+            >
+              <span className="block md:whitespace-nowrap">Your first Ma Kitchens</span>
+              <span className="block">meal is on us.</span>
+            </h1>
+            <p className="mt-7 max-w-xl text-lg leading-8 text-ink/70">
+              Discover authentic home-cooked food prepared fresh by talented local cooks and delivered through Ma Kitchens.
+            </p>
+            <a
+              className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-clay px-8 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
+              href="#claim"
+            >
+              CLAIM FIRST FREE MEAL
+            </a>
+            <p className="mt-4 max-w-xl text-xs leading-5 text-ink/60 sm:text-sm sm:leading-6">
+              Your first Ma Kitchens meal is completely free. One free serving per customer, subject to delivery area and availability.
             </p>
           </div>
-          <div className="text-sm leading-7 text-cream/70">
-            <a className="block hover:text-white" href="mailto:admin@makitchens.com.au">
-              admin@makitchens.com.au
-            </a>
-            <Link className="hover:text-white" href="/privacy">
+
+          <div className="relative h-[300px] sm:h-[400px] md:h-[580px]">
+            <Image
+              alt="Ma Kitchens home-cooked meal delivery bag"
+              className="object-contain object-right"
+              fill
+              priority
+              sizes="(max-width: 767px) 100vw, 49vw"
+              src="/images/ma-kitchens-delivery-bag.png"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="claim" className="scroll-mt-4 px-0 py-8 sm:px-6 sm:py-12 lg:px-10" aria-label="First free meal claim form">
+        <div className="mx-auto max-w-[54rem]">
+          <div className="min-w-0">
+            <Suspense fallback={<p className="px-5 py-16 text-center text-sm text-ink/60">Loading registration form…</p>}>
+              <TallyFirstMealForm />
+            </Suspense>
+          </div>
+
+          <div className="mx-5 mt-2 border-y border-clay/25 bg-oat/40 px-5 py-7 text-center sm:mx-0 sm:px-8">
+            <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] sm:text-3xl">
+              100% satisfaction promise
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/70">
+              If you&apos;re not satisfied with a dish, let us know within 24 hours and we&apos;ll make it right.
+            </p>
+          </div>
+          <div className="mx-5 pt-6 text-center sm:mx-0">
+            <p className="mx-auto max-w-2xl text-xs leading-5 text-ink/55">
+              We use your information to contact you about Ma Kitchens and provide updates where you have requested them.
+            </p>
+            <Link className="mt-2 inline-block text-xs font-semibold text-clay underline underline-offset-4" href="/privacy">
               Privacy Policy
             </Link>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   );
 }
