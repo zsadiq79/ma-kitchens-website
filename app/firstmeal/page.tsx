@@ -101,7 +101,7 @@ export default function FirstMealPage() {
               Ma Kitchens
             </Link>
             <p className="mt-4 max-w-sm text-left text-sm leading-6 text-cream/65 [word-spacing:normal]">
-              Home-cooked food, prepared with heart.
+              Connecting local communities through home-cooked food, prepared with heart.
             </p>
           </div>
           <div className="text-sm leading-7 text-cream/70">
