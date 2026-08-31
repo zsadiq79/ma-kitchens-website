@@ -8,7 +8,7 @@ import { TallyFirstMealForm } from "@/components/TallyFirstMealForm";
 export const metadata: Metadata = {
   title: "First Meal Free | Ma Kitchens",
   description:
-    "Register to try authentic home-cooked food from local cooks with Ma Kitchens. Your first order is free for up to 4 servings during our introductory launch.",
+    "Your first Ma Kitchens meal is completely free. One free serving per customer, subject to delivery area and availability.",
 };
 
 export default function FirstMealPage() {
@@ -31,7 +31,7 @@ export default function FirstMealPage() {
               </p>
               <h1
                 id="firstmeal-heading"
-                className="mt-5 max-w-2xl font-serif text-[3.25rem] leading-[0.93] tracking-[-0.03em] sm:text-6xl lg:text-[4.65rem]"
+                className="mt-5 max-w-2xl text-[3.25rem] font-medium leading-[0.98] tracking-[-0.03em] sm:text-6xl lg:text-[4.65rem]"
               >
                 Your first Ma Kitchens meal is on us.
               </h1>
@@ -43,10 +43,11 @@ export default function FirstMealPage() {
                 className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-clay px-8 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
                 href="#claim"
               >
-                Claim my free meal
+                CLAIM FIRST FREE MEAL
               </a>
-              <p className="mt-4 max-w-lg text-xs leading-5 text-ink/55">
-                First order free for up to 4 servings. Limited launch, subject to delivery area and availability.
+              <p className="mt-4 max-w-xl text-xs leading-5 text-ink/60 sm:text-sm sm:leading-6">
+                Your first Ma Kitchens meal is completely free. One free serving per customer, subject to delivery area
+                and availability.
               </p>
             </div>
 
@@ -63,29 +64,24 @@ export default function FirstMealPage() {
           </div>
         </section>
 
-        <section id="claim" className="scroll-mt-4 px-0 py-12 sm:px-6 sm:py-16 lg:px-10" aria-labelledby="claim-heading">
-          <div className="mx-auto max-w-4xl">
-            <div className="px-5 text-center sm:px-0">
-              <h2 id="claim-heading" className="font-serif text-4xl leading-none sm:text-5xl">
-                Claim your free first meal
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-ink/65">
-                Tell us where you are and what kind of home-cooked food you&apos;d love to see.
-              </p>
-            </div>
-
-            <div className="mt-8 min-w-0">
+        <section id="claim" className="scroll-mt-4 px-0 py-8 sm:px-6 sm:py-12 lg:px-10" aria-label="First free meal claim form">
+          <div className="mx-auto max-w-3xl">
+            <div className="min-w-0">
               <Suspense fallback={<p className="px-5 py-16 text-center text-sm text-ink/60">Loading registration form…</p>}>
                 <TallyFirstMealForm />
               </Suspense>
             </div>
 
-            <div className="mx-5 border-t border-clay/25 pt-7 text-center sm:mx-0">
-              <h3 className="font-serif text-3xl">100% satisfaction promise</h3>
-              <p className="mt-2 text-sm leading-6 text-ink/70">
+            <div className="mx-5 mt-2 border-y border-clay/25 bg-oat/40 px-5 py-7 text-center sm:mx-0 sm:px-8">
+              <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] sm:text-3xl">
+                100% satisfaction promise
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/70">
                 If you&apos;re not satisfied with a dish, let us know within 24 hours and we&apos;ll make it right.
               </p>
-              <p className="mx-auto mt-6 max-w-2xl text-xs leading-5 text-ink/55">
+            </div>
+            <div className="mx-5 pt-6 text-center sm:mx-0">
+              <p className="mx-auto max-w-2xl text-xs leading-5 text-ink/55">
                 We use your information to contact you about Ma Kitchens and provide updates where you have requested
                 them.
               </p>
