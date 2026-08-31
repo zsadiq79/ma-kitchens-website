@@ -55,7 +55,7 @@ export default function FirstMealPage() {
       </section>
 
       <section id="claim" className="scroll-mt-4 px-0 py-8 sm:px-6 sm:py-12 lg:px-10" aria-label="First free meal claim form">
-        <div className="mx-auto max-w-[54rem]">
+        <div className="mx-auto max-w-[62rem]">
           <div className="min-w-0">
             <Suspense fallback={<p className="px-5 py-16 text-center text-sm text-ink/60">Loading registration form…</p>}>
               <TallyFirstMealForm />
