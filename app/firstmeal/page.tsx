@@ -62,14 +62,6 @@ export default function FirstMealPage() {
             </Suspense>
           </div>
 
-          <div className="mx-5 mt-2 border-y border-clay/25 bg-oat/40 px-5 py-7 text-center sm:mx-0 sm:px-8">
-            <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] sm:text-3xl">
-              100% satisfaction promise
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/70">
-              If you&apos;re not satisfied with a dish, let us know within 24 hours and we&apos;ll make it right.
-            </p>
-          </div>
           <div className="mx-5 pt-6 text-center sm:mx-0">
             <p className="mx-auto max-w-2xl text-xs leading-5 text-ink/55">
               We use your information to contact you about Ma Kitchens and provide updates where you have requested them.
