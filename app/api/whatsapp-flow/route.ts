@@ -16,6 +16,42 @@ type FlowRequestBody = {
   flow_token?: string;
 };
 
+type MenuMeal = {
+  id: string;
+  itemCode: string;
+  kitchenName: string;
+  dishName: string;
+  description: string;
+  portion: string;
+  price: number;
+  priceDisplay: string;
+  imageUrl: string;
+  remainingServings: number;
+};
+
+type MenuApiResponse = {
+  ok: boolean;
+  status?: string;
+  menuCycleId?: string;
+  deliveryDate?: string;
+  deliveryDateDisplay?: string;
+  orderDeadline?: string;
+  orderDeadlineDisplay?: string;
+  mealCount?: number;
+  meals?: MenuMeal[];
+  error?: string;
+  message?: string;
+};
+
+type FlowMealOption = {
+  id: string;
+  title: string;
+  description: string;
+  metadata: string;
+  image?: string;
+  "alt-text"?: string;
+};
+
 class FlowEndpointError extends Error {
   statusCode: number;
 
@@ -155,6 +191,160 @@ function encryptResponse(
   ]).toString("base64");
 }
 
+function truncate(value: string, maxLength: number) {
+  const normalized = value.trim();
+
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return normalized.slice(0, Math.max(0, maxLength - 1)).trimEnd() + "…";
+}
+
+async function fetchActiveMenu(): Promise<MenuApiResponse> {
+  const menuApiUrl = process.env.FLOW_MENU_API_URL;
+  const menuApiSecret = process.env.FLOW_MENU_API_SECRET;
+
+  if (!menuApiUrl || !menuApiSecret) {
+    throw new FlowEndpointError(
+      503,
+      "WhatsApp Flow menu environment variables are not configured.",
+    );
+  }
+
+  const url = new URL(menuApiUrl);
+  url.searchParams.set("action", "menu");
+
+  let response: Response;
+
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        secret: menuApiSecret,
+      }),
+      cache: "no-store",
+      redirect: "follow",
+    });
+  } catch (error) {
+    console.error("Unable to reach Apps Script menu feed:", error);
+    throw new FlowEndpointError(502, "Unable to reach the menu service.");
+  }
+
+  if (!response.ok) {
+    console.error("Apps Script menu feed returned HTTP", response.status);
+    throw new FlowEndpointError(502, "Menu service returned an error.");
+  }
+
+  let menu: MenuApiResponse;
+
+  try {
+    menu = (await response.json()) as MenuApiResponse;
+  } catch (error) {
+    console.error("Apps Script menu feed returned invalid JSON:", error);
+    throw new FlowEndpointError(502, "Menu service returned invalid data.");
+  }
+
+  if (!menu.ok) {
+    console.error("Apps Script menu feed error:", menu.error, menu.message);
+    throw new FlowEndpointError(502, "Menu service could not build the menu.");
+  }
+
+  if (menu.status !== "ACTIVE" || !Array.isArray(menu.meals)) {
+    throw new FlowEndpointError(409, "No active menu is currently available.");
+  }
+
+  return menu;
+}
+
+function getFlowThumbnailUrl(imageUrl: string) {
+  const baseUrl =
+    process.env.FLOW_THUMBNAIL_BASE_URL ||
+    "https://www.makitchens.com.au/flow-thumbnails";
+
+  try {
+    const pathname = new URL(imageUrl).pathname;
+    const filename = pathname.split("/").pop() || "";
+    const stem = filename.replace(/\.[^.]+$/, "");
+    const safeStem = stem.replace(/[^A-Za-z0-9_-]/g, "");
+
+    if (!safeStem) {
+      return null;
+    }
+
+    return `${baseUrl.replace(/\/$/, "")}/${encodeURIComponent(safeStem)}.jpg`;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchThumbnailBase64(imageUrl: string) {
+  const thumbnailUrl = getFlowThumbnailUrl(imageUrl);
+
+  if (!thumbnailUrl) {
+    return undefined;
+  }
+
+  try {
+    const response = await fetch(thumbnailUrl, {
+      cache: "force-cache",
+    });
+
+    if (!response.ok) {
+      console.warn("Flow thumbnail unavailable:", thumbnailUrl, response.status);
+      return undefined;
+    }
+
+    const bytes = Buffer.from(await response.arrayBuffer());
+
+    // Meta's CheckboxGroup image limit is 100 KB. Keep a little safety margin.
+    if (bytes.length > 95 * 1024) {
+      console.warn("Flow thumbnail exceeds safe size limit:", thumbnailUrl);
+      return undefined;
+    }
+
+    return bytes.toString("base64");
+  } catch (error) {
+    console.warn("Unable to load Flow thumbnail:", thumbnailUrl, error);
+    return undefined;
+  }
+}
+
+async function buildFlowMealOptions(meals: MenuMeal[]): Promise<FlowMealOption[]> {
+  return Promise.all(
+    meals.map(async (meal) => {
+      const image = meal.imageUrl
+        ? await fetchThumbnailBase64(meal.imageUrl)
+        : undefined;
+
+      const descriptionParts = [meal.kitchenName, meal.description]
+        .map((value) => value.trim())
+        .filter(Boolean);
+
+      const metadataParts = [meal.portion, meal.priceDisplay]
+        .map((value) => value.trim())
+        .filter(Boolean);
+
+      const option: FlowMealOption = {
+        id: meal.itemCode || meal.id,
+        title: truncate(meal.dishName, 30),
+        description: truncate(descriptionParts.join(" · "), 300),
+        metadata: truncate(metadataParts.join(" · "), 20),
+      };
+
+      if (image) {
+        option.image = image;
+        option["alt-text"] = truncate(meal.dishName, 80);
+      }
+
+      return option;
+    }),
+  );
+}
+
 async function getNextScreen(body: FlowRequestBody) {
   const { action, data, screen, flow_token: flowToken } = body;
 
@@ -176,21 +366,39 @@ async function getNextScreen(body: FlowRequestBody) {
     };
   }
 
-  // The ordering screens will be connected in the next build step.
   if (action === "INIT") {
+    const menu = await fetchActiveMenu();
+    const meals = await buildFlowMealOptions(menu.meals || []);
+
+    if (meals.length === 0) {
+      throw new FlowEndpointError(409, "No orderable meals are currently available.");
+    }
+
+    console.log("WhatsApp Flow active menu loaded:", {
+      menuCycleId: menu.menuCycleId,
+      deliveryDate: menu.deliveryDate,
+      mealCount: meals.length,
+    });
+
     return {
       screen: "SELECT_MEALS",
       data: {
-        endpoint_ready: true,
+        meals,
       },
     };
   }
 
   if (action === "data_exchange") {
+    if (screen === "SELECT_MEALS") {
+      return {
+        screen: "QUANTITIES",
+        data: {},
+      };
+    }
+
     return {
       screen: screen || "SELECT_MEALS",
       data: {
-        endpoint_ready: true,
         flow_token: flowToken || "",
       },
     };
