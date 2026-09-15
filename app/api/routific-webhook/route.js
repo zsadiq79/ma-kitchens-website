@@ -48,11 +48,16 @@ export async function POST(request) {
         .update(rawBody)
         .digest("hex");
 
-    const suppliedBuffer =
-      Buffer.from(signature, "utf8");
+    const suppliedSignature =
+  signature.startsWith("v0=")
+    ? signature.substring(3)
+    : signature;
 
-    const expectedBuffer =
-      Buffer.from(expectedSignature, "utf8");
+const suppliedBuffer =
+  Buffer.from(suppliedSignature, "utf8");
+
+const expectedBuffer =
+  Buffer.from(expectedSignature, "utf8");
 
     const signatureIsValid =
       suppliedBuffer.length === expectedBuffer.length &&
