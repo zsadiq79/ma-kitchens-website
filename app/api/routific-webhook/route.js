@@ -10,6 +10,16 @@ export async function POST(request) {
     const secret =
       process.env.ROUTIFIC_WEBHOOK_SECRET;
 
+    console.log(
+  "Routific signature diagnostic:",
+  {
+    signaturePresent: Boolean(signature),
+    signatureLength: signature ? signature.length : 0,
+    signaturePrefix: signature
+      ? signature.substring(0, 12)
+      : null
+  }
+);
     if (!secret) {
       console.error(
         "ROUTIFIC_WEBHOOK_SECRET is not configured."
