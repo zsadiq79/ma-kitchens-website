@@ -45,9 +45,9 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 className={`${buttonStyles} homepage-customer-cta-pulse w-full bg-clay text-white hover:bg-ink focus-visible:outline-clay sm:w-72`}
-                href="/firstmeal"
+                href="/menu"
               >
-                Claim first free meal
+                Latest Menu
               </Link>
               <TrackedLink
                 className={`${buttonStyles} w-full border border-ink/30 text-ink hover:border-ink hover:bg-ink hover:text-cream focus-visible:outline-ink sm:w-72`}
