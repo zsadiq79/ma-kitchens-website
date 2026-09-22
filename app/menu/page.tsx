@@ -5,6 +5,22 @@ import { formatMenuDate, getWeeklyMenus } from "@/lib/weeklyMenus";
 
 export const dynamic = "force-static";
 
+const whatsappOrderUrl =
+  "https://wa.me/61420246023?text=Hi%20Ma%20Kitchens%2C%20I%27d%20like%20to%20order%20from%20this%20week%27s%20menu.";
+
+function WhatsAppOrderButton() {
+  return (
+    <a
+      className="inline-flex min-h-12 items-center justify-center rounded-full bg-clay px-7 py-3 text-center text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay sm:px-8"
+      href={whatsappOrderUrl}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      ORDER ON WHATSAPP
+    </a>
+  );
+}
+
 export const metadata: Metadata = {
   title: "Weekly Menu | Ma Kitchens",
   description: "View the current Ma Kitchens weekly menu and browse previous menus.",
@@ -23,9 +39,17 @@ export default function MenuPage() {
             This week&apos;s menu
           </h1>
           {activeMenu ? (
-            <p className="mt-4 text-base leading-7 text-ink/65 sm:text-lg sm:leading-8">
-              Delivery: {formatMenuDate(activeMenu.date)}
-            </p>
+            <>
+              <p className="mt-4 text-base leading-7 text-ink/65 sm:text-lg sm:leading-8">
+                Delivery: {formatMenuDate(activeMenu.date)}
+              </p>
+              <div className="mt-7">
+                <WhatsAppOrderButton />
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/60 sm:text-base">
+                  Message us to place your order. We&apos;ll confirm availability and help you from there.
+                </p>
+              </div>
+            </>
           ) : (
             <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-ink/65 sm:text-lg sm:leading-8">
               Our next weekly menu will be published here soon.
@@ -48,6 +72,9 @@ export default function MenuPage() {
                 />
               </figure>
             ))}
+            <div className="pt-2 text-center">
+              <WhatsAppOrderButton />
+            </div>
           </div>
         </section>
       )}
