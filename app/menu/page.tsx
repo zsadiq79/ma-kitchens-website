@@ -5,6 +5,29 @@ import { formatMenuDate, getWeeklyMenus } from "@/lib/weeklyMenus";
 
 export const dynamic = "force-static";
 
+const whatsappOrderUrl =
+  "https://wa.me/61420246023?text=Hi%20Ma%20Kitchens%2C%20I%27d%20like%20to%20order%20from%20this%20week%27s%20menu.";
+
+function WhatsAppOrderButton() {
+  return (
+    <a
+      className="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-clay px-7 py-2 text-center text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay sm:px-8"
+      href={whatsappOrderUrl}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      <svg
+        aria-hidden="true"
+        className="h-8 w-8 shrink-0 fill-current"
+        viewBox="0 0 24 24"
+      >
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.917-.273-.099-.471-.148-.67.15-.197.297-.767.916-.94 1.113-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479s1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.438-9.887 9.892-9.887a9.821 9.821 0 0 1 7.021 2.91 9.825 9.825 0 0 1 2.9 7.025c-.002 5.45-4.438 9.887-9.889 9.887m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+      </svg>
+      ORDER ON WHATSAPP
+    </a>
+  );
+}
+
 export const metadata: Metadata = {
   title: "Weekly Menu | Ma Kitchens",
   description: "View the current Ma Kitchens weekly menu and browse previous menus.",
@@ -23,9 +46,17 @@ export default function MenuPage() {
             This week&apos;s menu
           </h1>
           {activeMenu ? (
-            <p className="mt-4 text-base leading-7 text-ink/65 sm:text-lg sm:leading-8">
-              Delivery: {formatMenuDate(activeMenu.date)}
-            </p>
+            <>
+              <p className="mt-4 text-base leading-7 text-ink/65 sm:text-lg sm:leading-8">
+                Delivery: {formatMenuDate(activeMenu.date)}
+              </p>
+              <div className="mt-7">
+                <WhatsAppOrderButton />
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/60 sm:text-base">
+                  Message us to place your order. We&apos;ll confirm availability and help you from there.
+                </p>
+              </div>
+            </>
           ) : (
             <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-ink/65 sm:text-lg sm:leading-8">
               Our next weekly menu will be published here soon.
@@ -48,6 +79,9 @@ export default function MenuPage() {
                 />
               </figure>
             ))}
+            <div className="pt-2 text-center">
+              <WhatsAppOrderButton />
+            </div>
           </div>
         </section>
       )}
