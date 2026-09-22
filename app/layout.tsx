@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 
+import { MetaPixel } from "@/components/MetaPixel";
 import { SiteChrome } from "@/components/SiteChrome";
 import "./globals.css";
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="font-sans antialiased">
         <SiteChrome>{children}</SiteChrome>
+        <MetaPixel />
         <Analytics />
       </body>
     </html>
