@@ -20,13 +20,13 @@ export default function PrivacyPage() {
         <h1 className="font-serif text-[3.25rem] leading-[0.92] tracking-[-0.025em] text-ink sm:text-6xl lg:text-7xl">
           Privacy Policy
         </h1>
-        <p className="mt-5 text-sm text-ink/55 sm:mt-6">Last updated: 11 August 2026</p>
+        <p className="mt-5 text-sm text-ink/55 sm:mt-6">Last updated: 27 September 2026</p>
       </header>
 
       <div className="mt-8 max-w-3xl space-y-10 text-base leading-7 text-ink/75 sm:mt-10 sm:text-lg sm:leading-8">
         <div className="space-y-5">
-          <p>Ma Kitchens respects your privacy and is committed to handling personal information responsibly and transparently.</p>
-          <p>This Privacy Policy explains how Ma Kitchens collects, uses, stores and discloses personal information when you interact with us, including through our website, social media pages, online forms and other communications.</p>
+          <p>Ma Kitchens is operated by Stockman Mineral Pty Ltd (ABN 31 696 868 587), trading as Ma Kitchens International.</p>
+          <p>Ma Kitchens respects your privacy and is committed to handling personal information responsibly and transparently. This Privacy Policy explains how Ma Kitchens collects, uses, stores and discloses personal information when you interact with us, including through our website, social media pages, online forms and other communications.</p>
         </div>
 
         <PolicySection title="1. PERSONAL INFORMATION WE COLLECT">
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
         </PolicySection>
 
         <PolicySection title="CONTACT">
-          <p>For privacy enquiries, please contact:</p><address className="not-italic">Ma Kitchens<br />Email: {emailLink}</address>
+          <p>For privacy enquiries, please contact:</p><address className="not-italic">Ma Kitchens<br />Operated by Stockman Mineral Pty Ltd<br />Trading as Ma Kitchens International<br />ABN 31 696 868 587<br />Email: {emailLink}</address>
         </PolicySection>
       </div>
     </article>

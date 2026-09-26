@@ -36,6 +36,7 @@ export function Footer() {
           <p className="mt-4 max-w-sm text-left text-sm leading-6 text-cream/65 [word-spacing:normal]">
             Connecting local communities through home-cooked food, prepared with heart.
           </p>
+          <p className="mt-3 text-xs leading-5 text-cream/45">Ma Kitchens International | ABN 31 696 868 587</p>
         </div>
 
         <div className="border-t border-cream/15 pt-6 text-sm leading-7 text-cream/75 md:border-t-0 md:pt-0">
