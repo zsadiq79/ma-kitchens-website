@@ -2,16 +2,18 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { FeedbackForm } from "@/components/FeedbackForm";
+import { getFeedbackOrder, type FeedbackOrder } from "@/lib/feedbackApi";
 
 export const metadata: Metadata = {
   title: "Order Feedback | Ma Kitchens",
   description: "Share feedback on your Ma Kitchens order.",
 };
 
-const demoFeedback = {
+const demoFeedback: FeedbackOrder = {
   customerName: "Sameera",
   deliveryDate: "24 September 2026",
   orderId: "ORD-000017",
+  status: "OPEN",
   dishes: [
     {
       itemCode: "M0003",
@@ -53,13 +55,26 @@ export default async function FeedbackPage({
 }) {
   const { token } = await params;
 
-  if (token !== "demo-sameera") {
-    notFound();
+  let feedback: FeedbackOrder;
+
+  if (token === "demo-sameera") {
+    feedback = demoFeedback;
+  } else {
+    try {
+      feedback = await getFeedbackOrder(token);
+    } catch (error) {
+      console.error("Unable to load feedback order:", error);
+      notFound();
+    }
   }
 
   return (
     <div className="min-h-[70vh] bg-cream text-ink">
-      <FeedbackForm {...demoFeedback} />
+      <FeedbackForm
+        {...feedback}
+        feedbackToken={token}
+        demoMode={token === "demo-sameera"}
+      />
     </div>
   );
 }
