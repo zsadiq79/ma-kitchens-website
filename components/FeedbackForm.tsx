@@ -74,6 +74,7 @@ export function FeedbackForm({
     useState<Record<string, DishState>>(initialDishState);
   const [deliveryRating, setDeliveryRating] = useState(0);
   const [overallComment, setOverallComment] = useState("");
+  const [testimonialConsent, setTestimonialConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   function updateDish(itemCode: string, patch: Partial<DishState>) {
@@ -248,6 +249,31 @@ export function FeedbackForm({
           placeholder="Your comments"
           className="mt-4 w-full resize-y rounded-2xl border border-ink/15 bg-cream/35 px-4 py-3 text-sm leading-6 outline-none transition placeholder:text-ink/35 focus:border-clay"
         />
+      </section>
+
+      <section className="mt-5 rounded-[1.5rem] border border-ink/10 bg-white p-5 shadow-sm sm:p-6">
+        <p className="text-sm leading-6 text-ink/65">
+          Your dish ratings may be combined with ratings from other customers and displayed as an overall dish rating. Your identity will not be shown.
+        </p>
+
+        <label className="mt-4 flex cursor-pointer items-start gap-3 text-sm leading-6 text-ink/70">
+          <input
+            type="checkbox"
+            checked={testimonialConsent}
+            onChange={(event) => setTestimonialConsent(event.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-[#8a5a44]"
+          />
+          <span>
+            You may use my written feedback as an anonymous Ma Kitchens testimonial on your website, social media or other promotional material.
+          </span>
+        </label>
+
+        <p className="mt-3 text-xs leading-5 text-ink/45">
+          This is optional. We will not publish your full name, phone number or other identifying information. See our{" "}
+          <a className="underline underline-offset-2 hover:text-clay" href="/privacy">
+            Privacy Policy
+          </a>.
+        </p>
       </section>
 
       {!canSubmit && (
