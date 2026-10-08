@@ -13,7 +13,10 @@ type FeedbackFormProps = {
   customerName: string;
   deliveryDate: string;
   orderId: string;
+  status: "OPEN" | "COMPLETED";
   dishes: DishFeedback[];
+  feedbackToken: string;
+  demoMode?: boolean;
 };
 
 type DishState = {
@@ -57,7 +60,10 @@ export function FeedbackForm({
   customerName,
   deliveryDate,
   orderId,
+  status,
   dishes,
+  feedbackToken,
+  demoMode = false,
 }: FeedbackFormProps) {
   const initialDishState = useMemo(
     () =>
@@ -75,7 +81,9 @@ export function FeedbackForm({
   const [deliveryRating, setDeliveryRating] = useState(0);
   const [overallComment, setOverallComment] = useState("");
   const [testimonialConsent, setTestimonialConsent] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(status === "COMPLETED");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   function updateDish(itemCode: string, patch: Partial<DishState>) {
     setDishFeedback((current) => ({
@@ -116,9 +124,52 @@ export function FeedbackForm({
   return (
     <form
       className="mx-auto max-w-3xl px-5 py-10 sm:px-6 sm:py-14"
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        if (canSubmit) setSubmitted(true);
+        if (!canSubmit || submitting) return;
+
+        setSubmitError("");
+
+        if (demoMode) {
+          setSubmitted(true);
+          return;
+        }
+
+        setSubmitting(true);
+
+        try {
+          const response = await fetch(`/api/feedback/${encodeURIComponent(feedbackToken)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              dishes: dishes.map((dish) => ({
+                itemCode: dish.itemCode,
+                rating: dishFeedback[dish.itemCode].rating,
+                skipped: dishFeedback[dish.itemCode].skipped,
+                comment: dishFeedback[dish.itemCode].comment.trim(),
+              })),
+              deliveryRating,
+              overallComment: overallComment.trim(),
+              testimonialConsent,
+            }),
+          });
+
+          if (!response.ok) {
+            const payload = (await response.json().catch(() => ({}))) as { error?: string };
+            throw new Error(payload.error || "Unable to save feedback.");
+          }
+
+          setSubmitted(true);
+        } catch (error) {
+          console.error("Feedback submit error:", error);
+          setSubmitError(
+            error instanceof Error
+              ? error.message
+              : "We couldn't save your feedback. Please try again.",
+          );
+        } finally {
+          setSubmitting(false);
+        }
       }}
     >
       <div className="text-center">
@@ -282,17 +333,25 @@ export function FeedbackForm({
         </p>
       )}
 
+      {submitError && (
+        <p role="alert" className="mt-5 text-center text-sm font-medium text-red-700">
+          {submitError}
+        </p>
+      )}
+
       <button
         type="submit"
-        disabled={!canSubmit}
+        disabled={!canSubmit || submitting}
         className="mt-6 min-h-14 w-full rounded-full bg-clay px-8 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white transition enabled:hover:bg-ink disabled:cursor-not-allowed disabled:opacity-40"
       >
-        Submit feedback
+        {submitting ? "Saving feedback..." : "Submit feedback"}
       </button>
 
-      <p className="mx-auto mt-4 max-w-xl text-center text-xs leading-5 text-ink/40">
-        This preview does not write to the live Ma Kitchens Control Tower.
-      </p>
+      {demoMode && (
+        <p className="mx-auto mt-4 max-w-xl text-center text-xs leading-5 text-ink/40">
+          This preview does not write to the live Ma Kitchens Control Tower.
+        </p>
+      )}
     </form>
   );
 }
