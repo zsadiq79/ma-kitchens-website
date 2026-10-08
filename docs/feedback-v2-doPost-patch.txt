@@ -1,0 +1,24 @@
+In the existing Code.gs doPost(e), keep Code.gs as the ONLY doPost in the Apps Script project.
+
+Immediately after the existing menu route:
+
+    if (e.parameter && e.parameter.action === 'menu') {
+      return handleMenuApiRequest_(e);
+    }
+
+add:
+
+    if (
+      e.parameter &&
+      (
+        e.parameter.action === 'feedback_read' ||
+        e.parameter.action === 'feedback_submit'
+      )
+    ) {
+      return handleFeedbackWebApiRequest_(
+        e,
+        e.parameter.action
+      );
+    }
+
+Do not remove or reorder the existing Routific or Meta WhatsApp webhook routing below it.
