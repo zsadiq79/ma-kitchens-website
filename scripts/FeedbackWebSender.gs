@@ -15,11 +15,11 @@ function feedbackSenderDecision_(table, row, rowNumber, now) {
   else if (status && status !== 'Not Sent') reason = 'ALREADY_REQUESTED';
   else if (fwFeedback_(book).rows.some(r => String(r[2]).trim() === orderId)) reason = 'LEGACY_FEEDBACK_EXISTS';
   else if (!due) reason = 'INVALID_DELIVERED_AT';
-  else if (now < due.getTime()) reason = 'BEFORE_48_HOURS';
+  else if (now < due.getTime()) reason = 'BEFORE_96_HOURS';
   if (reason === 'ELIGIBLE') {
     try {
       const order = fwOrder_(book, orderId);
-      if (!feedbackV2Eligibility_(order, false, now).eligible) reason = 'BEFORE_48_HOURS';
+      if (!feedbackV2Eligibility_(order, false, now).eligible) reason = 'BEFORE_96_HOURS';
     } catch (error) { if (error.code === 'INELIGIBLE') reason = 'NO_ELIGIBLE_ITEMS'; else throw error; }
   }
   return { eligible: reason === 'ELIGIBLE', reason: reason, dueAt: due ? due.toISOString() : null, candidate: { deliveryRowNumber: rowNumber, orderId: orderId, routificId: String(row[c['Routific ID']] || ''), deliveredAt: deliveredAt, feedbackDueAt: due, feedbackStatus: status } };

@@ -15,5 +15,5 @@ function feedbackDryRunForOrder_(orderId, simulateDelivered) {
     sender: fwProps_().getProperty('FEEDBACK_V2_SENDER_ENABLED') === 'true' ? 'WEB_V2' : 'LEGACY', messageSent: false, spreadsheetWrites: false };
 }
 function testFeedbackDryRun_ORD000002() { return feedbackDryRunForOrder_('ORD-000002', false); }
-// Compatibility only; all consumers use the production 48-hour helper.
+// Compatibility only; all consumers use the production 96-hour helper.
 function getNextDay10am_(deliveredAt, timeZone) { return feedbackNextDay10am_(deliveredAt, timeZone); }

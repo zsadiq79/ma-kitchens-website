@@ -4,7 +4,7 @@
  */
 const FW = Object.freeze({
   legacyHeaders: ['Feedback ID', 'Submitted At', 'Order ID', 'Customer ID', 'Cook ID', 'Item Code', 'Rating / 5', 'Complaint', 'Refund', 'Comments', 'Follow-up Status', 'WhatsApp Message ID'],
-  links: 'Feedback V2 Links', orders: 'Feedback V2 Orders', delay: 48 * 60 * 60 * 1000,
+  links: 'Feedback V2 Links', orders: 'Feedback V2 Orders', delay: 96 * 60 * 60 * 1000,
   linkHeaders: ['Token Hash', 'Order ID', 'Created At', 'Expires At', 'Status', 'Submitted At', 'Last Page Requested At'],
   orderHeaders: ['Order ID', 'Submission ID', 'Completed At', 'Channel', 'Active Hash', 'Draft JSON', 'Draft Revision', 'Draft Updated At', 'Browser Opened At', 'First Interaction At', 'Draft Window At', 'Draft Writes', 'Event Window At', 'Event Writes', 'Page Requested At', 'Message Attempt ID', 'Message ID', 'Message Accepted At', 'Message Sent At', 'Message Delivered At', 'Message Read At', 'Legacy Message IDs', 'Legacy Comment IDs', 'Page Window At', 'Page Writes'],
   extraHeaders: ['Marketing Consent', 'Marketing Consent At', 'Submission ID', 'Feedback Channel', 'Skipped'],
@@ -140,7 +140,7 @@ function fwOrder_(book, orderId) {
 }
 function feedbackV2Eligibility_(order, completed, now) {
   if (completed) return { eligible: false, reason: 'COMPLETED' };
-  if (!Number.isFinite(order.deliveredAt) || now < order.deliveredAt + FW.delay) return { eligible: false, reason: 'BEFORE_48_HOURS' };
+  if (!Number.isFinite(order.deliveredAt) || now < order.deliveredAt + FW.delay) return { eligible: false, reason: 'BEFORE_96_HOURS' };
   return { eligible: true, reason: 'ELIGIBLE' };
 }
 function fwContext_(book, schema, token, now) {
