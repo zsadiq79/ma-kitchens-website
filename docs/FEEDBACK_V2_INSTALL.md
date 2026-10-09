@@ -35,7 +35,9 @@ Enable the **Google Sheets API advanced service** as identifier `Sheets`, versio
 | FEEDBACK_V2_WRITES_ENABLED | Default absent/false; enable only on the copy after schema/integration verification |
 | WHATSAPP_REQUIRE_VERIFIED_FORWARD | Must be true for V2 writes; only authenticated server-forwarded Meta POSTs are then accepted |
 | FEEDBACK_V2_SENDER_ENABLED | Leave absent/false. Explicit later cutover switch; installation never changes it |
-| FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED | Leave absent/false until exact approved URL-button template is verified |
+| FEEDBACK_WEB_TEMPLATE_NAME | Required for the prepared sender: `customer_feedback_web_v2_fragment`; submitted v1 is rejected |
+| FEEDBACK_WEB_TEMPLATE_URL | Required exact approved template URL: `FEEDBACK_WEB_BASE_URL` followed by `#{{1}}`; no path/query token alternatives |
+| FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED | Leave absent/false until replacement approval and fragment-preserving button behavior are verified; this flag alone cannot bypass the name/URL guards |
 | FEEDBACK_LIVE_ENABLED | Preserve the owner's production true setting and existing sender; use **false on the copy** to prohibit all outbound feedback |
 | WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID, GRAPH_API_VERSION | Existing send transport. Not needed for local no-send tests; do not bind real customer messaging to the copy |
 
@@ -72,7 +74,32 @@ No production order was used for writes in this PR task. A future end-to-end pro
 
 ## Sender preparation and later explicit cutover
 
-The current sender remains selected while `FEEDBACK_V2_SENDER_ENABLED` is false; `FEEDBACK_LIVE_ENABLED` and its five-minute production trigger are not changed by any installer. The prepared web sender uses `customer_feedback_web_v1`, `en`, one first-name body parameter and URL button index 0. The approved template must use the exact dynamic prefix `https://www.makitchens.com.au/feedback/open#{{1}}` (or the verified test equivalent). Verify Meta's actual approved template JSON and fragment-preserving button behavior before setting `FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED=true`. Do not guess that an old quick-reply template has the required URL button.
+The current sender remains selected while `FEEDBACK_V2_SENDER_ENABLED` is false; `FEEDBACK_LIVE_ENABLED` and its five-minute production trigger are not changed by any installer. The owner confirms that submitted `customer_feedback_web_v1` uses language `en`, body {{1}} = customer first name, body {{2}} = Order ID, and website button index 0 with prefix `https://www.makitchens.com.au/feedback/` and sample `https://www.makitchens.com.au/feedback/demo-sameera`. Its approval status has not been independently inspected. **That submitted URL contract is incompatible with this implementation. Do not use or activate v1 for secure links.** The demo sample has no secure token and remains demonstration-only.
+
+Retain fragment-only tokens and submit a **replacement template**, without changing or activating the current sender. Proposed exact submission settings:
+
+| Setting | Replacement value |
+| --- | --- |
+| Name | `customer_feedback_web_v2_fragment` |
+| Category | Marketing (request approval in this category; do not assume Meta will classify a feedback request as Utility) |
+| Language | English, code `en` |
+| Header / footer | None |
+| Body | `Hi {{1}}, how was your Ma Kitchens order {{2}}? Share your feedback using the button below.` |
+| Body sample {{1}} / {{2}} | `Sameera` / `ORD-12345` |
+| Button | Call to action → Visit website, dynamic URL, index `0` |
+| Button text | `Share feedback` |
+| Complete URL field | `https://www.makitchens.com.au/feedback/open#{{1}}` |
+| Fixed URL prefix | `https://www.makitchens.com.au/feedback/open#` |
+| Button variable sample | `AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA` (43 characters, synthetic and never issued) |
+| Complete button URL sample | `https://www.makitchens.com.au/feedback/open#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA` |
+
+Body {{1}}/{{2}} and button {{1}} belong to separate component parameter lists. The sender sends **two** body text parameters in that order (first name, Order ID), then one button parameter containing only the 43-character token. It selects the replacement name and `en`. The assembled URL must equal the issued link exactly.
+
+Fragments do not reach the website's HTTP paths or referrers. Adapting the submitted `/feedback/` prefix by appending a raw token would expose it in HTTP URLs/access logs and the retired path-token route will not accept it. Appending `open#token` to that prefix is also not an accepted workaround: it changes the submitted dynamic suffix contract and assumes unverified Meta handling. No path/query fallback is implemented.
+
+Before any separately authorized activation, obtain approval of the replacement, inspect its returned template JSON for name, language, both body placeholders and exact URL button, and verify that Meta accepts and WhatsApp preserves the fragment through a controlled, separately authorized test. Neither approval nor fragment preservation has been verified here. If Meta rejects or strips fragments, **stop the cutover**; leave the existing sender active and design a separately reviewed privacy-preserving delivery mechanism. Do not downgrade to path/query tokens.
+
+Only after these checks, on the authorized target set `FEEDBACK_WEB_TEMPLATE_NAME=customer_feedback_web_v2_fragment`, `FEEDBACK_WEB_BASE_URL=https://www.makitchens.com.au/feedback/open`, and `FEEDBACK_WEB_TEMPLATE_URL=https://www.makitchens.com.au/feedback/open#{{1}}`. A test-domain template needs the matching test base and complete URL. Name and URL guards run before reserving a link/message; missing settings, v1, a different host, or path/query suffixes fail closed even if `FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED=true`. Keep confirmation and sender switches false until separately approved cutover. These settings describe future installation; no template was submitted, message sent or production setting changed in this task.
 
 A durable message-attempt reservation is written under lock before the provider call. Provider calls happen outside the lock. Acceptance logging and Deliveries Feedback Requested At are committed atomically afterward. Ambiguous send/log failures retain the reservation and require operator reconciliation: **never automatically resend or generate a new token** after uncertain acceptance. `feedbackV2ReconcileAcceptedMessage(...)` can record an independently confirmed provider message ID/accepted time for the same attempt without sending. There is deliberately no automated clear-reservation or resend function; revoking an unsafe link does not prove the provider did not send it.
 

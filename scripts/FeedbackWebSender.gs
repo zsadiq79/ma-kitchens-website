@@ -24,9 +24,19 @@ function feedbackSenderDecision_(table, row, rowNumber, now) {
   }
   return { eligible: reason === 'ELIGIBLE', reason: reason, dueAt: due ? due.toISOString() : null, candidate: { deliveryRowNumber: rowNumber, orderId: orderId, routificId: String(row[c['Routific ID']] || ''), deliveredAt: deliveredAt, feedbackDueAt: due, feedbackStatus: status } };
 }
+function fwWebTemplateContract_() {
+  // A submitted path-token template cannot be reused for fragment-only links.
+  const props = fwProps_(), name = props.getProperty('FEEDBACK_WEB_TEMPLATE_NAME');
+  const base = fwConfig_('FEEDBACK_WEB_BASE_URL');
+  if (name !== 'customer_feedback_web_v2_fragment' ||
+      !/^https:\/\/[^/?#]+\/feedback\/open$/.test(base) ||
+      props.getProperty('FEEDBACK_WEB_TEMPLATE_URL') !== base + '#{{1}}') fwError_('CONFIGURATION_ERROR');
+  return { name: name };
+}
 function fwPrepareWebMessage_(resolution) {
   fwEnabled_();
   if (fwProps_().getProperty('FEEDBACK_V2_SENDER_ENABLED') !== 'true' || !feedbackIsLiveEnabled_() || fwProps_().getProperty('FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED') !== 'true') fwError_('TEMPORARY_ERROR');
+  const template = fwWebTemplateContract_(); // Validate before reserving a link/message.
   return fwLock_(() => {
     const book = fwBook_(), schema = fwSchema_(book), order = fwOrder_(book, resolution.orderId);
     const decision = feedbackSenderDecision_(order.delivery.table, order.delivery.row, order.delivery.number, Date.now());
@@ -36,8 +46,8 @@ function fwPrepareWebMessage_(resolution) {
     resolution = fresh; // Recheck contact/opt-in inside the reservation lock.
     const link = fwCreateLinkLocked_(book, schema, resolution.orderId, true);
     return { attemptId: link.attemptId, orderId: resolution.orderId, recipient: resolution.recipient,
-      payload: { messaging_product: 'whatsapp', recipient_type: 'individual', to: resolution.recipient, type: 'template', template: { name: 'customer_feedback_web_v1', language: { code: 'en' }, components: [
-        { type: 'body', parameters: [{ type: 'text', text: resolution.customerFirstName }] },
+      payload: { messaging_product: 'whatsapp', recipient_type: 'individual', to: resolution.recipient, type: 'template', template: { name: template.name, language: { code: 'en' }, components: [
+        { type: 'body', parameters: [{ type: 'text', text: resolution.customerFirstName }, { type: 'text', text: resolution.orderId }] },
         { type: 'button', sub_type: 'url', index: '0', parameters: [{ type: 'text', text: link.token }] }
       ] } }
     };
