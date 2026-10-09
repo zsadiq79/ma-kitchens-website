@@ -10,8 +10,8 @@ import { SiteChrome } from "@/components/SiteChrome";
 export function SiteExperience({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
-  // No tracker scripts or tracked navigation on feedback pages, including 404s.
-  if (!pathname || pathname === "/feedback" || pathname.startsWith("/feedback/")) {
+  // The demo has no tracker scripts or tracked site navigation.
+  if (pathname === "/feedback/demo-sameera") {
     return <>{children}</>;
   }
 
