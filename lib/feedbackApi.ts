@@ -1,78 +1,34 @@
-export type FeedbackDish = {
-  itemCode: string;
-  dishName: string;
-  kitchenName: string;
-  imageUrl: string;
-};
-
+import type { FeedbackAction, FeedbackSubmission } from "@/lib/feedbackValidation";
 export type FeedbackOrder = {
-  customerName: string;
-  deliveryDate: string;
-  orderId: string;
-  status: "OPEN" | "COMPLETED";
-  dishes: FeedbackDish[];
+  customerName: string; deliveryDate: string; orderId: string; status: "OPEN" | "COMPLETED";
+  dishes: { itemCode: string; dishName: string; kitchenName: string; imageUrl: string }[];
+  submissionId: string; revision: number; draft: FeedbackSubmission | null;
 };
-
-type FeedbackServiceResponse = {
-  ok: boolean;
-  feedback?: FeedbackOrder;
-  error?: string;
-  message?: string;
-};
-
-function getFeedbackServiceConfig() {
-  const url = process.env.FLOW_MENU_API_URL;
-  const secret = process.env.FLOW_MENU_API_SECRET;
-
-  if (!url || !secret) {
-    throw new Error("Feedback service environment variables are not configured.");
-  }
-
-  return { url, secret };
+const codes = new Set(["INVALID_INPUT", "INVALID_LINK", "EXPIRED", "REVOKED", "REPLACED", "COMPLETED", "CONFLICT", "RATE_LIMITED", "INELIGIBLE", "LEGACY_IN_PROGRESS"]);
+export class FeedbackServiceError extends Error {
+  constructor(public readonly code: string) { super(code); }
 }
-
-async function callFeedbackService(
-  action: "feedback_read" | "feedback_submit",
-  payload: Record<string, unknown>,
-) {
-  const { url, secret } = getFeedbackServiceConfig();
-  const endpoint = new URL(url);
-  endpoint.searchParams.set("action", action);
-
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ secret, ...payload }),
-    cache: "no-store",
-    redirect: "follow",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Feedback service returned HTTP ${response.status}.`);
+export async function callFeedbackService(action: FeedbackAction, payload: Record<string, unknown>) {
+  const url = process.env.FLOW_MENU_API_URL, secret = process.env.FLOW_MENU_API_SECRET;
+  if (!url || !secret) throw new FeedbackServiceError("TEMPORARY_ERROR");
+  try {
+    const endpoint = new URL(url);
+    if (endpoint.protocol !== "https:" || endpoint.hostname !== "script.google.com" || !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint.pathname) || endpoint.username || endpoint.password) throw new Error();
+    endpoint.search = ""; endpoint.hash = ""; endpoint.searchParams.set("action", action);
+    const response = await fetch(endpoint, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, secret }), cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(12000),
+    });
+    if (!response.ok) throw new Error();
+    const raw = await response.text(); if (raw.length > 100000) throw new Error();
+    const data: unknown = JSON.parse(raw);
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error();
+    const envelope = data as { ok?: unknown; result?: unknown; error?: unknown };
+    if (envelope.ok !== true) throw new FeedbackServiceError(typeof envelope.error === "string" && codes.has(envelope.error) ? envelope.error : "TEMPORARY_ERROR");
+    if (!envelope.result || typeof envelope.result !== "object" || Array.isArray(envelope.result)) throw new Error();
+    return envelope.result as Record<string, unknown>;
+  } catch (error) {
+    // Fetch errors can contain URLs/secrets. Never log or return their messages.
+    throw error instanceof FeedbackServiceError ? error : new FeedbackServiceError("TEMPORARY_ERROR");
   }
-
-  const data = (await response.json()) as FeedbackServiceResponse;
-
-  if (!data.ok) {
-    throw new Error(data.message || data.error || "Feedback service returned an error.");
-  }
-
-  return data;
-}
-
-export async function getFeedbackOrder(token: string): Promise<FeedbackOrder> {
-  const data = await callFeedbackService("feedback_read", { token });
-
-  if (!data.feedback) {
-    throw new Error("Feedback order was not returned.");
-  }
-
-  return data.feedback;
-}
-
-export async function submitFeedback(
-  token: string,
-  submission: Record<string, unknown>,
-) {
-  return callFeedbackService("feedback_submit", { token, submission });
 }

@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { FeedbackSubmission } from "@/lib/feedbackValidation";
+import { feedbackRequest } from "@/lib/feedbackClient";
 
 type DishFeedback = {
   itemCode: string;
@@ -16,7 +18,9 @@ type FeedbackFormProps = {
   status: "OPEN" | "COMPLETED";
   dishes: DishFeedback[];
   feedbackToken: string;
-  demoMode?: boolean;
+  submissionId: string;
+  revision: number;
+  draft: FeedbackSubmission | null;
 };
 
 type DishState = {
@@ -35,7 +39,7 @@ function Stars({
   label: string;
 }) {
   return (
-    <div className="flex flex-wrap gap-1" role="radiogroup" aria-label={label}>
+    <div className="flex flex-wrap gap-1" role="group" aria-label={label}>
       {[1, 2, 3, 4, 5].map((rating) => (
         <button
           key={rating}
@@ -63,7 +67,9 @@ export function FeedbackForm({
   status,
   dishes,
   feedbackToken,
-  demoMode = false,
+  submissionId,
+  revision,
+  draft,
 }: FeedbackFormProps) {
   const initialDishState = useMemo(
     () =>
@@ -77,13 +83,65 @@ export function FeedbackForm({
   );
 
   const [dishFeedback, setDishFeedback] =
-    useState<Record<string, DishState>>(initialDishState);
-  const [deliveryRating, setDeliveryRating] = useState(0);
-  const [overallComment, setOverallComment] = useState("");
-  const [testimonialConsent, setTestimonialConsent] = useState(false);
+    useState<Record<string, DishState>>(() => draft ? Object.fromEntries(draft.dishes.map(d => [d.itemCode, { rating: d.rating, skipped: d.skipped, comment: d.comment }])) : initialDishState);
+  const [deliveryRating, setDeliveryRating] = useState(draft?.deliveryRating ?? 0);
+  const [overallComment, setOverallComment] = useState(draft?.overallComment ?? "");
+  const [testimonialConsent, setTestimonialConsent] = useState(draft?.testimonialConsent ?? false);
   const [submitted, setSubmitted] = useState(status === "COMPLETED");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  const [saveState, setSaveState] = useState("saved");
+  const revisionRef = useRef(revision);
+  const busy = useRef(false);
+  const interacted = useRef(false);
+  const conflict = useRef(false);
+  const lastSaveAt = useRef(0);
+  const inFlight = useRef<Promise<void> | null>(null);
+  const submission: FeedbackSubmission = {
+    dishes: dishes.map(d => ({ itemCode: d.itemCode, ...dishFeedback[d.itemCode] })),
+    deliveryRating, overallComment, testimonialConsent,
+  };
+  const snapshot = JSON.stringify(submission);
+  const latest = useRef(snapshot); latest.current = snapshot;
+  const saved = useRef(snapshot);
+
+  function markInteraction() {
+    if (interacted.current || submitted) return;
+    interacted.current = true;
+    void feedbackRequest(feedbackToken, "feedback_event", { event: "first_interaction" }).catch(() => {});
+  }
+  async function flushDraft() {
+    if (inFlight.current) await inFlight.current;
+    if (conflict.current) throw new Error("CONFLICT");
+    if (saved.current === latest.current) return;
+    const work = (async () => {
+      while (saved.current !== latest.current) {
+        const pending = latest.current;
+        const wait = Math.max(0, 3100 - (Date.now() - lastSaveAt.current));
+        if (wait) await new Promise(resolve => setTimeout(resolve, wait));
+        lastSaveAt.current = Date.now(); setSaveState("saving");
+        try {
+          const result = await feedbackRequest(feedbackToken, "feedback_draft", { revision: revisionRef.current, submission: JSON.parse(pending) });
+          if (!Number.isSafeInteger(result.revision)) throw new Error("TEMPORARY_ERROR");
+          revisionRef.current = result.revision; saved.current = pending;
+        } catch (error) {
+          if (error instanceof Error && error.message === "CONFLICT") conflict.current = true;
+          setSaveState(conflict.current ? "conflict" : "error"); throw error;
+        }
+      }
+      setSaveState("saved");
+    })();
+    inFlight.current = work;
+    try { await work; } finally { inFlight.current = null; }
+  }
+  const flushRef = useRef(flushDraft); flushRef.current = flushDraft;
+  useEffect(() => {
+    if (submitted || snapshot === saved.current || conflict.current) return;
+    setSaveState("pending");
+    const timer = setTimeout(() => { void flushRef.current().catch(() => {}); }, 800);
+    return () => clearTimeout(timer);
+  }, [snapshot, submitted]);
 
   function updateDish(itemCode: string, patch: Partial<DishState>) {
     setDishFeedback((current) => ({
@@ -124,52 +182,23 @@ export function FeedbackForm({
   return (
     <form
       className="mx-auto max-w-3xl px-5 py-10 sm:px-6 sm:py-14"
+      onInputCapture={markInteraction}
+      onClickCapture={markInteraction}
       onSubmit={async (event) => {
         event.preventDefault();
-        if (!canSubmit || submitting) return;
-
-        setSubmitError("");
-
-        if (demoMode) {
-          setSubmitted(true);
-          return;
-        }
-
-        setSubmitting(true);
-
+        if (!canSubmit || busy.current || conflict.current) return;
+        busy.current = true; setSubmitting(true); setSubmitError("");
         try {
-          const response = await fetch(`/api/feedback/${encodeURIComponent(feedbackToken)}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              dishes: dishes.map((dish) => ({
-                itemCode: dish.itemCode,
-                rating: dishFeedback[dish.itemCode].rating,
-                skipped: dishFeedback[dish.itemCode].skipped,
-                comment: dishFeedback[dish.itemCode].comment.trim(),
-              })),
-              deliveryRating,
-              overallComment: overallComment.trim(),
-              testimonialConsent,
-            }),
+          await flushDraft();
+          await feedbackRequest(feedbackToken, "feedback_submit", {
+            submissionId, revision: revisionRef.current, submission: JSON.parse(latest.current),
           });
-
-          if (!response.ok) {
-            const payload = (await response.json().catch(() => ({}))) as { error?: string };
-            throw new Error(payload.error || "Unable to save feedback.");
-          }
-
           setSubmitted(true);
         } catch (error) {
-          console.error("Feedback submit error:", error);
-          setSubmitError(
-            error instanceof Error
-              ? error.message
-              : "We couldn't save your feedback. Please try again.",
-          );
-        } finally {
-          setSubmitting(false);
-        }
+          const code = error instanceof Error ? error.message : "TEMPORARY_ERROR";
+          if (code === "COMPLETED") setSubmitted(true);
+          else setSubmitError(code === "CONFLICT" ? "This feedback changed in another tab. Reopen your link to resume the latest saved progress." : ["EXPIRED", "REVOKED", "REPLACED", "INVALID_LINK"].includes(code) ? "This link is no longer active. Please use the latest link or ask Ma Kitchens for a new one." : "We could not confirm your submission. Please retry; your submission ID prevents duplicates.");
+        } finally { busy.current = false; setSubmitting(false); }
       }}
     >
       <div className="text-center">
@@ -187,7 +216,12 @@ export function FeedbackForm({
         </p>
       </div>
 
-      <div className="mt-10 space-y-5">
+      <p className="mt-5 text-center text-sm text-ink/65" role="status" aria-live="polite">
+        {saveState === "saved" ? "Your progress is saved automatically" : saveState === "pending" || saveState === "saving" ? "Saving your progress…" : saveState === "conflict" ? "Progress changed in another tab. Reopen your link to resume." : "We could not confirm your progress was saved. Keep this page open and retry."}
+      </p>
+      {saveState === "error" && <button type="button" className="mx-auto mt-2 block underline" onClick={() => { void flushDraft().catch(() => {}); }}>Retry saving progress</button>}
+
+      <fieldset disabled={submitting} className="mt-10 space-y-5">
         {dishes.map((dish) => {
           const answer = dishFeedback[dish.itemCode];
 
@@ -267,8 +301,9 @@ export function FeedbackForm({
             </article>
           );
         })}
-      </div>
+      </fieldset>
 
+      <fieldset disabled={submitting}>
       <section className="mt-8 rounded-[1.5rem] border border-ink/10 bg-oat/35 p-5 sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay">
           Delivery
@@ -327,6 +362,8 @@ export function FeedbackForm({
         </p>
       </section>
 
+      </fieldset>
+
       {!canSubmit && (
         <p className="mt-5 text-center text-sm text-ink/50">
           Please rate each dish you tried and your delivery before submitting.
@@ -341,17 +378,13 @@ export function FeedbackForm({
 
       <button
         type="submit"
-        disabled={!canSubmit || submitting}
+        disabled={!canSubmit || submitting || saveState === "conflict"}
         className="mt-6 min-h-14 w-full rounded-full bg-clay px-8 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white transition enabled:hover:bg-ink disabled:cursor-not-allowed disabled:opacity-40"
       >
         {submitting ? "Saving feedback..." : "Submit feedback"}
       </button>
 
-      {demoMode && (
-        <p className="mx-auto mt-4 max-w-xl text-center text-xs leading-5 text-ink/40">
-          This preview does not write to the live Ma Kitchens Control Tower.
-        </p>
-      )}
+
     </form>
   );
 }

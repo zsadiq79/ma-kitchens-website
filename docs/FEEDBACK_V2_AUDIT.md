@@ -1,0 +1,64 @@
+# Feedback V2 audit and implementation decisions
+
+This audit uses the supplied `Ma_Kitchens_Live_Apps_Script_Code_Handoff.txt`, the original markdown handoff, current main, and the owner's subsequent sheet findings and eligibility correction. Instructions in the handoff are historical context. The current request authorizes updating PR #35, and prohibits merging, deploying, messaging customers, and changing the live Control Tower.
+
+## Live architecture observed
+
+All eight supplied files parse. There are 192 top-level functions, one `doPost` in Code.gs, and no duplicate function declarations. No unresolved project-level function calls were found in the supplied source. Property-name, trigger, and deployment-note sections of the attachment are empty; the owner separately confirmed `FEEDBACK_LIVE_ENABLED=true` and a five-minute `runFeedbackSender` trigger.
+
+- Code.gs routes authenticated menu calls, then wrapped Routific calls, then WhatsApp messages/statuses. Message routing gives feedback buttons, ratings and optional comments first refusal before ordering. Cache-based message deduplication lasts six hours; it is not durable feedback idempotency. The original webhook reads only the first entry/change and does not verify Meta POST signatures.
+- FeedbackSender.gs uses `customer_feedback_request`, language `en`, a quick-reply button, customer opt-in and Australian mobile validation. Despite its name, `feedbackNextDay10am_` correctly returns Delivered At plus exactly 48 elapsed hours. Only blank/Not Sent feedback status and a Routific ID are eligible. Sending is governed by `FEEDBACK_LIVE_ENABLED`. The trigger and control functions are preserved, not invoked.
+- FeedbackInteraction.gs verifies the WhatsApp sender's phone for the old conversation. Its item reader looks for `Item Status`/`Status` and `Item Code`, which do not match the audited item headers. It writes each rating immediately, can overwrite a prior rating, then marks delivery completion separately. Optional comments can arrive after completion and use unbounded text concatenation and non-persistent replay protection.
+- Dish ratings 1–3 prompt reasons; a non-skipped reason produces Complaint=Y, Refund=N and Follow-up Status=Open. Higher ratings and skips produce N/N/None. Delivery ratings 1–3 produce Complaint=N, Refund=N and Follow-up Status=Open; optional comments do not delay completion. The replacements preserve these distinctions. Web low dish ratings produce Y/Open without adding an extra UX step; free text on high ratings does not automatically become a complaint.
+- PermanentWhatsAppLog.gs has the exact 11 audited headers. It handles callback-before-registration and status ranking, but has no shared write lock and invents a timestamp with `new Date()` when a receipt lacks its provider timestamp. The replacements require real receipt timestamps and retain orphan rows and advanced statuses.
+- FeedbackDryRun.gs uses fixed column indices, simulated deliveries and next-calendar-day 10am eligibility. It is replaced with a read-only diagnostic using the same candidate decision and customer resolution as the sender. No reminder sender was found. Historical reminder timestamps are preserved.
+- RoutificWebhook.gs reads/writes delivery lifecycle, authenticates the existing forwarding wrapper and matches Routific IDs. Routific.gs dispatches confirmed orders and manages delivery rows while protecting formula regions. PackingSlips.gs reads confirmed orders and excludes explicit cancellations. These three files are not changed or included as replacements.
+
+## Authoritative eligibility correction
+
+Orders → Order Status (currently column I) is authoritative and must be Confirmed. Match by Order ID and resolve headers, rejecting duplicates or missing headers. Delivery must be Delivered with a valid Delivered At. Sending waits until `now >= Delivered At + 48*60*60*1000`, including across daylight-saving transitions.
+
+Order Items does **not** prove fulfilment with Ready or any other positive status. Select positive numeric Qty, valid item codes that resolve uniquely to Dishes, and exclude explicit cancellations in either item Order Status or Fulfilment Status. Do not require item Order Status=Confirmed. Rate a dish once per order, independent of quantity. The owner confirmed this supersedes the earlier proposed fulfilment-status allowlist; no such property is required.
+
+## Main and demo preservation
+
+Current main (`f1107c0` when merged) contains PR #36. The standalone demo page and DemoFeedbackForm contents are preserved. Pages move into route groups without URL changes. Feedback uses a separate root document with no marketing scripts, tracked footer, or cross-document inherited analytics listeners. `/feedback/demo-sameera` stays self-contained and never calls the feedback API. Marketing routes retain their existing chrome and tracking.
+
+## Integrity and coexistence
+
+One durable order ledger owns a persistent submission ID across all links/channels. Link issuance, draft writes, legacy staging, receipt registration and completion use the same project's ScriptLock. The final Sheets `spreadsheets.batchUpdate` atomically appends all missing feedback rows, writes the order completion marker, marks active links complete, clears the draft and marks Deliveries complete. Do not replace this with a sequence of SpreadsheetApp writes. A lost response after commit is handled by reading the durable completion marker on retry, not by blindly appending again.
+
+The legacy questionnaire stages new answers in the separate ledger until delivery finalisation. Drafts never enter Feedback or public averages. The complete replacement FeedbackInteraction.gs keeps existing conversation/optional-comment functions but delegates all feedback writes to the shared bridge. Completion freezes ratings. Late legacy comments cannot modify a completed web submission. Optional legacy comments use persistent message-ID deduplication and bounded text/rate limits.
+
+Historical A:L rows are never renumbered or overwritten. FB- and FDBK- IDs are both recognised throughout the entire Feedback sheet. A historical DELIVERY row or delivery completion marker blocks another completed submission. Historical partial legacy rows block web submissions with a meaningful WhatsApp-in-progress state. Legacy may finish that existing questionnaire: its final atomic commit appends only missing items and leaves existing ratings, comments, complaint/refund/follow-up flags intact. Operators must reconcile corrupt/duplicate historical rows before enabling writes; the system fails closed on duplicate source records and never silently deletes them.
+
+ScriptLock coordinates only executions in the **same Apps Script project**. Another project, third-party integration, manual editor, or an unconverted writer can bypass it. Every feedback writer in the supplied project is replaced; any additional external writer must be discovered before activation. This is why installation and real concurrency validation on a separate copy are required.
+
+## Schema and audit semantics
+
+Feedback A:L is validated exactly and preserved. Guarded setup explicitly extends the real 12-column grid to 17 columns, then adds M Marketing Consent, N Marketing Consent At, O Submission ID, P Feedback Channel, Q Skipped. Conflicting existing headers abort before any batch. Consent is recorded once on DELIVERY; skipped ratings remain empty. Column L retains an actual WhatsApp message ID for legacy feedback and is blank for web feedback. It is not repurposed for synthetic web IDs.
+
+Feedback V2 Links stores SHA-256 hashes, order, creation, strict expiry, state, submission and last page request. Feedback V2 Orders stores the canonical submission ID, completion/channel, active hash, draft/revision, first browser/interaction signals, bounded counters, message reservation/ID, separate accepted/sent/delivered/read timestamps, and legacy deduplication metadata. Browser events are customer-browser signals, not proof of a human. Page Requested At records a token-authorized feedback_read and may be automated, so it is never labelled as a customer open. The initial static HTTP landing-page GET cannot be attributed to an order because its token is deliberately in a fragment; only the subsequent authorized read is recorded against the order.
+
+Accepted At is captured only after a provider response supplies a message ID. Sent/Delivered/Read At use the corresponding actual Meta event timestamps only; no stage is inferred from a later stage. Missing or future-invalid timestamps are rejected. Verified callbacks update WhatsApp Log and the V2 ledger atomically, preserving orphan receipt rows and handling out-of-order/duplicate events. A later acceptance fills metadata without overwriting existing receipt times/status.
+
+Draft changes update a revision and Draft Updated At, capped at 20 changed writes/order/minute. First browser and interaction timestamps are write-once, capped separately from scanner/page-request writes. Page-request writes cap at 10/order/minute. Legacy per-item staging is immutable and bounded by the eligible dish set; legacy optional-comment writes cap at 20/minute and 50 persistent message IDs/order. Rate limits are not proof against total Apps Script read/quota exhaustion: use the hosting firewall for public volumetric abuse.
+
+## Link/privacy design
+
+New links are `/feedback/open#<token>`. The fragment survives reopening/reloading but is not sent in HTTP paths, referrers or hosting access logs. The static browser API is `/api/feedback`; the token is only in a POST JSON body. No raw token is stored in Sheets or browser storage. HMAC-SHA256 with an independently generated 256-bit secret key and fresh UUID nonces produces unpredictable tokens; token hashes are stored. Issuance atomically replaces prior open links, and readers require both OPEN/COMPLETED state and the current active hash. Revoked/replaced/expired links fail closed. Default TTL remains thirty days, configurable 1–720 hours; equality at expiry is expired. A completed order cannot issue a new link.
+
+Old `/feedback/<token>` and token-path API endpoints are retired. Already-issued old path URLs can still appear in hosting access logs when somebody requests them; the application cannot retroactively erase those URLs. Do not import or publish old tokens. Configure hosting/proxy log redaction for retired paths and disable request-body logging on credential-bearing endpoints.
+
+Feedback pages have noindex/nofollow/noarchive, no-referrer and a restrictive CSP. Separate root layouts prevent analytics from carrying over when entering feedback from a marketing page. User text is written with explicit Sheets `stringValue`, never as formulaValue or USER_ENTERED parsing; legitimate leading `=`, `+`, `-` and `@` stay plain text. Secrets and unexpected exception messages are never sent to the browser or logged by the new handlers/sender.
+
+## Remaining information and verification gates
+
+No function implementation is still missing from the eight supplied files. The following live configuration/evidence was not supplied and must be checked before deployment/activation:
+
+1. Exact approved Meta `customer_feedback_web_v1` template JSON, including its language/body parameter and dynamic URL-button prefix. The fragment-preserving button prefix must be approved and tested; `FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED` defaults off. No template change or send occurred here.
+2. Actual Dishes Average Rating/Rating Count formula text. The owner confirmed ranges 2:2000 and blank-rating exclusion. The guarded expansion function requires exact audited formulas and only expands Feedback range bounds; it does not invent a replacement aggregation algorithm. Snapshot and validate spill anchors, exclusions and full-column performance on the copy.
+3. Actual Script Property bindings, deployment identity/scopes and Meta callback configuration. The handoff's relevant sections are empty. The source lacks POST authentication: a verified Next.js forwarding endpoint and its callback transition are required before V2 writes can be enabled. Do not change the live callback during this PR task.
+4. Whether any other Apps Script project, integration or operator-written function writes Feedback. Same-project locking cannot protect a writer outside this protocol.
+
+Local tests emulate Sheets atomic requests, lock contention and provider events; browser tests use a mocked API. They do not establish live Sheets transaction behavior, actual Meta acceptance/receipts, approved template behavior, or end-to-end production readiness. None of the supplied live scripts was executed, and no live sheet was read or written.

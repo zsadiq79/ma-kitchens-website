@@ -1,24 +1,11 @@
-In the existing Code.gs doPost(e), keep Code.gs as the ONLY doPost in the Apps Script project.
+Superseded by the complete replacement function in scripts/Code-doPost.gs.
 
-Immediately after the existing menu route:
+Replace only the existing Code.gs doPost(e) function; do not install a second
+doPost. Follow docs/FEEDBACK_V2_INSTALL.md on a separate test copy first.
 
-    if (e.parameter && e.parameter.action === 'menu') {
-      return handleMenuApiRequest_(e);
-    }
+The new function preserves menu and authenticated Routific routing, routes
+feedback_read/feedback_draft/feedback_event/feedback_submit to the web handler,
+and accepts the signature-verified whatsapp_verified forwarding envelope.
 
-add:
-
-    if (
-      e.parameter &&
-      (
-        e.parameter.action === 'feedback_read' ||
-        e.parameter.action === 'feedback_submit'
-      )
-    ) {
-      return handleFeedbackWebApiRequest_(
-        e,
-        e.parameter.action
-      );
-    }
-
-Do not remove or reorder the existing Routific or Meta WhatsApp webhook routing below it.
+Production installation, callback transition and sender cutover are not
+performed or authorized by this PR task.

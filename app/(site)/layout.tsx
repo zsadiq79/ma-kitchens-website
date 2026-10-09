@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 
-import { SiteExperience } from "@/components/SiteExperience";
-import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
+import { MetaPixel } from "@/components/MetaPixel";
+import { SiteChrome } from "@/components/SiteChrome";
+import "@/app/globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,7 +28,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="font-sans antialiased">
-        <SiteExperience>{children}</SiteExperience>
+        <SiteChrome>{children}</SiteChrome>
+        <MetaPixel />
+        <Analytics />
       </body>
     </html>
   );
