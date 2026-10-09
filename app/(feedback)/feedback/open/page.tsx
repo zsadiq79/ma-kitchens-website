@@ -1,2 +1,2 @@
-import { FeedbackClient } from "@/components/FeedbackClient";
-export default function FeedbackOpenPage() { return <FeedbackClient />; }
+import { FeedbackState } from "@/components/FeedbackState";
+export default function FeedbackOpenPage() { return <FeedbackState state="INVALID_LINK" />; }

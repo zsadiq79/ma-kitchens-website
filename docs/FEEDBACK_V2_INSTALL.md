@@ -17,7 +17,7 @@
 
 Other Code.gs functions/constants, doGet, RoutificWebhook.gs, Routific.gs and PackingSlips.gs remain the supplied implementation. Do not copy the `.txt` headings into Apps Script. New files and replacements share one global namespace and one project's ScriptLock. A separately deployed second Apps Script project writing the same spreadsheet is unsupported.
 
-The website adds `/api/feedback` and `/api/whatsapp-events`, `/feedback/open` and isolated feedback layouts. Existing `/api/whatsapp-flow`, `/api/routific-webhook` and their authentication are unchanged. Static demo route/content is preserved.
+The website adds `/api/feedback` and `/api/whatsapp-events`, `/feedback/open` and isolated feedback layouts. Existing `/api/whatsapp-flow`, `/api/routific-webhook` and their authentication are unchanged. Static demo route/content is preserved. Iteration 1 restores `/feedback/<token>` as the customer route; `/feedback/open` no longer accepts fragment links.
 
 ## Prerequisites/properties (names, never secret values)
 
@@ -30,14 +30,14 @@ Enable the **Google Sheets API advanced service** as identifier `Sheets`, versio
 | CONTROL_TOWER_SPREADSHEET_ID | Spreadsheet copy ID; must agree with Code.gs constant |
 | FLOW_MENU_API_SECRET | Existing server-to-server secret mechanism; use a separate secure test secret on the copy and test website |
 | FEEDBACK_TOKEN_SIGNING_KEY | Independently generated random 32-byte secret, encoded as 64 hex characters; never use the test fixture key |
-| FEEDBACK_WEB_BASE_URL | HTTPS test website's exact `/feedback/open` URL, no query or fragment; production URL only after separately approved deployment |
+| FEEDBACK_WEB_BASE_URL | HTTPS test website's exact `/feedback/` prefix including trailing slash, no query or fragment; production URL only after separately approved deployment |
 | FEEDBACK_LINK_TTL_HOURS | Optional integer 1–720; default 720 (thirty days) |
 | FEEDBACK_V2_WRITES_ENABLED | Default absent/false; enable only on the copy after schema/integration verification |
 | WHATSAPP_REQUIRE_VERIFIED_FORWARD | Must be true for V2 writes; only authenticated server-forwarded Meta POSTs are then accepted |
 | FEEDBACK_V2_SENDER_ENABLED | Leave absent/false. Explicit later cutover switch; installation never changes it |
-| FEEDBACK_WEB_TEMPLATE_NAME | Required for the prepared sender: `customer_feedback_web_v2_fragment`; submitted v1 is rejected |
-| FEEDBACK_WEB_TEMPLATE_URL | Required exact approved template URL: `FEEDBACK_WEB_BASE_URL` followed by `#{{1}}`; no path/query token alternatives |
-| FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED | Leave absent/false until replacement approval and fragment-preserving button behavior are verified; this flag alone cannot bypass the name/URL guards |
+| FEEDBACK_WEB_TEMPLATE_NAME | Required for the prepared sender: `customer_feedback_web_v1` |
+| FEEDBACK_WEB_TEMPLATE_URL | Required exact approved template URL: `FEEDBACK_WEB_BASE_URL` followed by `{{1}}`; no fragment/query alternatives |
+| FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED | Leave absent/false until v1 approval and exact button contract are verified; this flag alone cannot bypass the name/URL guards |
 | FEEDBACK_LIVE_ENABLED | Preserve the owner's production true setting and existing sender; use **false on the copy** to prohibit all outbound feedback |
 | WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID, GRAPH_API_VERSION | Existing send transport. Not needed for local no-send tests; do not bind real customer messaging to the copy |
 
@@ -74,32 +74,25 @@ No production order was used for writes in this PR task. A future end-to-end pro
 
 ## Sender preparation and later explicit cutover
 
-The current sender remains selected while `FEEDBACK_V2_SENDER_ENABLED` is false; `FEEDBACK_LIVE_ENABLED` and its five-minute production trigger are not changed by any installer. The owner confirms that submitted `customer_feedback_web_v1` uses language `en`, body {{1}} = customer first name, body {{2}} = Order ID, and website button index 0 with prefix `https://www.makitchens.com.au/feedback/` and sample `https://www.makitchens.com.au/feedback/demo-sameera`. Its approval status has not been independently inspected. **That submitted URL contract is incompatible with this implementation. Do not use or activate v1 for secure links.** The demo sample has no secure token and remains demonstration-only.
+The current sender remains selected while `FEEDBACK_V2_SENDER_ENABLED` is false; `FEEDBACK_LIVE_ENABLED` and its five-minute production trigger are not changed by any installer. Iteration 1 uses **the existing `customer_feedback_web_v1`**, currently in review according to the owner. No replacement template or fragment support is required. Approval has not been independently checked; sending stays disabled until separate authorization and approval verification.
 
-Retain fragment-only tokens and submit a **replacement template**, without changing or activating the current sender. Proposed exact submission settings:
-
-| Setting | Replacement value |
+| Submitted v1 setting | Exact selected contract |
 | --- | --- |
-| Name | `customer_feedback_web_v2_fragment` |
-| Category | Marketing (request approval in this category; do not assume Meta will classify a feedback request as Utility) |
-| Language | English, code `en` |
-| Header / footer | None |
-| Body | `Hi {{1}}, how was your Ma Kitchens order {{2}}? Share your feedback using the button below.` |
-| Body sample {{1}} / {{2}} | `Sameera` / `ORD-12345` |
-| Button | Call to action → Visit website, dynamic URL, index `0` |
-| Button text | `Share feedback` |
-| Complete URL field | `https://www.makitchens.com.au/feedback/open#{{1}}` |
-| Fixed URL prefix | `https://www.makitchens.com.au/feedback/open#` |
-| Button variable sample | `AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA` (43 characters, synthetic and never issued) |
-| Complete button URL sample | `https://www.makitchens.com.au/feedback/open#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA` |
+| Name / language | `customer_feedback_web_v1` / `en` |
+| Body parameters | {{1}} customer first name, {{2}} Order ID; two text parameters in this order |
+| Button | Dynamic website URL, index `0`; one text parameter containing only the ordinary 43-character random token |
+| Fixed URL prefix | `https://www.makitchens.com.au/feedback/` |
+| Complete dynamic URL | `https://www.makitchens.com.au/feedback/{{1}}` |
+| Submitted sample | `https://www.makitchens.com.au/feedback/demo-sameera` (unchanged local demonstration page) |
+| Real issued URL | `https://www.makitchens.com.au/feedback/<random-token>`; no fragment or query string |
 
-Body {{1}}/{{2}} and button {{1}} belong to separate component parameter lists. The sender sends **two** body text parameters in that order (first name, Order ID), then one button parameter containing only the 43-character token. It selects the replacement name and `en`. The assembled URL must equal the issued link exactly.
+On the isolated test project, use `FEEDBACK_WEB_TEMPLATE_NAME=customer_feedback_web_v1`, an HTTPS test website `/feedback/` prefix for `FEEDBACK_WEB_BASE_URL`, and that exact prefix plus `{{1}}` for `FEEDBACK_WEB_TEMPLATE_URL`. The production prefix above is documented for future authorized activation only. Test links can be generated and submitted without any sending/template confirmation flag. Keep `FEEDBACK_V2_SENDER_ENABLED=false`, `FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED=false` and outbound transport disabled on the copy. The sender checks name/base/URL consistency before reserving a message; obsolete fragment-template settings fail closed. Later activation requires independently checking the approved v1 JSON and exact two-body-parameter/button contract; never treat its current in-review state as approved.
 
-Fragments do not reach the website's HTTP paths or referrers. Adapting the submitted `/feedback/` prefix by appending a raw token would expose it in HTTP URLs/access logs and the retired path-token route will not accept it. Appending `open#token` to that prefix is also not an accepted workaround: it changes the submitted dynamic suffix contract and assumes unverified Meta handling. No path/query fallback is implemented.
+**Residual exposure accepted for iteration 1:** the bearer token is in the requested HTTP URL. Meta/WhatsApp, browser history, hosting/CDN/WAF/access logs, monitoring and link scanners may see it. Hash-only storage and application redaction cannot remove that upstream exposure. Anyone with an active link can submit; no identity challenge is introduced. Expiry, replacement and revocation limit exposure. Configure upstream path/body redaction and retention controls separately before broader use; do not claim no-referrer or noindex hides URLs from the initial host/provider request.
 
-Before any separately authorized activation, obtain approval of the replacement, inspect its returned template JSON for name, language, both body placeholders and exact URL button, and verify that Meta accepts and WhatsApp preserves the fragment through a controlled, separately authorized test. Neither approval nor fragment preservation has been verified here. If Meta rejects or strips fragments, **stop the cutover**; leave the existing sender active and design a separately reviewed privacy-preserving delivery mechanism. Do not downgrade to path/query tokens.
+Feedback responses use no-referrer, noindex/nofollow/noarchive, no-store and a restrictive CSP, and isolated layouts load no feedback analytics. The application never logs tokens, full request URLs, request bodies, raw upstream responses or exception messages/stacks; errors use allowlisted codes only. The backend/API still receive tokens only in POST bodies at a static `/api/feedback` endpoint. Do not add raw-path/body tracing in middleware or APM. Application logging exclusions do not configure hosting access logs.
 
-Only after these checks, on the authorized target set `FEEDBACK_WEB_TEMPLATE_NAME=customer_feedback_web_v2_fragment`, `FEEDBACK_WEB_BASE_URL=https://www.makitchens.com.au/feedback/open`, and `FEEDBACK_WEB_TEMPLATE_URL=https://www.makitchens.com.au/feedback/open#{{1}}`. A test-domain template needs the matching test base and complete URL. Name and URL guards run before reserving a link/message; missing settings, v1, a different host, or path/query suffixes fail closed even if `FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED=true`. Keep confirmation and sender switches false until separately approved cutover. These settings describe future installation; no template was submitted, message sent or production setting changed in this task.
+Drafts and interaction events remain supported, but their availability is not a prerequisite for basic submission. A malformed stored draft is ignored for form restoration; optional page-request tracking failures do not prevent reading a valid link. If autosave fails, the form can submit its current selections directly using the persistent submission ID and revision, checking a possible lost draft acknowledgement when possible. Genuine revision conflicts still require reopening rather than overwriting newer progress. Atomic completion, strict final validation, expiry/revocation and cross-channel safeguards remain mandatory.
 
 A durable message-attempt reservation is written under lock before the provider call. Provider calls happen outside the lock. Acceptance logging and Deliveries Feedback Requested At are committed atomically afterward. Ambiguous send/log failures retain the reservation and require operator reconciliation: **never automatically resend or generate a new token** after uncertain acceptance. `feedbackV2ReconcileAcceptedMessage(...)` can record an independently confirmed provider message ID/accepted time for the same attempt without sending. There is deliberately no automated clear-reservation or resend function; revoking an unsafe link does not prove the provider did not send it.
 
@@ -126,4 +119,4 @@ CHROMIUM_PATH=/usr/bin/chromium node tests/feedback-browser.cjs
 
 Optional `FEEDBACK_TEST_BASE_URL` selects an authorized local/test deployment. Browser tests mock `/api/feedback`, so they never call Apps Script or Control Tower. Node tests run the actual .gs functions in a service emulator and test atomic request construction, failure-before-commit, lost-response-after-commit, overlapping lock contention, cross-channel behavior and strict validation. API tests mock upstream fetch and verify signatures/timeouts/redaction. These tests provide implementation evidence, not live Google/Meta verification.
 
-Feedback must stay out of analytics, search indexing and referrers. New token fragments never enter HTTP access-log paths; browser requests use only a static API path and POST body. Disable credential-bearing body logging in proxies/hosting/APM; redact retired token-path requests, which existing old links can still cause. Protect the static feedback API with the hosting firewall for volumetric abuse; persisted per-order limits bound writes, not total reads or project-wide Apps Script quotas.
+Feedback must stay out of analytics, search indexing and referrers. Iteration 1 tokens enter the page-request HTTP path; subsequent browser API requests use a static API path and POST body. Disable credential-bearing body logging in proxies/hosting/APM; redact active `/feedback/<token>` page paths and obsolete token-path API requests. Protect the static feedback API with the hosting firewall for volumetric abuse; persisted per-order limits bound writes, not total reads or project-wide Apps Script quotas.

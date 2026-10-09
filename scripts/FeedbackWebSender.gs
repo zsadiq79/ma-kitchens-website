@@ -25,12 +25,12 @@ function feedbackSenderDecision_(table, row, rowNumber, now) {
   return { eligible: reason === 'ELIGIBLE', reason: reason, dueAt: due ? due.toISOString() : null, candidate: { deliveryRowNumber: rowNumber, orderId: orderId, routificId: String(row[c['Routific ID']] || ''), deliveredAt: deliveredAt, feedbackDueAt: due, feedbackStatus: status } };
 }
 function fwWebTemplateContract_() {
-  // A submitted path-token template cannot be reused for fragment-only links.
+  // Iteration 1 uses the submitted v1 path-token contract.
   const props = fwProps_(), name = props.getProperty('FEEDBACK_WEB_TEMPLATE_NAME');
   const base = fwConfig_('FEEDBACK_WEB_BASE_URL');
-  if (name !== 'customer_feedback_web_v2_fragment' ||
-      !/^https:\/\/[^/?#]+\/feedback\/open$/.test(base) ||
-      props.getProperty('FEEDBACK_WEB_TEMPLATE_URL') !== base + '#{{1}}') fwError_('CONFIGURATION_ERROR');
+  if (name !== 'customer_feedback_web_v1' ||
+      !/^https:\/\/[^/?#]+\/feedback\/$/.test(base) ||
+      props.getProperty('FEEDBACK_WEB_TEMPLATE_URL') !== base + '{{1}}') fwError_('CONFIGURATION_ERROR');
   return { name: name };
 }
 function fwPrepareWebMessage_(resolution) {

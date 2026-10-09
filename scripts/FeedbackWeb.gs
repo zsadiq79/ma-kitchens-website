@@ -180,7 +180,7 @@ function fwLimit_(row, now, windowIndex, countIndex, limit) {
 }
 function fwPublic_(context) {
   const r = context.state.row; let draft = null;
-  if (r[5]) { try { draft = fwPayload_(JSON.parse(r[5]), context.order, true); } catch (_) { fwError_('TEMPORARY_ERROR'); } }
+  if (r[5]) { try { draft = fwPayload_(JSON.parse(r[5]), context.order, true); } catch (_) { draft = null; } }
   return { customerName: context.order.customerName, deliveryDate: context.order.deliveryDate, orderId: context.order.orderId, status: context.completed ? 'COMPLETED' : 'OPEN', dishes: context.order.dishes.map(d => ({ itemCode: d.itemCode, dishName: d.dishName, kitchenName: d.kitchenName, imageUrl: d.imageUrl })), submissionId: r[1], revision: Number(r[6] || 0), draft: context.completed ? null : draft };
 }
 function handleFeedbackWebApiRequest_(e, action) {
@@ -211,7 +211,7 @@ function fwRequest_(body, action) {
     // Automated requests are explicitly separate from browser/interaction signals.
     if (fwLimit_(r, now, 23, 24, 10)) {
       r[14] = new Date(now).toISOString(); c.link.row[6] = r[14];
-      fwBatch_(book, [fwUpdate_(schema.orders.sheet, c.state.number, r), fwUpdate_(schema.links.sheet, c.link.number, c.link.row)]);
+      try { fwBatch_(book, [fwUpdate_(schema.orders.sheet, c.state.number, r), fwUpdate_(schema.links.sheet, c.link.number, c.link.row)]); } catch (_) { /* Optional page tracking cannot block reading/submitting. */ }
     }
     return fwPublic_(c);
   }
@@ -287,7 +287,7 @@ function fwCreateLinkLocked_(book, schema, orderId, reserveMessage) {
   const hours = Number(fwProps_().getProperty('FEEDBACK_LINK_TTL_HOURS') || '720');
   if (!Number.isInteger(hours) || hours < 1 || hours > 720) fwError_('CONFIGURATION_ERROR');
   const base = fwConfig_('FEEDBACK_WEB_BASE_URL');
-  if (!/^https:\/\/[^/?#]+\/feedback\/open$/.test(base)) fwError_('CONFIGURATION_ERROR');
+  if (!/^https:\/\/[^/?#]+\/feedback\/$/.test(base)) fwError_('CONFIGURATION_ERROR');
   const token = fwNewToken_(orderId), hash = fwHash_(token), at = new Date(now).toISOString();
   const requests = fwCapacity_(schema.orders.sheet, state.number, FW.orderHeaders.length);
   schema.links.rows.forEach((row, i) => { if (row[1] === orderId && row[4] === 'OPEN') { const copy = row.slice(); copy[4] = 'REPLACED'; requests.push(fwUpdate_(schema.links.sheet, i + 2, copy)); } });
@@ -295,7 +295,7 @@ function fwCreateLinkLocked_(book, schema, orderId, reserveMessage) {
   if (reserveMessage) state.row[15] = Utilities.getUuid();
   requests.push(fwAppend_(schema.links.sheet, [[hash, orderId, at, new Date(now + hours * 3600000).toISOString(), 'OPEN', '', '']]), fwUpdate_(schema.orders.sheet, state.number, state.row));
   fwBatch_(book, requests);
-  return { url: base + '#' + token, token: token, attemptId: state.row[15], customerName: order.customerName };
+  return { url: base + token, token: token, attemptId: state.row[15], customerName: order.customerName };
 }
 function getOrCreateFeedbackWebLink_(orderId) {
   // Compatibility name; every explicit issuance replaces the old link atomically.

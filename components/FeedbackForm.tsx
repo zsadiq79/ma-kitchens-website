@@ -189,7 +189,21 @@ export function FeedbackForm({
         if (!canSubmit || busy.current || conflict.current) return;
         busy.current = true; setSubmitting(true); setSubmitError("");
         try {
-          await flushDraft();
+          try { await flushDraft(); }
+          catch (error) {
+            if (error instanceof Error && error.message === "CONFLICT") throw error;
+            // Autosave is optional. Resolve a possible lost acknowledgement when
+            // available, then submit directly; the backend still checks revisions.
+            try {
+              const current = await feedbackRequest(feedbackToken, "feedback_read");
+              if (Number.isSafeInteger(current.revision) && current.revision !== revisionRef.current) {
+                if (JSON.stringify(current.draft) !== latest.current) throw new Error("CONFLICT");
+                revisionRef.current = current.revision;
+              }
+            } catch (readError) {
+              if (readError instanceof Error && readError.message === "CONFLICT") throw readError;
+            }
+          }
           await feedbackRequest(feedbackToken, "feedback_submit", {
             submissionId, revision: revisionRef.current, submission: JSON.parse(latest.current),
           });
