@@ -3,6 +3,7 @@ import { callFeedbackService, FeedbackServiceError } from "@/lib/feedbackApi";
 import { validFeedbackRequest } from "@/lib/feedbackValidation";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 const headers = { "Cache-Control": "no-store, private", "Referrer-Policy": "no-referrer", "X-Robots-Tag": "noindex, nofollow, noarchive" };
 async function readBounded(request: Request) {
   if (!request.body || !request.headers.get("content-type")?.startsWith("application/json")) throw new Error();

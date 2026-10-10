@@ -102,6 +102,43 @@ Before any future production activation: audit additional writers, verify the co
 
 ## Local development tests
 
+### Isolated copy test and response timing follow-up
+
+The owner installed the iteration-one files on the separate test copy and
+connected a branch-scoped Vercel preview. On 10 October 2026, copied order
+ORD-000011 loaded its one dish and delivery question, restored a saved draft
+after refresh, and committed exactly one dish row plus one delivery row with
+matching submission IDs and completion markers. No WhatsApp message was sent.
+This is a real Sheets/preview check, not a production or Meta callback test.
+
+The owner observed 8–12-second requests. The original 12-second upstream limit
+caused uncertain-save warnings even when Sheets had committed. The follow-up
+uses a 45-second upstream budget, a 60-second browser budget, and a 60-second
+feedback function duration. After a transient write failure, the browser reads
+persisted state once and accepts only the matching saved draft or matching
+completed submission ID. It does not automatically resend a write. Conflicts,
+revoked/expired/replaced links and rate-limit errors keep their existing behavior.
+
+FeedbackWeb.gs now reuses the spreadsheet handle, timezone and table snapshots
+only inside one locked operation. Table snapshots are invalidated after every
+attempted batch, including an ambiguous write failure, and discarded when the
+operation ends. No CacheService or cross-request cache of eligibility, links,
+drafts or completion is introduced.
+
+For this follow-up, replace **only FeedbackWeb.gs in the test project**, retain
+its existing properties and other installed files, then update the existing
+test web-app deployment to a new version so `/exec` serves the replacement.
+The website changes deploy through PR #35's Preview only. Test with another
+eligible copied order and measure load, autosave and submission again. Reduced
+redundant reads are tested, but improved real latency is not yet verified.
+
+Follow-up validation: 48 API/Apps Script emulator tests passed, as did the
+production build, TypeScript check and production-build browser smoke. The
+browser test includes a committed draft/submission followed by a lost
+acknowledgement, then read-only recovery to saved/received UI without a second
+write. Browser upstream requests are mocked; this follow-up has not yet been
+installed and timed against the real copy.
+
 ```bash
 npm install --package-lock=false
 npm test

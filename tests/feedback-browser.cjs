@@ -9,7 +9,7 @@ const base = process.env.FEEDBACK_TEST_BASE_URL || 'http://127.0.0.1:3000';
   const page = await context.newPage(); const token = 'T'.repeat(43), replacement = 'U'.repeat(43); const requests = []; const errors = [];
   page.on('request', r => requests.push({ url: r.url(), method: r.method() }));
   page.on('pageerror', e => errors.push(e.message));
-  let draftUnavailable = false, eventsUnavailable = false;
+  let draftUnavailable = false, eventsUnavailable = false, lostDraftAck = false, lostSubmitAck = false;
   let calls = [], submitted = 0, revision = 1, failure = '', draft = { dishes: [{ itemCode: 'M1', rating: 4, skipped: false, comment: 'Saved on an earlier visit' }, { itemCode: 'M2', rating: 0, skipped: false, comment: '' }], deliveryRating: 0, overallComment: '', testimonialConsent: false };
   const order = () => ({ customerName: 'Sameera', deliveryDate: '24 September 2026', orderId: 'ORD-TEST', status: submitted ? 'COMPLETED' : 'OPEN', dishes: [{ itemCode: 'M1', dishName: 'Tadka Daal', kitchenName: 'Public Kitchen', imageUrl: '/menu-images/Dish-0003.jpg' }, { itemCode: 'M2', dishName: 'Aalo Gobhi', kitchenName: 'Public Kitchen', imageUrl: '/menu-images/Dish-0004.jpg' }], submissionId: 'persistent-id', revision, draft: submitted ? null : draft });
   await page.route('**/api/feedback', async route => {
@@ -19,8 +19,8 @@ const base = process.env.FEEDBACK_TEST_BASE_URL || 'http://127.0.0.1:3000';
     if ((draftUnavailable && body.action === 'feedback_draft') || (eventsUnavailable && body.action === 'feedback_event')) return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'TEMPORARY_ERROR'})});
     let result = {};
     if (body.action === 'feedback_read') result = order();
-    if (body.action === 'feedback_draft') { assert.equal(body.revision, revision); draft = body.submission; revision++; result = { revision }; }
-    if (body.action === 'feedback_submit') { assert.equal(body.submissionId, 'persistent-id'); assert.equal(body.revision, revision); submitted++; result = { status: 'COMPLETED' }; }
+    if (body.action === 'feedback_draft') { assert.equal(body.revision, revision); draft = body.submission; revision++; result = { revision }; if(lostDraftAck)return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'TEMPORARY_ERROR'})}); }
+    if (body.action === 'feedback_submit') { assert.equal(body.submissionId, 'persistent-id'); assert.equal(body.revision, revision); submitted++; result = { status: 'COMPLETED' }; if(lostSubmitAck)return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'TEMPORARY_ERROR'})}); }
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(result) });
   });
   const response = await page.goto(base + '/feedback/' + token);
@@ -60,6 +60,14 @@ const base = process.env.FEEDBACK_TEST_BASE_URL || 'http://127.0.0.1:3000';
   await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
   await page.getByText('Feedback received', { exact: true }).waitFor(); assert.equal(submitted, 1);
   assert.equal(calls.filter(c => c.action === 'feedback_submit').at(-1).submission.dishes[0].comment,'Direct submission despite unavailable autosave');
+  submitted = 0; draftUnavailable = false; eventsUnavailable = false; lostDraftAck = true; lostSubmitAck = true;
+  await page.goto(base + '/feedback/' + token);
+  await page.locator('#comment-M1').fill('Saved even when the acknowledgement is lost');
+  await page.waitForFunction(() => document.querySelector('[aria-live=polite]')?.textContent === 'Your progress is saved automatically');
+  assert.equal(draft.dishes[0].comment,'Saved even when the acknowledgement is lost');
+  assert.equal(await page.getByText('We could not confirm your progress was saved. Keep this page open and retry.',{exact:true}).count(),0);
+  await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+  await page.getByText('Feedback received', { exact: true }).waitFor(); assert.equal(submitted,1);
   const count = calls.length;
   await page.goto(base + '/feedback/demo-sameera'); await page.getByText('Demonstration only', { exact: true }).waitFor();
   for (const checkbox of await page.getByText("I didn't try this dish", { exact: true }).all()) await checkbox.click();

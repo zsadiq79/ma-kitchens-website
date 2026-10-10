@@ -10,6 +10,7 @@ const now = Date.parse('2026-10-09T12:00:00Z');
 function fixture() {
   const props = { CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY', FLOW_MENU_API_SECRET:'test-service-secret', FEEDBACK_TOKEN_SIGNING_KEY:'a'.repeat(64), FEEDBACK_WEB_BASE_URL:'https://test.example/feedback/', FEEDBACK_WEB_TEMPLATE_NAME:'customer_feedback_web_v1', FEEDBACK_WEB_TEMPLATE_URL:'https://test.example/feedback/{{1}}', FEEDBACK_V2_WRITES_ENABLED:'true', WHATSAPP_REQUIRE_VERIFIED_FORWARD:'true', FEEDBACK_LIVE_ENABLED:'true' };
   let execution = 1, lockOwner = null, batches = 0, failBefore = false, failAfter = false, duringBatch = null, sends = 0;
+  const reads = { book: 0, timezone: 0, tables: 0 };
   const tables = new Map(); const add = (name, headers, rows=[], columns=headers.length) => { const s = {name,id:tables.size+1,values:[headers,...rows],maxCols:columns,maxRows:1000}; tables.set(name,s);return s; };
   add('Feedback', original.slice(), [], 12);
   add('Orders',['Order ID','Order Status','Delivery Date','Customer ID','Customer Name'],[['ORD-1','Confirmed',new Date('2026-10-06T00:00:00Z'),'CUST-1','Sameera']]);
@@ -21,10 +22,10 @@ function fixture() {
   const clone = x => { if(x instanceof Date)return new Date(x);if(Array.isArray(x))return x.map(clone);if(x&&typeof x==='object')return Object.fromEntries(Object.entries(x).map(([k,v])=>[k,clone(v)]));return x; };
   function wrap(s) { return {
     getSheetId:()=>s.id,getName:()=>s.name,getMaxRows:()=>s.maxRows,getMaxColumns:()=>s.maxCols,getLastRow:()=>s.values.length,getLastColumn:()=>Math.max(...s.values.map(r=>r.length)),
-    getDataRange:()=>({getValues:()=>clone(s.values)}),
+    getDataRange:()=>({getValues:()=>{reads.tables++;return clone(s.values)}}),
     getRange:(r,c,n=1,m=1)=>{if(typeof r==='string'){const match=r.match(/^([A-Z]+)(\d+)$/);c=[...match[1]].reduce((a,x)=>a*26+x.charCodeAt(0)-64,0);r=Number(match[2]);}return {getRow:()=>r,getColumn:()=>c,getFormula:()=>s.values[r-1]?.[c-1]?.formula||'',getFormulas:()=>Array.from({length:n},(_,i)=>Array.from({length:m},(_,j)=>s.values[r-1+i]?.[c-1+j]?.formula||'')),getValues:()=>Array.from({length:n},(_,i)=>Array.from({length:m},(_,j)=>clone(s.values[r-1+i]?.[c-1+j]??''))),getDisplayValues:()=>Array.from({length:n},(_,i)=>Array.from({length:m},(_,j)=>String(s.values[r-1+i]?.[c-1+j]??'')))}}
   }; }
-  const book={getId:()=> 'COPY_ONLY',getSheetByName:n=>tables.has(n)?wrap(tables.get(n)):null,getSheets:()=>[...tables.values()].map(wrap),getSpreadsheetTimeZone:()=> 'Australia/Sydney'};
+  const book={getId:()=> 'COPY_ONLY',getSheetByName:n=>tables.has(n)?wrap(tables.get(n)):null,getSheets:()=>[...tables.values()].map(wrap),getSpreadsheetTimeZone:()=> {reads.timezone++;return 'Australia/Sydney'}};
   function apply(requests) {
     const staged = new Map([...tables.entries()].map(([k,s])=>[k,clone(s)]));
     const sheet = id => {const s=[...staged.values()].find(s=>s.id===id);if(!s)throw Error('missing sheet');return s};
@@ -40,7 +41,7 @@ function fixture() {
   }
   class ClockDate extends Date {constructor(...args){super(...(args.length?args:[now]));}static now(){return now}static [Symbol.hasInstance](v){return v instanceof Date}}
   const lock={hasLock:()=>lockOwner===execution,tryLock:()=>{if(lockOwner!==null)return false;lockOwner=execution;return true},waitLock:()=>{if(lockOwner!==null)throw Error('lock busy');lockOwner=execution},releaseLock:()=>{assert.equal(lockOwner,execution);lockOwner=null}};
-  const c=vm.createContext({Date:ClockDate,Set,Map,URL,console:{log:()=>{},error:()=>{}},CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY',recordWhatsAppStatus_:()=>{},SpreadsheetApp:{openById:id=>{assert.equal(id,'COPY_ONLY');return book},flush:()=>{}},LockService:{getScriptLock:()=>lock},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]??null,setProperty:(k,v)=>{props[k]=v},deleteProperty:k=>delete props[k]})},Utilities:{getUuid:()=>crypto.randomUUID(),computeDigest:(_,v)=>[...crypto.createHash('sha256').update(v).digest()],computeHmacSha256Signature:(v,k)=>[...crypto.createHmac('sha256',k).update(v).digest()],base64EncodeWebSafe:v=>Buffer.from(v).toString('base64url'),DigestAlgorithm:{SHA_256:'SHA256'},Charset:{UTF_8:'UTF8'},formatDate:(d,tz,format)=>format.includes('HH:mm:ss.SSS')?new Date(d.getTime()+11*3600000).toISOString().slice(0,-1):d.toISOString().slice(0,10)},ContentService:{MimeType:{JSON:'json',TEXT:'text'},createTextOutput:s=>({text:s,setMimeType(){return this}})},Sheets:{Spreadsheets:{batchUpdate:({requests},id)=>{assert.equal(id,'COPY_ONLY');batches++;if(duringBatch){const f=duringBatch;duringBatch=null;f()}if(failBefore){failBefore=false;throw Error('atomic failure before commit')}apply(requests);if(failAfter){failAfter=false;throw Error('response lost after commit')}}}},UrlFetchApp:{fetch:()=>{sends++;throw Error('NO MESSAGES AUTHORIZED')}},CacheService:{getScriptCache:()=>({get:()=>null,put:()=>{},remove:()=>{}})}});
+  const c=vm.createContext({Date:ClockDate,Set,Map,URL,console:{log:()=>{},error:()=>{}},CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY',recordWhatsAppStatus_:()=>{},SpreadsheetApp:{openById:id=>{reads.book++;assert.equal(id,'COPY_ONLY');return book},flush:()=>{}},LockService:{getScriptLock:()=>lock},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]??null,setProperty:(k,v)=>{props[k]=v},deleteProperty:k=>delete props[k]})},Utilities:{getUuid:()=>crypto.randomUUID(),computeDigest:(_,v)=>[...crypto.createHash('sha256').update(v).digest()],computeHmacSha256Signature:(v,k)=>[...crypto.createHmac('sha256',k).update(v).digest()],base64EncodeWebSafe:v=>Buffer.from(v).toString('base64url'),DigestAlgorithm:{SHA_256:'SHA256'},Charset:{UTF_8:'UTF8'},formatDate:(d,tz,format)=>format.includes('HH:mm:ss.SSS')?new Date(d.getTime()+11*3600000).toISOString().slice(0,-1):d.toISOString().slice(0,10)},ContentService:{MimeType:{JSON:'json',TEXT:'text'},createTextOutput:s=>({text:s,setMimeType(){return this}})},Sheets:{Spreadsheets:{batchUpdate:({requests},id)=>{assert.equal(id,'COPY_ONLY');batches++;if(duringBatch){const f=duringBatch;duringBatch=null;f()}if(failBefore){failBefore=false;throw Error('atomic failure before commit')}apply(requests);if(failAfter){failAfter=false;throw Error('response lost after commit')}}}},UrlFetchApp:{fetch:()=>{sends++;throw Error('NO MESSAGES AUTHORIZED')}},CacheService:{getScriptCache:()=>({get:()=>null,put:()=>{},remove:()=>{}})}});
   for(const name of files)vm.runInContext(fs.readFileSync(path.join(__dirname,'../scripts/'+name+'.gs'),'utf8'),c,{filename:name+'.gs'});
   const run=(expression)=>vm.runInContext(expression,c);
   c.feedbackV2Setup();
@@ -49,8 +50,29 @@ function fixture() {
   const payload=()=>({dishes:[{itemCode:'M1',rating:2,skipped:false,comment:'=IMPORTXML("bad")'},{itemCode:'M2',rating:0,skipped:true,comment:''}],deliveryRating:2,overallComment:'+SUM(1,2)',testimonialConsent:true});
   const read=token=>call(token,'feedback_read');
   function submit(token,p=payload()){const data=read(token);assert.equal(data.ok,true);return call(token,'feedback_submit',{submissionId:data.result.submissionId,revision:data.result.revision,submission:p});}
-  return {c,run,tables,props,issue,call,read,submit,payload,batches:()=>batches,sends:()=>sends,before:()=>{failBefore=true},after:()=>{failAfter=true},concurrent:fn=>{duringBatch=()=>{const old=execution;execution=2;try{fn()}finally{execution=old}}}};
+  return {c,run,tables,props,issue,call,read,submit,payload,reads,batches:()=>batches,sends:()=>sends,before:()=>{failBefore=true},after:()=>{failAfter=true},concurrent:fn=>{duringBatch=()=>{const old=execution;execution=2;try{fn()}finally{execution=old}}}};
 }
+test('one submission reuses spreadsheet and timezone reads only within its lock',()=>{
+  const f=fixture(),token=f.issue(),r=f.read(token).result;
+  Object.keys(f.reads).forEach(k=>f.reads[k]=0);
+  assert.equal(f.call(token,'feedback_submit',{submissionId:r.submissionId,revision:r.revision,submission:f.payload()}).ok,true);
+  assert.equal(f.reads.book,1);assert.equal(f.reads.timezone,1);
+  assert.equal(f.read(token).result.status,'COMPLETED');
+  assert.equal(f.reads.book,2); // No state carried to the next operation.
+});
+test('cached table reads are invalidated after successful and ambiguous writes',()=>{
+  for(const lostResponse of [false,true]){
+    const f=fixture(),token=f.issue();if(lostResponse)f.after();
+    f.c.inspectWrite=()=>f.c.fwLock_(()=>{
+      const book=f.c.fwBook_(),before=f.c.fwTable_(book,'Deliveries',['Feedback Status']);
+      const requests=[f.c.fwCell_(before.sheet,2,before.col['Feedback Status'],'Completed')];
+      try{f.c.fwBatch_(book,requests)}catch{}
+      return f.c.fwTable_(book,'Deliveries',['Feedback Status']).rows[0][before.col['Feedback Status']];
+    });
+    assert.equal(f.c.inspectWrite(),'Completed');
+    assert.equal(f.read(token).result.status,'COMPLETED');
+  }
+});
 test('guarded setup expands actual 12-column grid and preserves A:L; repeatable',()=>{const f=fixture();assert.equal(f.tables.get('Feedback').maxCols,17);assert.deepEqual(f.tables.get('Feedback').values[0].slice(0,12),original);f.c.feedbackV2Setup();assert.equal(f.tables.get('Feedback').maxCols,17);f.tables.get('Feedback').values[0][12]='User custom header';assert.throws(()=>f.c.feedbackV2Setup(),/CONFIGURATION_ERROR/);});
 test('secure issuance stores only hashes; replacement is atomic and rejected',()=>{const f=fixture(),a=f.issue(),b=f.issue();assert.equal(a.length,43);assert.notEqual(a,b);assert.equal(f.read(a).error,'REPLACED');assert.equal(f.read(b).ok,true);assert(!JSON.stringify([...f.tables.values()]).includes(b));});
 test('revocation and strict expiry at equality, malformed expiry fails closed',()=>{const f=fixture(),a=f.issue();f.c.feedbackV2RevokeOrderLinks('ORD-1');assert.equal(f.read(a).error,'REVOKED');const b=f.issue();f.tables.get('Feedback V2 Links').values.at(-1)[3]=new Date(now).toISOString();assert.equal(f.read(b).error,'EXPIRED');f.tables.get('Feedback V2 Links').values.at(-1)[3]='not-a-date';assert.equal(f.read(b).error,'EXPIRED');});

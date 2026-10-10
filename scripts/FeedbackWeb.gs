@@ -14,12 +14,33 @@ function fwError_(code) { const e = new Error(code); e.code = code; throw e; }
 function fwProps_() { return PropertiesService.getScriptProperties(); }
 function fwConfig_(name) { const v = fwProps_().getProperty(name); if (!v) fwError_('CONFIGURATION_ERROR'); return v; }
 function fwEnabled_() { if (fwProps_().getProperty('FEEDBACK_V2_WRITES_ENABLED') !== 'true' || fwProps_().getProperty('WHATSAPP_REQUIRE_VERIFIED_FORWARD') !== 'true') fwError_('TEMPORARY_ERROR'); }
-function fwBook_() { const id = fwConfig_('CONTROL_TOWER_SPREADSHEET_ID'); if (id !== CONTROL_TOWER_SPREADSHEET_ID) fwError_('CONFIGURATION_ERROR'); return SpreadsheetApp.openById(id); }
+// Only reuse reads during one locked operation. Never persist order/link state
+// in CacheService, and discard all table snapshots after any attempted write.
+let fwReadContext_ = null;
+function fwWithReads_(fn) {
+  if (fwReadContext_) return fn();
+  fwReadContext_ = { book: null, timezone: null, tables: new Map() };
+  try { return fn(); } finally { fwReadContext_ = null; }
+}
+function fwBook_() {
+  if (fwReadContext_ && fwReadContext_.book) return fwReadContext_.book;
+  const id = fwConfig_('CONTROL_TOWER_SPREADSHEET_ID');
+  if (id !== CONTROL_TOWER_SPREADSHEET_ID) fwError_('CONFIGURATION_ERROR');
+  const book = SpreadsheetApp.openById(id);
+  if (fwReadContext_) fwReadContext_.book = book;
+  return book;
+}
+function fwTimezone_() {
+  if (fwReadContext_ && fwReadContext_.timezone) return fwReadContext_.timezone;
+  const timezone = fwBook_().getSpreadsheetTimeZone();
+  if (fwReadContext_) fwReadContext_.timezone = timezone;
+  return timezone;
+}
 function fwLock_(fn) {
   const lock = LockService.getScriptLock();
-  if (lock.hasLock()) return fn(); // Same execution may already hold the shared sender lock.
+  if (lock.hasLock()) return fwWithReads_(fn); // Same execution may already hold the shared sender lock.
   if (!lock.tryLock(10000)) fwError_('TEMPORARY_ERROR');
-  try { return fn(); } finally { lock.releaseLock(); }
+  try { return fwWithReads_(fn); } finally { lock.releaseLock(); }
 }
 function fwObject_(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
 function fwKeys_(v, allowed, required) {
@@ -47,11 +68,18 @@ function fwTime_(v) {
   return Date.parse(v);
 }
 function fwTable_(book, name, required) {
+  if (fwReadContext_ && fwReadContext_.tables.has(name)) {
+    const cached = fwReadContext_.tables.get(name);
+    if (required.some(h => !Object.prototype.hasOwnProperty.call(cached.col, h))) fwError_('CONFIGURATION_ERROR');
+    return cached;
+  }
   const sheet = book.getSheetByName(name); if (!sheet) fwError_('CONFIGURATION_ERROR');
   const values = sheet.getDataRange().getValues(); const headers = (values[0] || []).map(v => String(v).trim()); const col = Object.create(null);
   headers.forEach((h, i) => { if (h && Object.prototype.hasOwnProperty.call(col, h)) fwError_('CONFIGURATION_ERROR'); col[h] = i; });
   if (required.some(h => !Object.prototype.hasOwnProperty.call(col, h))) fwError_('CONFIGURATION_ERROR');
-  return { sheet: sheet, headers: headers, col: col, rows: values.slice(1) };
+  const table = { sheet: sheet, headers: headers, col: col, rows: values.slice(1) };
+  if (fwReadContext_) fwReadContext_.tables.set(name, table);
+  return table;
 }
 function fwFeedback_(book) {
   const expected = FW.legacyHeaders;
@@ -70,7 +98,7 @@ function fwSchema_(book) {
 function fwExtended_(v) {
   // Explicit stringValue cells never interpret '=' / '+' / '-' / '@' as formulas.
   if (v === '' || v === null || v === undefined) return {};
-  if (v instanceof Date) return { userEnteredValue: { numberValue: Date.parse(Utilities.formatDate(v, fwBook_().getSpreadsheetTimeZone(), "yyyy-MM-dd'T'HH:mm:ss.SSS") + 'Z') / 86400000 + 25569 }, userEnteredFormat: { numberFormat: { type: 'DATE_TIME', pattern: 'yyyy-mm-dd hh:mm:ss' } } };
+  if (v instanceof Date) return { userEnteredValue: { numberValue: Date.parse(Utilities.formatDate(v, fwTimezone_(), "yyyy-MM-dd'T'HH:mm:ss.SSS") + 'Z') / 86400000 + 25569 }, userEnteredFormat: { numberFormat: { type: 'DATE_TIME', pattern: 'yyyy-mm-dd hh:mm:ss' } } };
   if (typeof v === 'number') return { userEnteredValue: { numberValue: v } };
   if (typeof v === 'boolean') return { userEnteredValue: { boolValue: v } };
   return { userEnteredValue: { stringValue: String(v) } };
@@ -86,7 +114,8 @@ function fwBatch_(book, requests) {
   if (!requests.length) return;
   // One atomic Sheets request. Never split rows and completion markers across calls.
   // Do not automatically retry ambiguous transport failures: read persisted state first.
-  Sheets.Spreadsheets.batchUpdate({ requests: requests }, book.getId());
+  try { Sheets.Spreadsheets.batchUpdate({ requests: requests }, book.getId()); }
+  finally { if (fwReadContext_) fwReadContext_.tables.clear(); }
 }
 function fwCapacity_(sheet, rowNumber, columns) {
   const requests = [];
@@ -136,7 +165,7 @@ function fwOrder_(book, orderId) {
   });
   if (!dishes.length || dishes.length > 50) fwError_('INELIGIBLE');
   const date = o[0].row[orders.col['Delivery Date']];
-  return { orderId: orderId, customerId: value(orders, o[0].row, 'Customer ID'), customerName: fwString_(value(orders, o[0].row, 'Customer Name'), 160), deliveryDate: date instanceof Date ? Utilities.formatDate(date, book.getSpreadsheetTimeZone(), 'd MMMM yyyy') : String(date || ''), dishes: dishes, deliveredAt: deliveredAt, delivery: { table: deliveries, row: d[0].row, number: d[0].number } };
+  return { orderId: orderId, customerId: value(orders, o[0].row, 'Customer ID'), customerName: fwString_(value(orders, o[0].row, 'Customer Name'), 160), deliveryDate: date instanceof Date ? Utilities.formatDate(date, fwTimezone_(), 'd MMMM yyyy') : String(date || ''), dishes: dishes, deliveredAt: deliveredAt, delivery: { table: deliveries, row: d[0].row, number: d[0].number } };
 }
 function feedbackV2Eligibility_(order, completed, now) {
   if (completed) return { eligible: false, reason: 'COMPLETED' };

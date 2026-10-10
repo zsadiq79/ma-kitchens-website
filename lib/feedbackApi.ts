@@ -1,4 +1,5 @@
 import type { FeedbackAction, FeedbackSubmission } from "@/lib/feedbackValidation";
+import { FEEDBACK_UPSTREAM_TIMEOUT_MS } from "@/lib/feedbackTiming";
 export type FeedbackOrder = {
   customerName: string; deliveryDate: string; orderId: string; status: "OPEN" | "COMPLETED";
   dishes: { itemCode: string; dishName: string; kitchenName: string; imageUrl: string }[];
@@ -17,7 +18,7 @@ export async function callFeedbackService(action: FeedbackAction, payload: Recor
     endpoint.search = ""; endpoint.hash = ""; endpoint.searchParams.set("action", action);
     const response = await fetch(endpoint, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...payload, secret }), cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(12000),
+      body: JSON.stringify({ ...payload, secret }), cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(FEEDBACK_UPSTREAM_TIMEOUT_MS),
     });
     if (!response.ok) throw new Error();
     const raw = await response.text(); if (raw.length > 100000) throw new Error();
