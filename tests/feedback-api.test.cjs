@@ -103,3 +103,10 @@ test('failed upstream requests retain safe timings and unavailable logging canno
  const broken={push(){throw Error('logger failed')}};
  const ok=modules(env,async()=>Response.json({ok:true,result:{status:'OPEN'}}),AbortSignal,broken)('app/api/feedback/route.ts');assert.equal((await ok.POST(request({action:'feedback_read',token}))).status,200);
 });
+
+test('browser-open signal is forwarded only as a strict optional true on read requests',async()=>{
+ let forwarded;const env={FLOW_MENU_API_URL:'https://script.google.com/macros/s/COPY/exec',FLOW_MENU_API_SECRET:'private-service-key'};
+ const route=modules(env,async(url,opts)=>{forwarded=JSON.parse(opts.body);return Response.json({ok:true,result:{status:'OPEN'}})})('app/api/feedback/route.ts');
+ assert.equal((await route.POST(request({action:'feedback_read',token,browserOpened:true}))).status,200);assert.equal(forwarded.browserOpened,true);
+ for(const body of [{action:'feedback_read',token,browserOpened:false},{action:'feedback_read',token,browserOpened:'true'},{action:'feedback_draft',token,browserOpened:true,revision:0,submission:payload}])assert.equal((await route.POST(request(body))).status,400);
+});
