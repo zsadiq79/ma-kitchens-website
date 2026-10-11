@@ -48,7 +48,7 @@ test('receipt reconciliation with unknown acceptance time records no fabricated 
 function fixture() {
   const props = { CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY', FLOW_MENU_API_SECRET:'test-service-secret', FEEDBACK_TOKEN_SIGNING_KEY:'a'.repeat(64), FEEDBACK_WEB_BASE_URL:'https://test.example/feedback/', FEEDBACK_WEB_TEMPLATE_NAME:'customer_feedback_web_v1', FEEDBACK_WEB_TEMPLATE_URL:'https://test.example/feedback/{{1}}', FEEDBACK_V2_WRITES_ENABLED:'true', WHATSAPP_REQUIRE_VERIFIED_FORWARD:'true', FEEDBACK_LIVE_ENABLED:'true' };
   let execution = 1, lockOwner = null, batches = 0, failBefore = false, failAfter = false, duringBatch = null, sends = 0;
-  const reads = { book: 0, timezone: 0, tables: 0 };
+  const reads = { book: 0, timezone: 0, tables: 0, api: 0 };
   const tables = new Map(); const add = (name, headers, rows=[], columns=headers.length) => { const s = {name,id:tables.size+1,values:[headers,...rows],maxCols:columns,maxRows:1000}; tables.set(name,s);return s; };
   add('Feedback', original.slice(), [], 12);
   add('Orders',['Order ID','Order Status','Delivery Date','Customer ID','Customer Name'],[['ORD-1','Confirmed',new Date('2026-10-06T00:00:00Z'),'CUST-1','Sameera']]);
@@ -79,7 +79,15 @@ function fixture() {
   }
   class ClockDate extends Date {constructor(...args){super(...(args.length?args:[now]));}static now(){return now}static [Symbol.hasInstance](v){return v instanceof Date}}
   const lock={hasLock:()=>lockOwner===execution,tryLock:()=>{if(lockOwner!==null)return false;lockOwner=execution;return true},waitLock:()=>{if(lockOwner!==null)throw Error('lock busy');lockOwner=execution},releaseLock:()=>{assert.equal(lockOwner,execution);lockOwner=null}};
-  const c=vm.createContext({Date:ClockDate,Set,Map,URL,console:{log:()=>{},error:()=>{}},CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY',recordWhatsAppStatus_:()=>{},SpreadsheetApp:{openById:id=>{reads.book++;assert.equal(id,'COPY_ONLY');return book},flush:()=>{}},LockService:{getScriptLock:()=>lock},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]??null,setProperty:(k,v)=>{props[k]=v},deleteProperty:k=>delete props[k]})},Utilities:{getUuid:()=>crypto.randomUUID(),computeDigest:(_,v)=>[...crypto.createHash('sha256').update(v).digest()],computeHmacSha256Signature:(v,k)=>[...crypto.createHmac('sha256',k).update(v).digest()],base64EncodeWebSafe:v=>Buffer.from(v).toString('base64url'),DigestAlgorithm:{SHA_256:'SHA256'},Charset:{UTF_8:'UTF8'},formatDate:(d,tz,format)=>format.includes('HH:mm:ss.SSS')?new Date(d.getTime()+11*3600000).toISOString().slice(0,-1):d.toISOString().slice(0,10)},ContentService:{MimeType:{JSON:'json',TEXT:'text'},createTextOutput:s=>({text:s,setMimeType(){return this}})},Sheets:{Spreadsheets:{Values:{get:(id,range,options)=>{assert.equal(id,'COPY_ONLY');assert.equal(range,"'Feedback V2 Orders'!A:Y");assert.equal(options.valueRenderOption,'UNFORMATTED_VALUE');return {values:clone(tables.get('Feedback V2 Orders').values)};}},batchUpdate:({requests},id)=>{assert.equal(id,'COPY_ONLY');batches++;if(duringBatch){const f=duringBatch;duringBatch=null;f()}if(failBefore){failBefore=false;throw Error('atomic failure before commit')}apply(requests);if(failAfter){failAfter=false;throw Error('response lost after commit')}}}},UrlFetchApp:{fetch:()=>{sends++;throw Error('NO MESSAGES AUTHORIZED')}},CacheService:{getScriptCache:()=>({get:()=>null,put:()=>{},remove:()=>{}})}});
+  const c=vm.createContext({Date:ClockDate,Set,Map,URL,console:{log:()=>{},error:()=>{}},CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY',recordWhatsAppStatus_:()=>{},SpreadsheetApp:{openById:id=>{reads.book++;assert.equal(id,'COPY_ONLY');return book},flush:()=>{}},LockService:{getScriptLock:()=>lock},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]??null,setProperty:(k,v)=>{props[k]=v},deleteProperty:k=>delete props[k]})},Utilities:{getUuid:()=>crypto.randomUUID(),computeDigest:(_,v)=>[...crypto.createHash('sha256').update(v).digest()],computeHmacSha256Signature:(v,k)=>[...crypto.createHmac('sha256',k).update(v).digest()],base64EncodeWebSafe:v=>Buffer.from(v).toString('base64url'),DigestAlgorithm:{SHA_256:'SHA256'},Charset:{UTF_8:'UTF8'},parseDate:(local,tz)=>{let instant=Date.parse(local+'Z');for(let i=0;i<3;i++){const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date(instant)).map(p=>[p.type,p.value]));const wall=Date.parse(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}.${local.slice(-3)}Z`);instant+=Date.parse(local+'Z')-wall;}return new Date(instant)},formatDate:(d,tz,format)=>format.includes('HH:mm:ss.SSS')?new Date(d.getTime()+11*3600000).toISOString().slice(0,-1):d.toISOString().slice(0,10)},ContentService:{MimeType:{JSON:'json',TEXT:'text'},createTextOutput:s=>({text:s,setMimeType(){return this}})},Sheets:{Spreadsheets:{get:(id,options)=>{
+      assert.equal(id,'COPY_ONLY');reads.api++;assert(options.fields.includes('effectiveValue'));assert(!options.fields.includes('userEnteredValue'));
+      return {properties:{timeZone:'Australia/Sydney'},sheets:options.ranges.map(range=>{const name=range.slice(1,-1).replace(/''/g,"'");const table=tables.get(name);if(!table)throw Error('missing sheet');return {properties:{title:name},data:[{rowData:table.values.map(row=>({values:row.map(v=>{
+        if(v instanceof Date)return {effectiveValue:{numberValue:(v.getTime()+11*3600000)/86400000+25569},effectiveFormat:{numberFormat:{type:'DATE_TIME'}}};
+        if(typeof v==='number')return {effectiveValue:{numberValue:v}};
+        if(typeof v==='boolean')return {effectiveValue:{boolValue:v}};
+        return v===''||v===undefined?{}:{effectiveValue:{stringValue:String(v)}};
+      })}))}]};})};
+    },Values:{get:(id,range,options)=>{assert.equal(id,'COPY_ONLY');assert.equal(range,"'Feedback V2 Orders'!A:Y");assert.equal(options.valueRenderOption,'UNFORMATTED_VALUE');return {values:clone(tables.get('Feedback V2 Orders').values)};}},batchUpdate:({requests},id)=>{assert.equal(id,'COPY_ONLY');batches++;if(duringBatch){const f=duringBatch;duringBatch=null;f()}if(failBefore){failBefore=false;throw Error('atomic failure before commit')}apply(requests);if(failAfter){failAfter=false;throw Error('response lost after commit')}}}},UrlFetchApp:{fetch:()=>{sends++;throw Error('NO MESSAGES AUTHORIZED')}},CacheService:{getScriptCache:()=>({get:()=>null,put:()=>{},remove:()=>{}})}});
   for(const name of files)vm.runInContext(fs.readFileSync(path.join(__dirname,'../scripts/'+name+'.gs'),'utf8'),c,{filename:name+'.gs'});
   const run=(expression)=>vm.runInContext(expression,c);
   c.feedbackV2Setup();
@@ -94,7 +102,7 @@ test('one submission reuses spreadsheet and timezone reads only within its lock'
   const f=fixture(),token=f.issue(),r=f.read(token).result;
   Object.keys(f.reads).forEach(k=>f.reads[k]=0);
   assert.equal(f.call(token,'feedback_submit',{submissionId:r.submissionId,revision:r.revision,submission:f.payload()}).ok,true);
-  assert.equal(f.reads.book,1);assert.equal(f.reads.timezone,1);
+  assert.equal(f.reads.book,1);assert.equal(f.reads.timezone,0);
   assert.equal(f.read(token).result.status,'COMPLETED');
   assert.equal(f.reads.book,2); // No state carried to the next operation.
 });
@@ -172,10 +180,10 @@ test('authenticated timing measures real phases and never persists or logs priva
  let tick=now;f.c.Date.now=()=>tick+=5;
  const requestId='b'.repeat(32);
  const before=f.batches();const r=f.call(a,'feedback_read',{timingId:requestId});
- assert.equal(r.ok,true);assert.equal(r.timing.readCalls,7);assert.equal(r.timing.writeCalls,1);
- for(const key of ['totalMs','lockWaitMs','readMs','writeMs','bookMs','timezoneMs'])assert(r.timing[key]>0);
+ assert.equal(r.ok,true);assert.equal(r.timing.readCalls,1);assert.equal(r.timing.writeCalls,1);
+ for(const key of ['totalMs','lockWaitMs','readMs','writeMs','bookMs'])assert(r.timing[key]>0);
  assert.equal(f.batches(),before+1);assert.equal(logs.length,1);
- const log=JSON.parse(logs[0]);assert.equal(log.requestId,requestId);assert.equal(log.action,'feedback_read');assert.equal(Object.keys(log.tableReadMs).length,7);
+ const log=JSON.parse(logs[0]);assert.equal(log.requestId,requestId);assert.equal(log.action,'feedback_read');assert.equal(Object.keys(log.tableReadMs).length,0);
  for(const privateValue of [a,f.props.FLOW_MENU_API_SECRET,f.props.FEEDBACK_TOKEN_SIGNING_KEY,'Sameera','ORD-1'])assert(!logs.join('').includes(privateValue));
  assert(!JSON.stringify([...f.tables.values()]).includes(requestId));
  assert.equal(f.run('fwTimingContext_'),null);assert.equal(f.sends(),0);
@@ -189,4 +197,35 @@ test('timing keeps failed and ambiguous outcomes safe, supports opt-out and reje
  assert.equal(failed.error,'TEMPORARY_ERROR');assert.equal(failed.timing.writeCalls,1);assert.equal(JSON.parse(logs[0]).outcome,'TEMPORARY_ERROR');
  const retry=f.call(a,'feedback_submit',{timingId:'c'.repeat(32),submissionId:read.submissionId,revision:read.revision,submission:f.payload()});assert.equal(retry.result.alreadyCompleted,true);assert.equal(f.tables.get('Feedback').values.length,4);
  f.c.console.log=()=>{throw Error('logging unavailable')};assert.equal(f.call(a,'feedback_read',{timingId:'d'.repeat(32)}).ok,true);
+});
+
+
+test('web reads use one fresh API snapshot without seven SpreadsheetApp data reads',()=>{
+ const f=fixture(),token=f.issue();Object.keys(f.reads).forEach(k=>f.reads[k]=0);
+ assert.equal(f.read(token).ok,true);assert.equal(f.reads.api,1);assert.equal(f.reads.tables,0);assert.equal(f.reads.timezone,0);
+ f.tables.get('Orders').values[1][1]='Cancelled';assert.equal(f.read(token).error,'INELIGIBLE');assert.equal(f.reads.api,2);
+});
+test('batched snapshot preserves interior row numbers and removes formatting-only trailing rows',()=>{
+ const f=fixture(),token=f.issue(),state=f.tables.get('Feedback V2 Orders');state.values.splice(1,0,[]);state.values.push([],[]);
+ assert.equal(f.call(token,'feedback_draft',{revision:0,submission:f.payload()}).ok,true);
+ assert.equal(f.tables.get('Feedback V2 Orders').values[1].length,0);assert.equal(f.tables.get('Feedback V2 Orders').values[2][6],1);
+});
+test('batched snapshot fails closed on incomplete response and duplicate headers',()=>{
+ for(const mutate of [r=>{r.sheets.pop()},r=>{r.sheets[0].data[0].rowData[0].values[1]={effectiveValue:{stringValue:'Feedback ID'}}}]){
+  const f=fixture(),token=f.issue(),get=f.c.Sheets.Spreadsheets.get;f.c.Sheets.Spreadsheets.get=(...args)=>{const r=get(...args);mutate(r);return r};
+  const before=f.batches();assert.equal(f.read(token).error,'TEMPORARY_ERROR');assert.equal(f.batches(),before);
+ }
+});
+test('batched date serials preserve Sydney winter/summer delivery deadlines',()=>{
+ for(const [at,offset]of [['2026-07-01T12:00:00.000Z',10],['2026-10-06T12:00:00.000Z',11]]){
+  const f=fixture(),get=f.c.Sheets.Spreadsheets.get,expected=Date.parse(at);
+  f.c.Sheets.Spreadsheets.get=(...args)=>{const r=get(...args),delivery=r.sheets.find(s=>s.properties.title==='Deliveries');delivery.data[0].rowData[1].values[2]={effectiveValue:{numberValue:(expected+offset*3600000)/86400000+25569},effectiveFormat:{numberFormat:{type:'DATE_TIME'}}};return r};
+  const actual=f.c.fwLock_(()=>{const book=f.c.fwBook_();f.c.fwPrimeWebReads_(book);return f.c.fwOrder_(book,'ORD-1').deliveredAt});assert.equal(actual,expected);
+ }
+});
+test('fresh API snapshot defeats stale SpreadsheetApp tables for web draft revision checks',()=>{
+ const f=fixture(),token=f.issue(),get=f.c.fwTable_;
+ f.c.fwTable_=(book,name,required)=>{const t=get(book,name,required);if(name!=='Feedback V2 Orders'||f.run('fwReadContext_').tables.has(name))return t;return {...t,rows:t.rows.map(r=>{const copy=r.slice();copy[6]=0;return copy})}};
+ assert.equal(f.call(token,'feedback_draft',{revision:0,submission:f.payload()}).ok,true);
+ const changed=f.payload();changed.overallComment='another tab';assert.equal(f.call(token,'feedback_draft',{revision:0,submission:changed}).error,'CONFLICT');
 });

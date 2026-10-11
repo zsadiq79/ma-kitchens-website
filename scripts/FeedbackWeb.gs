@@ -97,6 +97,63 @@ function fwTable_(book, name, required) {
   if (fwReadContext_) fwReadContext_.tables.set(name, table);
   return table;
 }
+// One fresh API snapshot for the seven web-request tables. The field mask
+// excludes formulas, notes, styles and other unused spreadsheet metadata.
+// Keep every populated row, including history beyond row 2000. Never persist
+// this snapshot across requests or use it outside the shared writer lock.
+function fwPrimeWebReads_(book) {
+  if (!fwReadContext_ || !LockService.getScriptLock().hasLock()) fwError_('CONFIGURATION_ERROR');
+  const names = ['Feedback', FW.links, FW.orders, 'Orders', 'Order Items', 'Dishes', 'Deliveries'];
+  const response = fwTimed_('readMs', () => Sheets.Spreadsheets.get(book.getId(), {
+    ranges: names.map(name => "'" + name.replace(/'/g, "''") + "'"),
+    fields: 'properties(timeZone),sheets(properties(title),data(startRow,startColumn,rowData(values(effectiveValue,effectiveFormat(numberFormat(type))))))'
+  }));
+  const timezone = response && response.properties && response.properties.timeZone;
+  if (typeof timezone !== 'string' || !timezone || !Array.isArray(response.sheets)) fwError_('CONFIGURATION_ERROR');
+  fwReadContext_.timezone = timezone;
+  const dates = new Map(), loaded = new Map();
+  const value = cell => {
+    const v = cell && cell.effectiveValue;
+    if (!v) return '';
+    if (Object.prototype.hasOwnProperty.call(v, 'stringValue')) return v.stringValue;
+    if (Object.prototype.hasOwnProperty.call(v, 'boolValue')) return v.boolValue;
+    if (Object.prototype.hasOwnProperty.call(v, 'numberValue')) {
+      const type = cell.effectiveFormat && cell.effectiveFormat.numberFormat && cell.effectiveFormat.numberFormat.type;
+      if (type !== 'DATE' && type !== 'DATE_TIME' && type !== 'TIME') return v.numberValue;
+      // Sheets dates are local wall-clock serials, not UTC instants. Decode
+      // with the spreadsheet timezone, including Sydney daylight saving.
+      if (!Number.isFinite(v.numberValue)) fwError_('CONFIGURATION_ERROR');
+      if (!dates.has(v.numberValue)) {
+        const local = new Date(Math.round((v.numberValue - 25569) * 86400000)).toISOString().slice(0, -1);
+        const date = Utilities.parseDate(local, timezone, "yyyy-MM-dd'T'HH:mm:ss.SSS");
+        if (!(date instanceof Date) || !Number.isFinite(date.getTime())) fwError_('CONFIGURATION_ERROR');
+        dates.set(v.numberValue, date);
+      }
+      return dates.get(v.numberValue);
+    }
+    if (v.errorValue) return '#' + (v.errorValue.type || 'ERROR') + '!';
+    return '';
+  };
+  response.sheets.forEach(entry => {
+    const name = entry.properties && entry.properties.title;
+    if (names.indexOf(name) < 0 || loaded.has(name)) fwError_('CONFIGURATION_ERROR');
+    const sheet = book.getSheetByName(name); if (!sheet) fwError_('CONFIGURATION_ERROR');
+    const values = [];
+    (entry.data || []).forEach(grid => {
+      if ((grid.startRow || 0) !== 0 || (grid.startColumn || 0) !== 0 || values.length) fwError_('CONFIGURATION_ERROR');
+      (grid.rowData || []).forEach(row => values.push((row.values || []).map(value)));
+    });
+    // API responses can include trailing rows with formatting alone. Remove
+    // those rows without changing the position of any populated/internal row.
+    while (values.length > 1 && !values[values.length - 1].some(v => v !== '')) values.pop();
+    const headers = (values[0] || []).map(v => String(v).trim()), col = Object.create(null);
+    headers.forEach((h, i) => { if (h && Object.prototype.hasOwnProperty.call(col, h)) fwError_('CONFIGURATION_ERROR'); col[h] = i; });
+    const rows = values.slice(1).map(row => { while (row.length < headers.length) row.push(''); return row; });
+    loaded.set(name, { sheet: sheet, headers: headers, col: col, rows: rows });
+  });
+  if (loaded.size !== names.length) fwError_('CONFIGURATION_ERROR');
+  loaded.forEach((table, name) => fwReadContext_.tables.set(name, table));
+}
 function fwFeedback_(book) {
   const expected = FW.legacyHeaders;
   if (!Array.isArray(expected) || expected.length !== 12 || expected.some(x => typeof x !== 'string' || !x) || new Set(expected).size !== 12) fwError_('CONFIGURATION_ERROR');
@@ -268,7 +325,9 @@ function handleFeedbackWebApiRequest_(e, action) {
   }
 }
 function fwRequest_(body, action) {
-  const book = fwBook_(), schema = fwSchema_(book), now = Date.now();
+  const book = fwBook_();
+  fwPrimeWebReads_(book);
+  const schema = fwSchema_(book), now = Date.now();
   const c = fwContext_(book, schema, body.token, now); const r = c.state.row;
   if (action === 'feedback_read') {
     // Automated requests are explicitly separate from browser/interaction signals.

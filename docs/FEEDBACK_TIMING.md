@@ -49,10 +49,10 @@ Authenticated, validated requests with a valid timing ID record:
 - `totalMs`: elapsed time inside the handler, before response delivery.
 - `lockWaitMs`: time attempting to obtain the shared script lock, including failed attempts.
 - `readMs` and `readCalls`: actual table data reads, excluding reuse within the request.
-- `tableReadMs`: read durations by a fixed allowlist of seven table names, in the Apps Script log only.
+- `tableReadMs`: per-table timings for individual reads only. With the batched web reader this is empty, because one API call retrieves all seven tables; its duration is reported once in `readMs` and `readCalls=1`.
 - `writeMs` and `writeCalls`: Sheets atomic batch calls, including failed calls.
 - `bookMs`: opening the spreadsheet.
-- `timezoneMs`: retrieving its time zone.
+- `timezoneMs`: separate time-zone retrieval. The batched reader gets the time zone with the same API response, so this is zero.
 - `outcome`: OK or a sanitized allowlisted error code.
 
 The phase measurements do not cover every small operation and must not be blindly added to browser timings. `totalMs` includes validation, in-memory processing and uninstrumented metadata calls. Logging itself, platform startup and response delivery are not fully measured.
@@ -63,9 +63,22 @@ Instrumentation performs no additional Sheets writes, network requests, messages
 
 - Large draft-flush time: submission is waiting for autosave before the final request.
 - Large lock wait: another request or writer is occupying the shared lock.
-- Large read time: reduce or batch spreadsheet reads; compare table timings.
+- Large read time: reduce or batch spreadsheet reads; compare aggregate read timings.
 - Large write time: investigate batch size and spreadsheet formula workload.
 - Upstream duration much larger than Apps Script duration: investigate transit, redirect and platform overhead. This difference cannot isolate cold start on its own.
 - Browser duration much larger than Vercel route duration: investigate mobile transit, startup and response handling.
 
 Use multiple requests and report median and 95th percentile separately for load, draft and submit. Compare cold and subsequent requests and concurrent sessions. Mock test timings validate accounting and privacy, not production performance.
+
+
+## First measured speed improvement: batched web reads
+
+Three production samples reported 5.46 to 7.52 seconds in spreadsheet reads, with one request also waiting 4.74 seconds for the script lock. The web handler now retrieves the same seven tables with one fresh Sheets API call instead of seven separate SpreadsheetApp data reads. The response includes effective cell values and date-format types only, plus the spreadsheet time zone. It excludes formula text, notes and unrelated formatting. All populated history is retained; there is no row-2000 cutoff or cross-request cache.
+
+Date serials are decoded using the spreadsheet time zone. Numeric quantities and booleans retain their types. Missing tables or duplicate headers fail closed. The shared lock and atomic completion write remain in place. The snapshot is discarded after any attempted write and at the end of the operation. Sender and receipt-handler behavior is unchanged.
+
+Install this backend-only improvement by replacing the existing production FeedbackWeb.gs with scripts/FeedbackWeb.gs, saving, and updating the same web app deployment to a new version. Keep its URL and access settings. No website redeployment, new .gs file, setup run, trigger change or property change is required for this improvement. The existing Advanced Sheets service must remain enabled.
+
+Use the existing unsubmitted test link to check loading, change a rating/comment, wait for Saved, and refresh to check resume. Capture three Server-Timing headers for the same action, ideally feedback_draft, and compare sheet_reads and route durations. Then test designated test-order submission and repeat opening to check that completion is retained. Do not reset an order or send another message for these checks. Backend tests validate safety and call counts, not live speed.
+
+Rollback by restoring the preceding FeedbackWeb.gs and updating the same deployment again. The website protocol and saved state have not changed.
