@@ -7,6 +7,44 @@ const path = require('node:path');
 const files = ['FeedbackWeb', 'FeedbackLegacyBridge', 'FeedbackSender', 'FeedbackWebSender', 'FeedbackDryRun', 'FeedbackInteraction', 'PermanentWhatsAppLog', 'Code-doPost'];
 const original = ['Feedback ID','Submitted At','Order ID','Customer ID','Cook ID','Item Code','Rating / 5','Complaint','Refund','Comments','Follow-up Status','WhatsApp Message ID'];
 const now = Date.parse('2026-10-09T12:00:00Z');
+test('acceptance uses current Sheets API reservation despite stale SpreadsheetApp state',()=>{
+  const f=fixture();
+  const link=f.c.fwLock_(()=>f.c.fwCreateLinkLocked_(f.c.fwBook_(),f.c.fwSchema_(f.c.fwBook_()),'ORD-1',true));
+  const original=f.c.fwTable_;
+  f.c.fwTable_=(book,name,headers)=>{
+    const table=original(book,name,headers);
+    if(name!=='Feedback V2 Orders')return table;
+    return {...table,rows:table.rows.map(row=>{const stale=row.slice();stale[15]='old-reservation';return stale;})};
+  };
+  f.c.fwAcceptWebMessage_({orderId:'ORD-1',attemptId:link.attemptId,recipient:'61420123456'},'wamid.fresh',new Date(now));
+  assert.equal(f.tables.get('Feedback V2 Orders').values[1][15],link.attemptId);
+  assert.equal(f.tables.get('Feedback V2 Orders').values[1][16],'wamid.fresh');
+  assert.equal(f.sends(),0);
+});
+test('queue scan reuses source reads for formula-filled empty rows and refreshes next scan',()=>{
+  const f=fixture();
+  for(let i=0;i<2000;i++)f.tables.get('Deliveries').values.push(['',new Date(now)]);
+  Object.keys(f.reads).forEach(key=>f.reads[key]=0);
+  assert.equal(f.c.findFeedbackCandidates_().length,1);
+  assert.equal(f.reads.book,1);assert(f.reads.tables<10);
+  f.tables.get('Orders').values[1][1]='Cancelled';
+  assert.equal(f.c.findFeedbackCandidates_().length,0);assert.equal(f.reads.book,2);
+});
+test('receipt reconciliation with unknown acceptance time records no fabricated timestamp or send',()=>{
+  const f=fixture();
+  const prepared=f.c.fwLock_(()=>f.c.fwCreateLinkLocked_(f.c.fwBook_(),f.c.fwSchema_(f.c.fwBook_()),'ORD-1',true));
+  f.c.updateWhatsAppLogFromStatus_({id:'wamid.reconcile',status:'read',recipient_id:'61420123456',timestamp:String(now/1000)});
+  const input={orderId:'ORD-1',attemptId:prepared.attemptId,recipient:'61420123456'};
+  f.c.fwAcceptWebMessage_(input,'wamid.reconcile',null);
+  const state=f.tables.get('Feedback V2 Orders').values[1];
+  assert.equal(state[16],'wamid.reconcile');assert.equal(state[17],'');assert.equal(state[20],new Date(now).toISOString());
+  assert.equal(f.tables.get('WhatsApp Log').values[1][4],'');
+  assert.equal(f.tables.get('Deliveries').values[1][4],'');assert.equal(f.tables.get('Deliveries').values[1][3],'Sent');
+  f.c.fwAcceptWebMessage_(input,'wamid.reconcile',null);
+  assert.equal(f.tables.get('WhatsApp Log').values.length,2);assert.equal(f.sends(),0);
+  assert.throws(()=>f.c.fwAcceptWebMessage_(input,'wamid.other',null),/CONFLICT/);
+  assert.throws(()=>f.c.fwAcceptWebMessage_(input,'wamid.reconcile',undefined),/INVALID_INPUT/);
+});
 function fixture() {
   const props = { CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY', FLOW_MENU_API_SECRET:'test-service-secret', FEEDBACK_TOKEN_SIGNING_KEY:'a'.repeat(64), FEEDBACK_WEB_BASE_URL:'https://test.example/feedback/', FEEDBACK_WEB_TEMPLATE_NAME:'customer_feedback_web_v1', FEEDBACK_WEB_TEMPLATE_URL:'https://test.example/feedback/{{1}}', FEEDBACK_V2_WRITES_ENABLED:'true', WHATSAPP_REQUIRE_VERIFIED_FORWARD:'true', FEEDBACK_LIVE_ENABLED:'true' };
   let execution = 1, lockOwner = null, batches = 0, failBefore = false, failAfter = false, duringBatch = null, sends = 0;
@@ -14,7 +52,7 @@ function fixture() {
   const tables = new Map(); const add = (name, headers, rows=[], columns=headers.length) => { const s = {name,id:tables.size+1,values:[headers,...rows],maxCols:columns,maxRows:1000}; tables.set(name,s);return s; };
   add('Feedback', original.slice(), [], 12);
   add('Orders',['Order ID','Order Status','Delivery Date','Customer ID','Customer Name'],[['ORD-1','Confirmed',new Date('2026-10-06T00:00:00Z'),'CUST-1','Sameera']]);
-  add('Deliveries',['Order ID','Delivery Status','Delivered At','Feedback Status','Feedback Requested At','Feedback Completed At','Routific ID','Feedback Reminder Sent At'],[['ORD-1','Delivered',new Date(now-96*3600000),'Not Sent','','','uuid','historic-reminder']]);
+  add('Deliveries',['Order ID','Delivery Status','Delivered At','Feedback Status','Feedback Requested At','Feedback Completed At','Routific ID','Feedback Reminder Sent At'],[['ORD-1','Delivered',new Date(now-72*3600000),'Not Sent','','','uuid','historic-reminder']]);
   add('Order Items',['Order ID','Order Status','Fulfilment Status','Item Code (AUTO, INTERNAL)','Qty'],[['ORD-1','', '', 'M1',2],['ORD-1','','','M2',1],['ORD-1','Cancelled','','M3',1],['ORD-1','','Cancelled','M4',1],['ORD-1','','','M5',0],['ORD-1','','','',2],['ORD-1','','','M1',3]]);
   add('Dishes',['Item Code','Cook ID','Dish Name','Menu Kitchen Name','Image URL','Average Rating','Rating Count'],['M1','M2','M3','M4','M5'].map(c=>[c,'PRIVATE-'+c,'Dish '+c,'Public Kitchen','https://www.makitchens.com.au/menu-images/Dish-0001.jpg','','']));
   add('Customers',['Customer ID','Name','Phone','WhatsApp Opt-In'],[['CUST-1','Sameera','0420123456','Y']]);
@@ -41,7 +79,7 @@ function fixture() {
   }
   class ClockDate extends Date {constructor(...args){super(...(args.length?args:[now]));}static now(){return now}static [Symbol.hasInstance](v){return v instanceof Date}}
   const lock={hasLock:()=>lockOwner===execution,tryLock:()=>{if(lockOwner!==null)return false;lockOwner=execution;return true},waitLock:()=>{if(lockOwner!==null)throw Error('lock busy');lockOwner=execution},releaseLock:()=>{assert.equal(lockOwner,execution);lockOwner=null}};
-  const c=vm.createContext({Date:ClockDate,Set,Map,URL,console:{log:()=>{},error:()=>{}},CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY',recordWhatsAppStatus_:()=>{},SpreadsheetApp:{openById:id=>{reads.book++;assert.equal(id,'COPY_ONLY');return book},flush:()=>{}},LockService:{getScriptLock:()=>lock},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]??null,setProperty:(k,v)=>{props[k]=v},deleteProperty:k=>delete props[k]})},Utilities:{getUuid:()=>crypto.randomUUID(),computeDigest:(_,v)=>[...crypto.createHash('sha256').update(v).digest()],computeHmacSha256Signature:(v,k)=>[...crypto.createHmac('sha256',k).update(v).digest()],base64EncodeWebSafe:v=>Buffer.from(v).toString('base64url'),DigestAlgorithm:{SHA_256:'SHA256'},Charset:{UTF_8:'UTF8'},formatDate:(d,tz,format)=>format.includes('HH:mm:ss.SSS')?new Date(d.getTime()+11*3600000).toISOString().slice(0,-1):d.toISOString().slice(0,10)},ContentService:{MimeType:{JSON:'json',TEXT:'text'},createTextOutput:s=>({text:s,setMimeType(){return this}})},Sheets:{Spreadsheets:{batchUpdate:({requests},id)=>{assert.equal(id,'COPY_ONLY');batches++;if(duringBatch){const f=duringBatch;duringBatch=null;f()}if(failBefore){failBefore=false;throw Error('atomic failure before commit')}apply(requests);if(failAfter){failAfter=false;throw Error('response lost after commit')}}}},UrlFetchApp:{fetch:()=>{sends++;throw Error('NO MESSAGES AUTHORIZED')}},CacheService:{getScriptCache:()=>({get:()=>null,put:()=>{},remove:()=>{}})}});
+  const c=vm.createContext({Date:ClockDate,Set,Map,URL,console:{log:()=>{},error:()=>{}},CONTROL_TOWER_SPREADSHEET_ID:'COPY_ONLY',recordWhatsAppStatus_:()=>{},SpreadsheetApp:{openById:id=>{reads.book++;assert.equal(id,'COPY_ONLY');return book},flush:()=>{}},LockService:{getScriptLock:()=>lock},PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]??null,setProperty:(k,v)=>{props[k]=v},deleteProperty:k=>delete props[k]})},Utilities:{getUuid:()=>crypto.randomUUID(),computeDigest:(_,v)=>[...crypto.createHash('sha256').update(v).digest()],computeHmacSha256Signature:(v,k)=>[...crypto.createHmac('sha256',k).update(v).digest()],base64EncodeWebSafe:v=>Buffer.from(v).toString('base64url'),DigestAlgorithm:{SHA_256:'SHA256'},Charset:{UTF_8:'UTF8'},formatDate:(d,tz,format)=>format.includes('HH:mm:ss.SSS')?new Date(d.getTime()+11*3600000).toISOString().slice(0,-1):d.toISOString().slice(0,10)},ContentService:{MimeType:{JSON:'json',TEXT:'text'},createTextOutput:s=>({text:s,setMimeType(){return this}})},Sheets:{Spreadsheets:{Values:{get:(id,range,options)=>{assert.equal(id,'COPY_ONLY');assert.equal(range,"'Feedback V2 Orders'!A:Y");assert.equal(options.valueRenderOption,'UNFORMATTED_VALUE');return {values:clone(tables.get('Feedback V2 Orders').values)};}},batchUpdate:({requests},id)=>{assert.equal(id,'COPY_ONLY');batches++;if(duringBatch){const f=duringBatch;duringBatch=null;f()}if(failBefore){failBefore=false;throw Error('atomic failure before commit')}apply(requests);if(failAfter){failAfter=false;throw Error('response lost after commit')}}}},UrlFetchApp:{fetch:()=>{sends++;throw Error('NO MESSAGES AUTHORIZED')}},CacheService:{getScriptCache:()=>({get:()=>null,put:()=>{},remove:()=>{}})}});
   for(const name of files)vm.runInContext(fs.readFileSync(path.join(__dirname,'../scripts/'+name+'.gs'),'utf8'),c,{filename:name+'.gs'});
   const run=(expression)=>vm.runInContext(expression,c);
   c.feedbackV2Setup();
@@ -91,7 +129,7 @@ test('late legacy ratings cannot overwrite completed web feedback',()=>{const f=
 test('legacy optional comments are plain text, persistent-id deduplicated, and retain low-rating rules',()=>{const f=fixture();f.c.fwLegacySave_('ORD-1','CUST-1',{itemCode:'M1'},2,'Other','Open',{id:'m1'});f.c.fwLegacyComment_('ORD-1','M1','=evil',{id:'comment'},'Other');f.c.fwLegacyComment_('ORD-1','M1','=evil',{id:'comment'},'Other');f.c.fwLegacySave_('ORD-1','CUST-1',{itemCode:'M2'},5,'','None',{id:'m2'});f.c.fwLegacySave_('ORD-1','CUST-1',{itemCode:'DELIVERY'},2,'','Open',{id:'delivery'});assert.equal(f.tables.get('Feedback').values[1][9],'Other: =evil');assert.equal(f.tables.get('Feedback').values[1][7],'Y');});
 test('strict types, lengths, duplicate codes, unknown fields, ratings/consent rejected',()=>{const f=fixture(),a=f.issue();const invalid=[p=>p.dishes[0].rating='5',p=>p.dishes[0].rating=2.2,p=>p.dishes[1].skipped='true',p=>p.testimonialConsent='false',p=>p.overallComment='x'.repeat(1201),p=>p.dishes[0].comment='x'.repeat(601),p=>p.dishes[1].itemCode='M1',p=>p.extra=1,p=>p.dishes[0].cookId='injected',p=>p.deliveryRating=null];for(const change of invalid){const p=f.payload();change(p);assert.equal(f.call(a,'feedback_submit',{revision:0,submissionId:f.read(a).result.submissionId,submission:p}).error,'INVALID_INPUT');}assert.equal(f.tables.get('Feedback').values.length,1);});
 test('required source headers, authoritative confirmation, and positive non-cancelled quantities',()=>{const f=fixture(),a=f.issue();assert.deepEqual(f.read(a).result.dishes.map(d=>d.itemCode),['M1','M2']);assert(!JSON.stringify(f.read(a)).includes('PRIVATE-'));f.tables.get('Orders').values[1][1]='Pending';assert.equal(f.read(a).error,'INELIGIBLE');f.tables.get('Orders').values[1][1]='Confirmed';f.tables.get('Order Items').values[0][1]='Item Status';assert.equal(f.read(a).error,'TEMPORARY_ERROR');});
-test('sender and read-only diagnostic share exact 96-hour boundary across DST',()=>{const f=fixture(),d=f.tables.get('Deliveries');d.values[1][2]=new Date(now-96*3600000+1);assert.equal(f.c.findFeedbackCandidates_().length,0);assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).reason,'BEFORE_96_HOURS');d.values[1][2]=new Date(now-96*3600000);assert.equal(f.c.findFeedbackCandidates_().length,1);const batches=f.batches();assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).wouldSend,true);assert.equal(f.batches(),batches);assert.equal(f.sends(),0);f.tables.get('Orders').values[1][1]='Pending';assert.equal(f.c.findFeedbackCandidates_().length,0);assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).reason,'ORDER_NOT_CONFIRMED');assert.equal(f.c.getNextDay10am_(new Date('2026-10-03T23:00:00+10:00')).getTime(),Date.parse('2026-10-03T13:00:00Z')+96*3600000);});
+test('sender and read-only diagnostic share exact 72-hour boundary across DST',()=>{const f=fixture(),d=f.tables.get('Deliveries');d.values[1][2]=new Date(now-72*3600000+1);assert.equal(f.c.findFeedbackCandidates_().length,0);assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).reason,'BEFORE_72_HOURS');d.values[1][2]=new Date(now-72*3600000);assert.equal(f.c.findFeedbackCandidates_().length,1);const batches=f.batches();assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).wouldSend,true);assert.equal(f.batches(),batches);assert.equal(f.sends(),0);f.tables.get('Orders').values[1][1]='Pending';assert.equal(f.c.findFeedbackCandidates_().length,0);assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).reason,'ORDER_NOT_CONFIRMED');assert.equal(f.c.getNextDay10am_(new Date('2026-10-03T23:00:00+10:00')).getTime(),Date.parse('2026-10-03T13:00:00Z')+72*3600000);});
 test('draft and page/event writes bounded; scanners cannot exhaust browser signal budget',()=>{const f=fixture(),a=f.issue();for(let i=0;i<40;i++)f.read(a);const before=f.batches();assert.equal(f.call(a,'feedback_event',{event:'browser_opened'}).ok,true);assert.equal(f.call(a,'feedback_event',{event:'first_interaction'}).ok,true);for(let i=0;i<20;i++)f.call(a,'feedback_event',{event:'browser_opened'});assert.equal(f.batches()-before,2);for(let i=0;i<20;i++){const p=f.payload();p.overallComment=String(i);assert.equal(f.call(a,'feedback_draft',{revision:i,submission:p}).ok,true)}assert.equal(f.call(a,'feedback_draft',{revision:20,submission:f.payload()}).error,'RATE_LIMITED');});
 test('provider receipt timestamps are actual events; missing timestamps not invented, duplicates/out-of-order safe',()=>{const f=fixture(),a=f.issue();const state=f.tables.get('Feedback V2 Orders').values[1];state[16]='wamid-1';f.c.updateWhatsAppLogFromStatus_({id:'wamid-1',status:'read',timestamp:String(now/1000-10)});f.c.registerWhatsAppOutbound_('wamid-1','ORD-1','feedback_request','61420123456',new Date(now));f.c.updateWhatsAppLogFromStatus_({id:'wamid-1',status:'delivered',timestamp:String(now/1000-20)});f.c.updateWhatsAppLogFromStatus_({id:'wamid-1',status:'sent',timestamp:String(now/1000-30)});f.c.updateWhatsAppLogFromStatus_({id:'wamid-1',status:'read',timestamp:String(now/1000-10)});const row=f.tables.get('WhatsApp Log').values[1];assert.equal(row[8],'Read');assert.equal(row[7].getTime(),now-10000);assert.equal(f.tables.get('Feedback V2 Orders').values[1][20],new Date(now-10000).toISOString());const before=f.batches();assert.equal(f.c.updateWhatsAppLogFromStatus_({id:'missing',status:'read'}),false);assert.equal(f.batches(),before);});
 test('sender template preparation guarded; durable reservation prevents concurrent duplicate sends',()=>{const f=fixture();f.props.FEEDBACK_V2_SENDER_ENABLED='true';f.props.FEEDBACK_WEB_TEMPLATE_URL_CONFIRMED='true';const resolution=f.c.buildFeedbackQueueSnapshot_()[0];const p=f.c.fwPrepareWebMessage_(resolution);assert.equal(p.payload.template.name,'customer_feedback_web_v1');assert.equal(p.payload.template.language.code,'en');assert.equal(JSON.stringify(p.payload.template.components[0]),JSON.stringify({type:'body',parameters:[{type:'text',text:'Sameera'},{type:'text',text:'ORD-1'}]}));assert.equal(p.payload.template.components[1].index,'0');assert.equal(p.payload.template.components[1].sub_type,'url');assert.equal(p.payload.template.components[1].parameters[0].text.length,43);assert.throws(()=>f.c.fwPrepareWebMessage_(resolution),/MESSAGE_REQUIRES_RECONCILIATION/);assert.equal(f.sends(),0);});
@@ -117,14 +155,38 @@ test('optional page tracking failure and malformed draft do not block read or at
   const f=fixture(),a=f.issue();f.before();const r=f.read(a);assert.equal(r.ok,true);f.tables.get('Feedback V2 Orders').values[1][5]='{corrupt';assert.equal(f.read(a).result.draft,null);assert.equal(f.submit(a).ok,true);assert.equal(f.tables.get('Feedback').values.length,4);
 });
 
-test('96-hour policy blocks the old 48-hour deadline and permits requests after 96 hours',()=>{
+test('72-hour policy blocks the old 48-hour deadline and permits requests after 72 hours',()=>{
   const f=fixture(),d=f.tables.get('Deliveries');
   d.values[1][2]=new Date(now-48*3600000);
   assert.equal(f.c.findFeedbackCandidates_().length,0);
-  assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).reason,'BEFORE_96_HOURS');
+  assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).reason,'BEFORE_72_HOURS');
   assert.equal(f.c.feedbackV2Eligibility_({deliveredAt:d.values[1][2].getTime()},false,now).eligible,false);
-  d.values[1][2]=new Date(now-96*3600000-1);
+  d.values[1][2]=new Date(now-72*3600000-1);
   assert.equal(f.c.findFeedbackCandidates_().length,1);
   assert.equal(f.c.feedbackDryRunForOrder_('ORD-1',false).wouldSend,true);
   assert.equal(f.sends(),0);
+});
+
+test('authenticated timing measures real phases and never persists or logs private data',()=>{
+ const f=fixture(),a=f.issue(),logs=[];f.c.console.log=value=>logs.push(value);
+ let tick=now;f.c.Date.now=()=>tick+=5;
+ const requestId='b'.repeat(32);
+ const before=f.batches();const r=f.call(a,'feedback_read',{timingId:requestId});
+ assert.equal(r.ok,true);assert.equal(r.timing.readCalls,7);assert.equal(r.timing.writeCalls,1);
+ for(const key of ['totalMs','lockWaitMs','readMs','writeMs','bookMs','timezoneMs'])assert(r.timing[key]>0);
+ assert.equal(f.batches(),before+1);assert.equal(logs.length,1);
+ const log=JSON.parse(logs[0]);assert.equal(log.requestId,requestId);assert.equal(log.action,'feedback_read');assert.equal(Object.keys(log.tableReadMs).length,7);
+ for(const privateValue of [a,f.props.FLOW_MENU_API_SECRET,f.props.FEEDBACK_TOKEN_SIGNING_KEY,'Sameera','ORD-1'])assert(!logs.join('').includes(privateValue));
+ assert(!JSON.stringify([...f.tables.values()]).includes(requestId));
+ assert.equal(f.run('fwTimingContext_'),null);assert.equal(f.sends(),0);
+});
+test('timing keeps failed and ambiguous outcomes safe, supports opt-out and rejects forged IDs',()=>{
+ const f=fixture(),a=f.issue(),logs=[];f.c.console.log=value=>logs.push(value);
+ assert.equal(f.call(a,'feedback_read',{timingId:a}).error,'INVALID_INPUT');assert.equal(logs.length,0);
+ f.props.FEEDBACK_TIMING_ENABLED='false';const disabled=f.call(a,'feedback_read',{timingId:'b'.repeat(32)});assert.equal(disabled.ok,true);assert.equal(disabled.timing,undefined);assert.equal(logs.length,0);
+ f.props.FEEDBACK_TIMING_ENABLED='true';const read=f.read(a).result;f.after();
+ const failed=f.call(a,'feedback_submit',{timingId:'b'.repeat(32),submissionId:read.submissionId,revision:read.revision,submission:f.payload()});
+ assert.equal(failed.error,'TEMPORARY_ERROR');assert.equal(failed.timing.writeCalls,1);assert.equal(JSON.parse(logs[0]).outcome,'TEMPORARY_ERROR');
+ const retry=f.call(a,'feedback_submit',{timingId:'c'.repeat(32),submissionId:read.submissionId,revision:read.revision,submission:f.payload()});assert.equal(retry.result.alreadyCompleted,true);assert.equal(f.tables.get('Feedback').values.length,4);
+ f.c.console.log=()=>{throw Error('logging unavailable')};assert.equal(f.call(a,'feedback_read',{timingId:'d'.repeat(32)}).ok,true);
 });

@@ -1,16 +1,21 @@
 "use client";
 import { FEEDBACK_BROWSER_TIMEOUT_MS } from "@/lib/feedbackTiming";
+import { startFeedbackMeasure } from "@/lib/feedbackTelemetry";
 
 async function sendRequest(token: string, action: string, payload: Record<string, unknown>) {
+  const finish = startFeedbackMeasure("http_" + action);
+  try {
   const response = await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, action, ...payload }), cache: "no-store", signal: AbortSignal.timeout(FEEDBACK_BROWSER_TIMEOUT_MS) });
   const data = await response.json();
   if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "TEMPORARY_ERROR");
   return data;
+  } finally { finish(); }
 }
 
 const terminalErrors = new Set(["INVALID_INPUT", "INVALID_LINK", "EXPIRED", "REVOKED", "REPLACED", "CONFLICT", "RATE_LIMITED", "INELIGIBLE", "LEGACY_IN_PROGRESS", "COMPLETED"]);
 
 export async function feedbackRequest(token: string, action: string, payload: Record<string, unknown> = {}) {
+  const finish = startFeedbackMeasure(action);
   try { return await sendRequest(token, action, payload); }
   catch (error) {
     if (!["feedback_draft", "feedback_submit"].includes(action) || (error instanceof Error && terminalErrors.has(error.message))) throw error;
@@ -28,5 +33,5 @@ export async function feedbackRequest(token: string, action: string, payload: Re
       }
     } catch { /* Preserve the uncertain outcome; do not disclose network errors. */ }
     throw error;
-  }
+  } finally { finish(); }
 }

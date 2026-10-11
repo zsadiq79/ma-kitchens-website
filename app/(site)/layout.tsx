@@ -1,22 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { inter, cormorant } from "@/app/fonts";
 
 import { Analytics } from "@vercel/analytics/next";
 import { MetaPixel } from "@/components/MetaPixel";
 import { SiteChrome } from "@/components/SiteChrome";
 import "@/app/globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-cormorant",
-  weight: ["400", "500", "600"],
-});
 
 export const metadata: Metadata = {
   title: "Ma Kitchens | Home-cooked food with heart",

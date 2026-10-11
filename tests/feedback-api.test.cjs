@@ -1,10 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const ts=require('typescript');
-function modules(env={},fetcher=async()=>{throw Error('unexpected network')},abortSignal=AbortSignal){
+function modules(env={},fetcher=async()=>{throw Error('unexpected network')},abortSignal=AbortSignal,logs=[]){
  const cache=new Map();
  function load(file){file=path.resolve(__dirname,'..',file);if(cache.has(file))return cache.get(file).exports;const mod={exports:{}};cache.set(file,mod);
  const code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
- const context={exports:mod.exports,module:mod,process:{env},fetch:fetcher,Response,Request,Headers,URL,Buffer,TextDecoder,Uint8Array,AbortSignal:abortSignal,console:{error:()=>{throw Error('unsafe logging')},log:()=>{throw Error('unsafe logging')}},require:n=>n.startsWith('@/')?load(n.slice(2)+'.ts'):require(n)};
+ const context={exports:mod.exports,module:mod,process:{env},fetch:fetcher,Response,Request,Headers,URL,Buffer,TextDecoder,Uint8Array,AbortSignal:abortSignal,console:{info:value=>logs.push(value),error:()=>{throw Error('unsafe logging')},log:()=>{throw Error('unsafe logging')}},require:n=>n.startsWith('@/')?load(n.slice(2)+'.ts'):require(n)};
  vm.runInNewContext(code,context,{filename:file});return mod.exports;
  }return load;
 }
@@ -75,4 +75,31 @@ test('real conflicts and revoked links retain their errors without reconciliatio
    await assert.rejects(client.feedbackRequest(token,'feedback_submit',{submissionId:'id',revision:0,submission:payload}),new RegExp(code));
    assert.equal(calls,1);
  }
+});
+
+test('timings correlate server and backend without leaking feedback or upstream metadata',async()=>{
+ const logs=[];let forwarded;
+ const env={FLOW_MENU_API_URL:'https://script.google.com/macros/s/COPY/exec',FLOW_MENU_API_SECRET:'private-service-key'};
+ const backend={totalMs:2100,lockWaitMs:700,readMs:1000,readCalls:7,writeMs:300,writeCalls:1,bookMs:80,timezoneMs:20};
+ const load=modules(env,async(url,opts)=>{forwarded=JSON.parse(opts.body);return Response.json({ok:true,result:{status:'COMPLETED'},timing:{...backend,secret:env.FLOW_MENU_API_SECRET}})},AbortSignal,logs);
+ const route=load('app/api/feedback/route.ts');
+ const r=await route.POST(request({action:'feedback_submit',token,revision:0,submissionId:'private-submission',submission:{...payload,overallComment:'private-feedback-text'}}));
+ assert.equal(r.status,200);assert.match(r.headers.get('server-timing'),/apps_script;dur=2100/);
+ const id=r.headers.get('x-feedback-request-id');assert.match(id,/^[a-f0-9]{32}$/);assert.equal(forwarded.timingId,id);
+ assert.deepEqual(await r.json(),{status:'COMPLETED'});
+ assert.equal(logs.length,1);const log=JSON.parse(logs[0]);assert.equal(log.requestId,id);assert.deepEqual(log.backend,backend);
+ for(const sensitive of [token,env.FLOW_MENU_API_SECRET,'private-feedback-text','private-submission',env.FLOW_MENU_API_URL])assert(!logs.join('').includes(sensitive));
+});
+test('missing, malformed and hostile backend timings do not affect valid responses',async()=>{
+ for(const timing of [undefined,null,[],{totalMs:Infinity},{totalMs:'secret'},Object.fromEntries(['totalMs','lockWaitMs','readMs','readCalls','writeMs','writeCalls','bookMs','timezoneMs'].map(k=>[k,-1]))]){
+  const logs=[];const route=modules({FLOW_MENU_API_URL:'https://script.google.com/macros/s/COPY/exec',FLOW_MENU_API_SECRET:'secret'},async()=>Response.json({ok:true,result:{status:'OPEN'},timing}),AbortSignal,logs)('app/api/feedback/route.ts');
+  const r=await route.POST(request({action:'feedback_read',token}));assert.equal(r.status,200);assert(!r.headers.get('server-timing').includes('apps_script'));assert(!('backend'in JSON.parse(logs[0])));
+ }
+});
+test('failed upstream requests retain safe timings and unavailable logging cannot break feedback',async()=>{
+ const logs=[];const env={FLOW_MENU_API_URL:'https://script.google.com/macros/s/COPY/exec',FLOW_MENU_API_SECRET:'secret'};
+ const route=modules(env,async()=>{throw Error(token+'secret')},AbortSignal,logs)('app/api/feedback/route.ts');
+ const r=await route.POST(request({action:'feedback_read',token}));assert.equal(r.status,503);assert.match(r.headers.get('server-timing'),/upstream;dur=/);assert.equal(JSON.parse(logs[0]).status,503);assert(!logs.join('').includes(token));
+ const broken={push(){throw Error('logger failed')}};
+ const ok=modules(env,async()=>Response.json({ok:true,result:{status:'OPEN'}}),AbortSignal,broken)('app/api/feedback/route.ts');assert.equal((await ok.POST(request({action:'feedback_read',token}))).status,200);
 });

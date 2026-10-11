@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { inter, cormorant } from "@/app/fonts";
 import "@/app/globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const cormorant = Cormorant_Garamond({ subsets: ["latin"], variable: "--font-cormorant", weight: ["400", "500", "600"] });
 export const metadata: Metadata = {
   title: "Order Feedback | Ma Kitchens",
   robots: { index: false, follow: false, nocache: true },

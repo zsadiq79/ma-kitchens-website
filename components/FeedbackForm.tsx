@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FeedbackSubmission } from "@/lib/feedbackValidation";
 import { feedbackRequest } from "@/lib/feedbackClient";
+import { startFeedbackMeasure } from "@/lib/feedbackTelemetry";
 
 type DishFeedback = {
   itemCode: string;
@@ -188,6 +189,8 @@ export function FeedbackForm({
         event.preventDefault();
         if (!canSubmit || busy.current || conflict.current) return;
         busy.current = true; setSubmitting(true); setSubmitError("");
+        const finishSubmission = startFeedbackMeasure("submission");
+        const finishDraftWait = startFeedbackMeasure("draft_flush_before_submit");
         try {
           try { await flushDraft(); }
           catch (error) {
@@ -203,7 +206,7 @@ export function FeedbackForm({
             } catch (readError) {
               if (readError instanceof Error && readError.message === "CONFLICT") throw readError;
             }
-          }
+          } finally { finishDraftWait(); }
           await feedbackRequest(feedbackToken, "feedback_submit", {
             submissionId, revision: revisionRef.current, submission: JSON.parse(latest.current),
           });
@@ -212,7 +215,7 @@ export function FeedbackForm({
           const code = error instanceof Error ? error.message : "TEMPORARY_ERROR";
           if (code === "COMPLETED") setSubmitted(true);
           else setSubmitError(code === "CONFLICT" ? "This feedback changed in another tab. Reopen your link to resume the latest saved progress." : ["EXPIRED", "REVOKED", "REPLACED", "INVALID_LINK"].includes(code) ? "This link is no longer active. Please use the latest link or ask Ma Kitchens for a new one." : "We could not confirm your submission. Please retry; your submission ID prevents duplicates.");
-        } finally { busy.current = false; setSubmitting(false); }
+        } finally { finishSubmission(); busy.current = false; setSubmitting(false); }
       }}
     >
       <div className="text-center">

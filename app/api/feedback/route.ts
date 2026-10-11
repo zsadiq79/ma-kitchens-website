@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { callFeedbackService, FeedbackServiceError } from "@/lib/feedbackApi";
 import { validFeedbackRequest } from "@/lib/feedbackValidation";
+import { randomUUID } from "node:crypto";
+import type { FeedbackBackendTiming } from "@/lib/feedbackTelemetry";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -19,10 +21,22 @@ export async function POST(request: Request) {
   try { body = await readBounded(request); } catch { return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400, headers }); }
   if (!validFeedbackRequest(body)) return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400, headers });
   const { action, ...payload } = body;
-  try { return NextResponse.json(await callFeedbackService(action, payload), { headers }); }
+  const started = Date.now();
+  const measurement: { requestId: string; upstreamMs: number; backend?: FeedbackBackendTiming } = { requestId: randomUUID().replaceAll("-", ""), upstreamMs: 0 };
+  let status = 200;
+  function measuredHeaders() {
+    const backend = measurement.backend;
+    const timings = [`route;dur=${Math.max(0, Date.now() - started)}`, `upstream;dur=${measurement.upstreamMs}`];
+    if (backend) timings.push(`apps_script;dur=${backend.totalMs}`, `lock;dur=${backend.lockWaitMs}`, `sheet_reads;dur=${backend.readMs}`, `sheet_writes;dur=${backend.writeMs}`);
+    return { ...headers, "Server-Timing": timings.join(", "), "X-Feedback-Request-Id": measurement.requestId };
+  }
+  try { return NextResponse.json(await callFeedbackService(action, payload, measurement), { headers: measuredHeaders() }); }
   catch (error) {
     const code = error instanceof FeedbackServiceError ? error.code : "TEMPORARY_ERROR";
-    const status = code === "INVALID_INPUT" ? 400 : code === "RATE_LIMITED" ? 429 : code === "CONFLICT" ? 409 : ["INVALID_LINK", "EXPIRED", "REVOKED", "REPLACED", "INELIGIBLE"].includes(code) ? 410 : code === "COMPLETED" ? 409 : 503;
-    return NextResponse.json({ error: code }, { status, headers });
+    status = code === "INVALID_INPUT" ? 400 : code === "RATE_LIMITED" ? 429 : code === "CONFLICT" ? 409 : ["INVALID_LINK", "EXPIRED", "REVOKED", "REPLACED", "INELIGIBLE"].includes(code) ? 410 : code === "COMPLETED" ? 409 : 503;
+    return NextResponse.json({ error: code }, { status, headers: measuredHeaders() });
+  } finally {
+    try { console.info(JSON.stringify({ event: "feedback_timing", requestId: measurement.requestId, action, status, routeMs: Math.max(0, Date.now() - started), upstreamMs: measurement.upstreamMs, ...(measurement.backend ? { backend: measurement.backend } : {}) })); }
+    catch { /* Diagnostics must never affect the response. */ }
   }
 }
