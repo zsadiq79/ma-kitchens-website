@@ -97,15 +97,11 @@ function fwTable_(book, name, required) {
   if (fwReadContext_) fwReadContext_.tables.set(name, table);
   return table;
 }
-// One fresh API snapshot for the seven web-request tables. The field mask
-// excludes formulas, notes, styles and other unused spreadsheet metadata.
-// Keep every populated row, including history beyond row 2000. Never persist
-// this snapshot across requests or use it outside the shared writer lock.
-function fwPrimeWebReads_(book) {
-  if (!fwReadContext_ || !LockService.getScriptLock().hasLock()) fwError_('CONFIGURATION_ERROR');
-  const names = ['Feedback', FW.links, FW.orders, 'Orders', 'Order Items', 'Dishes', 'Deliveries'];
+// Fresh reads stay inside the shared writer lock. Only headers/key columns
+// are scanned globally; source details are read for the matching order/dishes.
+function fwWebGrid_(book, ranges, names) {
   const response = fwTimed_('readMs', () => Sheets.Spreadsheets.get(book.getId(), {
-    ranges: names.map(name => "'" + name.replace(/'/g, "''") + "'"),
+    ranges: ranges,
     fields: 'properties(timeZone),sheets(properties(title),data(startRow,startColumn,rowData(values(effectiveValue,effectiveFormat(numberFormat(type))))))'
   }));
   const timezone = response && response.properties && response.properties.timeZone;
@@ -138,21 +134,65 @@ function fwPrimeWebReads_(book) {
     const name = entry.properties && entry.properties.title;
     if (names.indexOf(name) < 0 || loaded.has(name)) fwError_('CONFIGURATION_ERROR');
     const sheet = book.getSheetByName(name); if (!sheet) fwError_('CONFIGURATION_ERROR');
-    const values = [];
+    const previous = fwReadContext_.tables.get(name);
+    const values = previous ? [previous.headers.slice()].concat(previous.rows.map(row => row.slice())) : [];
     (entry.data || []).forEach(grid => {
-      if ((grid.startRow || 0) !== 0 || (grid.startColumn || 0) !== 0 || values.length) fwError_('CONFIGURATION_ERROR');
-      (grid.rowData || []).forEach(row => values.push((row.values || []).map(value)));
+      const startRow = grid.startRow || 0, startColumn = grid.startColumn || 0;
+      if (!Number.isSafeInteger(startRow) || startRow < 0 || !Number.isSafeInteger(startColumn) || startColumn < 0) fwError_('CONFIGURATION_ERROR');
+      (grid.rowData || []).forEach((row, i) => {
+        const at = startRow + i; if (!values[at]) values[at] = [];
+        (row.values || []).forEach((cell, j) => { values[at][startColumn + j] = value(cell); });
+      });
     });
-    // API responses can include trailing rows with formatting alone. Remove
-    // those rows without changing the position of any populated/internal row.
-    while (values.length > 1 && !values[values.length - 1].some(v => v !== '')) values.pop();
-    const headers = (values[0] || []).map(v => String(v).trim()), col = Object.create(null);
+    while (values.length > 1 && (!values[values.length - 1] || !values[values.length - 1].some(v => v !== ''))) values.pop();
+    const headers = Array.from(values[0] || [], v => String(v === undefined ? '' : v).trim()), col = Object.create(null);
     headers.forEach((h, i) => { if (h && Object.prototype.hasOwnProperty.call(col, h)) fwError_('CONFIGURATION_ERROR'); col[h] = i; });
-    const rows = values.slice(1).map(row => { while (row.length < headers.length) row.push(''); return row; });
+    const rows = values.slice(1).map(row => Array.from({ length: Math.max(row.length, headers.length) }, (_, i) => row[i] === undefined ? '' : row[i]));
     loaded.set(name, { sheet: sheet, headers: headers, col: col, rows: rows });
   });
   if (loaded.size !== names.length) fwError_('CONFIGURATION_ERROR');
   loaded.forEach((table, name) => fwReadContext_.tables.set(name, table));
+}
+function fwPrimeWebReads_(book, token) {
+  if (!fwReadContext_ || !LockService.getScriptLock().hasLock()) fwError_('CONFIGURATION_ERROR');
+  const hash = fwHash_(fwToken_(token));
+  const sources = {
+    'Orders': ['Order ID', 'Order Status', 'Delivery Date', 'Customer ID', 'Customer Name'],
+    'Order Items': ['Order ID', 'Order Status', 'Fulfilment Status', 'Item Code (AUTO, INTERNAL)', 'Qty'],
+    'Dishes': ['Item Code', 'Cook ID', 'Dish Name', 'Menu Kitchen Name', 'Image URL'],
+    'Deliveries': ['Order ID', 'Delivery Status', 'Delivered At', 'Feedback Status', 'Feedback Requested At', 'Feedback Completed At', 'Routific ID']
+  };
+  const quote = name => "'" + name.replace(/'/g, "''") + "'";
+  const letters = col => { let out = ''; for (let n = col + 1; n > 0; n = Math.floor((n - 1) / 26)) out = String.fromCharCode(65 + (n - 1) % 26) + out; return out; };
+  // Feedback IDs/order IDs/item codes retain all historical completion and
+  // duplicate checks. Comments/ratings/customer details are not needed here.
+  const names = ['Feedback', FW.links, FW.orders].concat(Object.keys(sources));
+  fwWebGrid_(book, [quote('Feedback') + '!1:1', quote('Feedback') + '!A:A', quote('Feedback') + '!C:C', quote('Feedback') + '!F:F', quote(FW.links) + '!1:1', quote(FW.links) + '!A:A', quote(FW.links) + '!B:B', quote(FW.links) + '!E:E', quote(FW.orders) + '!1:1', quote(FW.orders) + '!A:A'].concat(Object.keys(sources).map(name => quote(name) + '!1:1')), names);
+  const schema = fwSchema_(book), links = schema.links.rows.filter(row => row[0] === hash);
+  if (links.length !== 1) fwError_('INVALID_LINK');
+  const orderId = fwOrderId_(links[0][1]), stateNumber = fwState_(schema, orderId, false).number;
+  const tables = Object.keys(sources).map(name => fwTable_(book, name, sources[name]));
+  const specs = tables.map(table => ({ name: table.sheet.getName(), col: table.col[table.sheet.getName() === 'Dishes' ? 'Item Code' : 'Order ID'] }));
+  const itemTable = fwTable_(book, 'Order Items', sources['Order Items']);
+  specs.push({ name: 'Order Items', col: itemTable.col['Item Code (AUTO, INTERNAL)'] });
+  const ranges = specs.map(spec => quote(spec.name) + '!' + letters(spec.col) + ':' + letters(spec.col));
+  const scan = fwTimed_('readMs', () => Sheets.Spreadsheets.Values.batchGet(book.getId(), { ranges: ranges, valueRenderOption: 'UNFORMATTED_VALUE' }));
+  if (!scan || !Array.isArray(scan.valueRanges) || scan.valueRanges.length !== specs.length) fwError_('CONFIGURATION_ERROR');
+  const columns = scan.valueRanges.map(range => range.values || []);
+  const match = (index, expected) => columns[index].map((row, i) => ({ number: i + 1, value: String(row[0] || '').trim() })).filter(x => x.number > 1 && x.value === expected).map(x => x.number);
+  const selected = { 'Orders': match(0, orderId), 'Order Items': match(1, orderId), 'Deliveries': match(3, orderId) };
+  if (selected.Orders.length !== 1 || selected.Deliveries.length !== 1) fwError_('INELIGIBLE');
+  const codes = new Set(selected['Order Items'].map(number => String((columns[4][number - 1] || [])[0] || '').trim()).filter(code => /^[A-Za-z0-9_-]{1,80}$/.test(code)));
+  selected.Dishes = columns[2].map((row, i) => ({ number: i + 1, code: String(row[0] || '').trim() })).filter(x => x.number > 1 && codes.has(x.code)).map(x => x.number);
+  const detailRanges = [];
+  Object.keys(selected).forEach(name => {
+    const table = fwTable_(book, name, sources[name]), columns = sources[name].map(h => table.col[h]).sort((a, b) => a - b);
+    const spans = []; columns.forEach(col => { const last = spans[spans.length - 1]; if (last && col === last[1] + 1) last[1] = col; else spans.push([col, col]); });
+    selected[name].forEach(number => spans.forEach(span => detailRanges.push(quote(name) + '!' + letters(span[0]) + number + ':' + letters(span[1]) + number)));
+  });
+  detailRanges.push(quote(FW.orders) + '!' + stateNumber + ':' + stateNumber);
+  schema.links.rows.forEach((row, i) => { if (row[1] === orderId) detailRanges.push(quote(FW.links) + '!' + (i + 2) + ':' + (i + 2)); });
+  fwWebGrid_(book, detailRanges, Object.keys(selected).filter(name => selected[name].length).concat([FW.orders, FW.links]));
 }
 function fwFeedback_(book) {
   const expected = FW.legacyHeaders;
@@ -297,11 +337,12 @@ function handleFeedbackWebApiRequest_(e, action) {
     const raw = e && e.postData && e.postData.contents;
     if (typeof raw !== 'string' || raw.length > 50000) fwError_('INVALID_INPUT');
     let body; try { body = JSON.parse(raw); } catch (_) { fwError_('INVALID_INPUT'); }
-    fwKeys_(body, ['secret', 'token', 'submission', 'revision', 'submissionId', 'event', 'timingId'], ['secret', 'token']);
+    fwKeys_(body, ['secret', 'token', 'submission', 'revision', 'submissionId', 'event', 'timingId', 'browserOpened'], ['secret', 'token']);
     const expected = fwConfig_('FLOW_MENU_API_SECRET');
     if (typeof body.secret !== 'string' || body.secret !== expected) fwError_('UNAUTHORISED');
     const required = action === 'feedback_read' ? ['secret', 'token'] : action === 'feedback_event' ? ['secret', 'token', 'event'] : action === 'feedback_submit' ? ['secret', 'token', 'submission', 'revision', 'submissionId'] : ['secret', 'token', 'submission', 'revision'];
-    fwKeys_(body, required.concat(['timingId']), required);
+    fwKeys_(body, required.concat(action === 'feedback_read' ? ['timingId', 'browserOpened'] : ['timingId']), required);
+    if (body.browserOpened !== undefined && body.browserOpened !== true) fwError_('INVALID_INPUT');
     if (body.timingId !== undefined && (typeof body.timingId !== 'string' || !/^[a-f0-9]{32}$/.test(body.timingId))) fwError_('INVALID_INPUT');
     if (body.timingId && fwProps_().getProperty('FEEDBACK_TIMING_ENABLED') !== 'false') {
       profile = { requestId: body.timingId, timing: { totalMs: 0, lockWaitMs: 0, readMs: 0, readCalls: 0, writeMs: 0, writeCalls: 0, bookMs: 0, timezoneMs: 0 }, tableReadMs: {} };
@@ -326,14 +367,19 @@ function handleFeedbackWebApiRequest_(e, action) {
 }
 function fwRequest_(body, action) {
   const book = fwBook_();
-  fwPrimeWebReads_(book);
+  fwPrimeWebReads_(book, body.token);
   const schema = fwSchema_(book), now = Date.now();
   const c = fwContext_(book, schema, body.token, now); const r = c.state.row;
   if (action === 'feedback_read') {
     // Automated requests are explicitly separate from browser/interaction signals.
-    if (fwLimit_(r, now, 23, 24, 10)) {
-      r[14] = new Date(now).toISOString(); c.link.row[6] = r[14];
-      try { fwBatch_(book, [fwUpdate_(schema.orders.sheet, c.state.number, r), fwUpdate_(schema.links.sheet, c.link.number, c.link.row)]); } catch (_) { /* Optional page tracking cannot block reading/submitting. */ }
+    const pageAllowed = fwLimit_(r, now, 23, 24, 10);
+    if (pageAllowed) { r[14] = new Date(now).toISOString(); c.link.row[6] = r[14]; }
+    const browserAllowed = body.browserOpened === true && !r[8] && !c.completed && fwLimit_(r, now, 12, 13, 10);
+    if (browserAllowed) r[8] = new Date(now).toISOString();
+    if (pageAllowed || browserAllowed) {
+      const requests = [fwUpdate_(schema.orders.sheet, c.state.number, r)];
+      if (pageAllowed) requests.push(fwUpdate_(schema.links.sheet, c.link.number, c.link.row));
+      try { fwBatch_(book, requests); } catch (_) { /* Optional tracking cannot block reading/submitting. */ }
     }
     return fwPublic_(c);
   }
@@ -349,9 +395,13 @@ function fwRequest_(body, action) {
     fwRevision_(body.revision);
     const draft = fwPayload_(body.submission, c.order, true); const encoded = JSON.stringify(draft);
     if (encoded.length > 45000) fwError_('INVALID_INPUT');
-    if (encoded === r[5]) return { revision: Number(r[6] || 0) }; // Idempotent retry after lost draft acknowledgement.
+    if (encoded === r[5]) {
+      if (!r[9]) { r[9] = new Date(now).toISOString(); fwBatch_(book, [fwUpdate_(schema.orders.sheet, c.state.number, r)]); }
+      return { revision: Number(r[6] || 0) }; // Idempotent retry after lost draft acknowledgement.
+    }
     if (body.revision !== Number(r[6] || 0)) fwError_('CONFLICT');
     if (!fwLimit_(r, now, 10, 11, 20)) fwError_('RATE_LIMITED');
+    if (!r[9]) r[9] = new Date(now).toISOString();
     r[5] = encoded; r[6] = Number(r[6] || 0) + 1; r[7] = new Date(now).toISOString();
     fwBatch_(book, [fwUpdate_(schema.orders.sheet, c.state.number, r)]);
     return { revision: r[6] };
@@ -380,7 +430,7 @@ function fwCommit_(book, schema, order, state, submission, channel, now) {
     return [format(), new Date(now), order.orderId, order.customerId, dish.cookId, dish.itemCode, answer.skipped ? '' : answer.rating, !answer.skipped && answer.rating <= 3 ? 'Y' : 'N', 'N', answer.skipped ? "Didn't try this" : answer.comment, !answer.skipped && answer.rating <= 3 ? 'Open' : 'None', channel === 'LEGACY' ? (legacyIds[answer.itemCode] || '') : '', '', '', id, channel, answer.skipped ? 'Y' : 'N'];
   });
   rows.push([format(), new Date(now), order.orderId, order.customerId, '', 'DELIVERY', submission.deliveryRating, 'N', 'N', submission.overallComment, submission.deliveryRating <= 3 ? 'Open' : 'None', channel === 'LEGACY' ? (legacyIds.DELIVERY || '') : '', submission.testimonialConsent ? 'Y' : 'N', submission.testimonialConsent ? new Date(now) : '', id, channel, 'N']);
-  const r = state.row; r[2] = at; r[3] = channel; r[5] = ''; r[7] = ''; r[6] = Number(r[6] || 0) + 1;
+  const r = state.row; if (channel === 'WEB' && !r[9]) r[9] = at; r[2] = at; r[3] = channel; r[5] = ''; r[7] = ''; r[6] = Number(r[6] || 0) + 1;
   const requests = fwCapacity_(schema.orders.sheet, state.number, FW.orderHeaders.length).concat([
     fwAppend_(schema.feedback.sheet, rows), fwUpdate_(schema.orders.sheet, state.number, r),
     fwCell_(order.delivery.table.sheet, order.delivery.number, order.delivery.table.col['Feedback Status'], 'Completed'),

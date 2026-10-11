@@ -6,7 +6,7 @@ This measures the current flow. It does not change saving, submission, link secu
 
 1. Replace the contents of the existing production `FeedbackWeb.gs` with `scripts/FeedbackWeb.gs`. Do not create a second Apps Script file or run setup again.
 2. Save and update the existing production web app deployment to a new version. Keep the same deployment URL and access settings.
-3. Deploy the website changes only after that Apps Script deployment completes. The website sends a new internal `timingId` field which older Apps Script code rejects. An older website works with the new Apps Script code.
+3. Deploy the website changes only after that Apps Script deployment completes. The website sends an optional `browserOpened=true` signal with its initial read. Older Apps Script code rejects that field. The timing-enabled website also sends an internal `timingId`. An older website works with the new Apps Script code.
 4. No new script properties or third-party analytics are required. An optional script property `FEEDBACK_TIMING_ENABLED=false` disables the Apps Script profiling. Basic browser and Vercel timings still work.
 5. Test loading and draft saving with an existing unsubmitted test link. Test submission only with a designated test order. Do not reset a real customer's feedback or send a new message merely to obtain timings.
 
@@ -49,7 +49,7 @@ Authenticated, validated requests with a valid timing ID record:
 - `totalMs`: elapsed time inside the handler, before response delivery.
 - `lockWaitMs`: time attempting to obtain the shared script lock, including failed attempts.
 - `readMs` and `readCalls`: actual table data reads, excluding reuse within the request.
-- `tableReadMs`: per-table timings for individual reads only. With the batched web reader this is empty, because one API call retrieves all seven tables; its duration is reported once in `readMs` and `readCalls=1`.
+- `tableReadMs`: per-table timings for individual reads only. With the targeted web reader this is empty because its three batched calls span multiple tables. Their total duration is reported in `readMs`, with `readCalls=3` on a normal successful request.
 - `writeMs` and `writeCalls`: Sheets atomic batch calls, including failed calls.
 - `bookMs`: opening the spreadsheet.
 - `timezoneMs`: separate time-zone retrieval. The batched reader gets the time zone with the same API response, so this is zero.
@@ -71,14 +71,20 @@ Instrumentation performs no additional Sheets writes, network requests, messages
 Use multiple requests and report median and 95th percentile separately for load, draft and submit. Compare cold and subsequent requests and concurrent sessions. Mock test timings validate accounting and privacy, not production performance.
 
 
-## First measured speed improvement: batched web reads
+## Targeted reads and combined interaction tracking
 
-Three production samples reported 5.46 to 7.52 seconds in spreadsheet reads, with one request also waiting 4.74 seconds for the script lock. The web handler now retrieves the same seven tables with one fresh Sheets API call instead of seven separate SpreadsheetApp data reads. The response includes effective cell values and date-format types only, plus the spreadsheet time zone. It excludes formula text, notes and unrelated formatting. All populated history is retained; there is no row-2000 cutoff or cross-request cache.
+The initial full-table batch reader reduced median measured reads from 7.07 to about 6.03 seconds in small production samples, leaving reads as the recurring bottleneck. The next revision uses three small, fresh read batches inside the same shared lock:
 
-Date serials are decoded using the spreadsheet time zone. Numeric quantities and booleans retain their types. Missing tables or duplicate headers fail closed. The shared lock and atomic completion write remain in place. The snapshot is discarded after any attempted write and at the end of the operation. Sender and receipt-handler behavior is unchanged.
+1. Read live headers and narrow global keys: Feedback columns A/C/F, link hashes/order IDs/statuses, and V2 order IDs. Do not fetch historical feedback comments, ratings or unrelated V2 drafts. Include the spreadsheet time zone and date-type metadata.
+2. Scan the actual source ID columns and Order Items item-code column using the validated live header positions. Do not assume Order ID is in column A. Find all matching rows, including duplicates, with no row-count cutoff.
+3. Retrieve only required source fields from matching Orders, Deliveries, Order Items and Dishes rows, plus full V2 state/link rows for the current order. Preserve original sheet row numbers and provider metadata.
 
-Install this backend-only improvement by replacing the existing production FeedbackWeb.gs with scripts/FeedbackWeb.gs, saving, and updating the same web app deployment to a new version. Keep its URL and access settings. No website redeployment, new .gs file, setup run, trigger change or property change is required for this improvement. The existing Advanced Sheets service must remain enabled.
+All historical Feedback IDs/order IDs/item codes remain available for shared completion safeguards, legacy-in-progress detection, duplicate checks and global ID generation. The active state, revocation, expiry, confirmation, delivery, eligibility and revision checks are still fresh and remain under the writer lock. There is no persistent state cache. Snapshots are discarded after attempted writes and at the end of the operation. Sender and receipt-handler behavior is unchanged.
 
-Use the existing unsubmitted test link to check loading, change a rating/comment, wait for Saved, and refresh to check resume. Capture three Server-Timing headers for the same action, ideally feedback_draft, and compare sheet_reads and route durations. Then test designated test-order submission and repeat opening to check that completion is retained. Do not reset an order or send another message for these checks. Backend tests validate safety and call counts, not live speed.
+The website folds browser-open tracking into its initial read with the strictly validated optional browserOpened=true flag. Draft saving and successful web submission fill a missing First Interaction At in the existing atomic write. The website no longer sends separate browser_opened or first_interaction feedback_event requests. Older clients can still use those events. Page Requested At and Browser Opened At remain separate signals; the page-request rate limit cannot consume the browser-signal budget. First Interaction At now means the server received the first successful draft save or submission, so it can follow the first input by the autosave debounce/network time. Opening the page without changing feedback does not mark an interaction. These signals do not prove a human identity.
 
-Rollback by restoring the preceding FeedbackWeb.gs and updating the same deployment again. The website protocol and saved state have not changed.
+Install the current production FeedbackWeb.gs first by replacing its contents with scripts/FeedbackWeb.gs, saving, and updating the existing web app deployment to a new version. Keep its URL and access settings. Then merge/deploy the website changes. This order is required because the new website sends browserOpened=true. No new .gs file, setup run, property change or trigger change is required. Keep Advanced Sheets enabled. The old website continues to work with the new backend.
+
+Use the existing unsubmitted test link to check loading, change a rating/comment, wait for Saved, and refresh to check resume. Capture three Server-Timing headers for the same action, ideally feedback_draft, and compare sheet_reads and route durations. In the Network panel confirm that the new website sends no separate feedback_event requests. Check the Browser Opened At and First Interaction At fields on a suitable fresh test state; existing timestamps are intentionally retained. Then test designated test-order submission and repeat opening to confirm completion is retained. Do not reset an order or send another message merely for measurements. Backend tests validate safety, targeted data and request shape, not live speed.
+
+For rollback, deploy the previous website first, then restore the previous FeedbackWeb.gs and redeploy the same Apps Script deployment. Both older website request forms remain supported by the new backend. Keep the shared locks and atomic submission protections enabled.

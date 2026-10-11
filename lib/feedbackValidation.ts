@@ -17,7 +17,7 @@ export function validSubmission(v: unknown, draft: boolean): v is FeedbackSubmis
 }
 export function validFeedbackRequest(v: unknown): v is Record<string, unknown> & { token: string; action: FeedbackAction } {
   if (!record(v) || !text(v.token, 43, 43) || !tokenPattern.test(v.token)) return false;
-  if (v.action === "feedback_read") return keys(v, ["action", "token"]);
+  if (v.action === "feedback_read") return keys(v, Object.hasOwn(v, "browserOpened") ? ["action", "token", "browserOpened"] : ["action", "token"]) && (!Object.hasOwn(v, "browserOpened") || v.browserOpened === true);
   if (v.action === "feedback_event") return keys(v, ["action", "token", "event"]) && ["browser_opened", "first_interaction"].includes(String(v.event)) && typeof v.event === "string";
   if (v.action !== "feedback_draft" && v.action !== "feedback_submit") return false;
   const allowed = v.action === "feedback_submit" ? ["action", "token", "submission", "revision", "submissionId"] : ["action", "token", "submission", "revision"];

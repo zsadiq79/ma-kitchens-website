@@ -25,11 +25,10 @@ export function FeedbackClient() {
       if (!tokenPattern.test(value)) { setState("INVALID_LINK"); return; }
       setToken(value);
       const finishLoad = startFeedbackMeasure("load");
-      feedbackRequest(value, "feedback_read").then(data => {
+      feedbackRequest(value, "feedback_read", { browserOpened: true }).then(data => {
         if (generation !== current) return;
         if (!publicOrder(data)) { setState("TEMPORARY_ERROR"); return; }
         setOrder(data);
-        if (data.status === "OPEN") void feedbackRequest(value, "feedback_event", { event: "browser_opened" }).catch(() => {});
       }).catch(error => { if (generation === current) setState(error instanceof Error ? error.message : "TEMPORARY_ERROR"); }).finally(finishLoad);
     }
     openLink();

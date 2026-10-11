@@ -95,7 +95,6 @@ export function FeedbackForm({
   const [saveState, setSaveState] = useState("saved");
   const revisionRef = useRef(revision);
   const busy = useRef(false);
-  const interacted = useRef(false);
   const conflict = useRef(false);
   const lastSaveAt = useRef(0);
   const inFlight = useRef<Promise<void> | null>(null);
@@ -107,11 +106,6 @@ export function FeedbackForm({
   const latest = useRef(snapshot); latest.current = snapshot;
   const saved = useRef(snapshot);
 
-  function markInteraction() {
-    if (interacted.current || submitted) return;
-    interacted.current = true;
-    void feedbackRequest(feedbackToken, "feedback_event", { event: "first_interaction" }).catch(() => {});
-  }
   async function flushDraft() {
     if (inFlight.current) await inFlight.current;
     if (conflict.current) throw new Error("CONFLICT");
@@ -183,8 +177,6 @@ export function FeedbackForm({
   return (
     <form
       className="mx-auto max-w-3xl px-5 py-10 sm:px-6 sm:py-14"
-      onInputCapture={markInteraction}
-      onClickCapture={markInteraction}
       onSubmit={async (event) => {
         event.preventDefault();
         if (!canSubmit || busy.current || conflict.current) return;
