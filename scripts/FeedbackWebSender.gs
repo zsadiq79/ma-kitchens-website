@@ -15,11 +15,11 @@ function feedbackSenderDecision_(table, row, rowNumber, now) {
   else if (status && status !== 'Not Sent') reason = 'ALREADY_REQUESTED';
   else if (fwFeedback_(book).rows.some(r => String(r[2]).trim() === orderId)) reason = 'LEGACY_FEEDBACK_EXISTS';
   else if (!due) reason = 'INVALID_DELIVERED_AT';
-  else if (now < due.getTime()) reason = 'BEFORE_96_HOURS';
+  else if (now < due.getTime()) reason = 'BEFORE_72_HOURS';
   if (reason === 'ELIGIBLE') {
     try {
       const order = fwOrder_(book, orderId);
-      if (!feedbackV2Eligibility_(order, false, now).eligible) reason = 'BEFORE_96_HOURS';
+      if (!feedbackV2Eligibility_(order, false, now).eligible) reason = 'BEFORE_72_HOURS';
     } catch (error) { if (error.code === 'INELIGIBLE') reason = 'NO_ELIGIBLE_ITEMS'; else throw error; }
   }
   return { eligible: reason === 'ELIGIBLE', reason: reason, dueAt: due ? due.toISOString() : null, candidate: { deliveryRowNumber: rowNumber, orderId: orderId, routificId: String(row[c['Routific ID']] || ''), deliveredAt: deliveredAt, feedbackDueAt: due, feedbackStatus: status } };
@@ -65,9 +65,26 @@ function fwSendWebMessage_(prepared) {
   fwString_(messageId, 256, 1);
   return messageId;
 }
+function fwFreshSenderState_(book, orderId) {
+  // Reservations are written by Sheets API. Read them through that same API,
+  // rather than SpreadsheetApp's read cache from before the reservation.
+  const values = Sheets.Spreadsheets.Values.get(book.getId(), "'Feedback V2 Orders'!A:Y", {
+    valueRenderOption: 'UNFORMATTED_VALUE', majorDimension: 'ROWS'
+  }).values || [];
+  if (!values.length || FW.orderHeaders.some((header, i) => values[0][i] !== header)) fwError_('CONFIGURATION_ERROR');
+  const found = values.slice(1).map((row, i) => ({ row: row.slice(), number: i + 2 }))
+    .filter(item => item.row[0] === orderId);
+  if (found.length !== 1) fwError_('CONFIGURATION_ERROR');
+  while (found[0].row.length < FW.orderHeaders.length) found[0].row.push('');
+  return found[0];
+}
 function fwAcceptWebMessage_(prepared, messageId, acceptedAt) {
+  // Null is permitted for an owner reconciliation where acceptance time is unknown.
+  // Never substitute receipt times or the reconciliation time for acceptance.
+  fwString_(messageId, 256, 1);
+  if (acceptedAt !== null && (!(acceptedAt instanceof Date) || !Number.isFinite(acceptedAt.getTime()))) fwError_('INVALID_INPUT');
   return fwLock_(() => {
-    const book = fwBook_(), schema = fwSchema_(book), state = fwState_(schema, prepared.orderId, false);
+    const book = fwBook_(), schema = fwSchema_(book), state = fwFreshSenderState_(book, prepared.orderId);
     if (state.row[15] !== prepared.attemptId || (state.row[16] && state.row[16] !== messageId)) fwError_('CONFLICT');
     // Callback-before-registration records are preserved in WhatsApp Log.
     // Same atomic batch fills outbound metadata, acceptance and delivery lifecycle.
@@ -79,10 +96,11 @@ function fwAcceptWebMessage_(prepared, messageId, acceptedAt) {
     if (row[3] && whatsappLogNormalisePhone_(row[3]) !== '+' + prepared.recipient) fwError_('CONFLICT');
     row[0] = messageId; row[1] = prepared.orderId; row[2] = 'feedback_web_request'; row[3] = '+' + prepared.recipient; row[4] = row[4] || acceptedAt; row[8] = row[8] || 'Accepted';
     const order = fwOrder_(book, prepared.orderId); const originalAcceptance = fwTime_(row[4]); if (Number.isFinite(originalAcceptance)) acceptedAt = new Date(originalAcceptance);
-    state.row[16] = messageId; state.row[17] = acceptedAt.toISOString();
+    state.row[16] = messageId;
+    if (acceptedAt) state.row[17] = acceptedAt.toISOString();
     [5, 6, 7].forEach((logIndex, i) => { const time = fwTime_(row[logIndex]); if (Number.isFinite(time)) state.row[18 + i] = new Date(time).toISOString(); });
-    const requests = [fwUpdate_(schema.orders.sheet, state.number, state.row),
-      fwCell_(order.delivery.table.sheet, order.delivery.number, order.delivery.table.col['Feedback Requested At'], acceptedAt)];
+    const requests = [fwUpdate_(schema.orders.sheet, state.number, state.row)];
+    if (acceptedAt) requests.push(fwCell_(order.delivery.table.sheet, order.delivery.number, order.delivery.table.col['Feedback Requested At'], acceptedAt));
     if (!fwCompleted_(schema, prepared.orderId, state, order.delivery)) requests.push(fwCell_(order.delivery.table.sheet, order.delivery.number, order.delivery.table.col['Feedback Status'], 'Sent'));
     if (found.length) {
       [1, 2, 3, 4, 8].forEach(i => requests.push(fwCell_(log.sheet, found[0].number, i, row[i])));

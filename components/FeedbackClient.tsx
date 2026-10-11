@@ -6,6 +6,7 @@ import { FeedbackState } from "@/components/FeedbackState";
 import type { FeedbackOrder } from "@/lib/feedbackApi";
 import { feedbackRequest } from "@/lib/feedbackClient";
 import { tokenPattern, validSubmission } from "@/lib/feedbackValidation";
+import { startFeedbackMeasure } from "@/lib/feedbackTelemetry";
 
 function publicOrder(data: unknown): data is FeedbackOrder {
   if (!data || typeof data !== "object") return false;
@@ -23,12 +24,13 @@ export function FeedbackClient() {
       setState(""); setOrder(null);
       if (!tokenPattern.test(value)) { setState("INVALID_LINK"); return; }
       setToken(value);
+      const finishLoad = startFeedbackMeasure("load");
       feedbackRequest(value, "feedback_read").then(data => {
         if (generation !== current) return;
         if (!publicOrder(data)) { setState("TEMPORARY_ERROR"); return; }
         setOrder(data);
         if (data.status === "OPEN") void feedbackRequest(value, "feedback_event", { event: "browser_opened" }).catch(() => {});
-      }).catch(error => { if (generation === current) setState(error instanceof Error ? error.message : "TEMPORARY_ERROR"); });
+      }).catch(error => { if (generation === current) setState(error instanceof Error ? error.message : "TEMPORARY_ERROR"); }).finally(finishLoad);
     }
     openLink();
     return () => { generation++; };

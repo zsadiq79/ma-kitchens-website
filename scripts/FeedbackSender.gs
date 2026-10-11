@@ -196,9 +196,12 @@ function previewOwnerFeedbackJourney() {
    ========================================================= */
 
 function findFeedbackCandidates_() {
-  const book = fwBook_();
-  const t = fwTable_(book, 'Deliveries', ['Order ID', 'Delivery Status', 'Delivered At', 'Feedback Status', 'Routific ID']);
-  return t.rows.map((row, i) => feedbackSenderDecision_(t, row, i + 2, Date.now())).filter(d => d.eligible).map(d => d.candidate);
+  // Reuse reads only for this read-only queue scan, including formula-filled rows.
+  return fwWithReads_(() => {
+    const book = fwBook_();
+    const t = fwTable_(book, 'Deliveries', ['Order ID', 'Delivery Status', 'Delivered At', 'Feedback Status', 'Routific ID']);
+    return t.rows.map((row, i) => feedbackSenderDecision_(t, row, i + 2, Date.now())).filter(d => d.eligible).map(d => d.candidate);
+  });
 }
 
 

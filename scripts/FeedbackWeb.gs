@@ -4,7 +4,7 @@
  */
 const FW = Object.freeze({
   legacyHeaders: ['Feedback ID', 'Submitted At', 'Order ID', 'Customer ID', 'Cook ID', 'Item Code', 'Rating / 5', 'Complaint', 'Refund', 'Comments', 'Follow-up Status', 'WhatsApp Message ID'],
-  links: 'Feedback V2 Links', orders: 'Feedback V2 Orders', delay: 96 * 60 * 60 * 1000,
+  links: 'Feedback V2 Links', orders: 'Feedback V2 Orders', delay: 72 * 60 * 60 * 1000,
   linkHeaders: ['Token Hash', 'Order ID', 'Created At', 'Expires At', 'Status', 'Submitted At', 'Last Page Requested At'],
   orderHeaders: ['Order ID', 'Submission ID', 'Completed At', 'Channel', 'Active Hash', 'Draft JSON', 'Draft Revision', 'Draft Updated At', 'Browser Opened At', 'First Interaction At', 'Draft Window At', 'Draft Writes', 'Event Window At', 'Event Writes', 'Page Requested At', 'Message Attempt ID', 'Message ID', 'Message Accepted At', 'Message Sent At', 'Message Delivered At', 'Message Read At', 'Legacy Message IDs', 'Legacy Comment IDs', 'Page Window At', 'Page Writes'],
   extraHeaders: ['Marketing Consent', 'Marketing Consent At', 'Submission ID', 'Feedback Channel', 'Skipped'],
@@ -14,6 +14,21 @@ function fwError_(code) { const e = new Error(code); e.code = code; throw e; }
 function fwProps_() { return PropertiesService.getScriptProperties(); }
 function fwConfig_(name) { const v = fwProps_().getProperty(name); if (!v) fwError_('CONFIGURATION_ERROR'); return v; }
 function fwEnabled_() { if (fwProps_().getProperty('FEEDBACK_V2_WRITES_ENABLED') !== 'true' || fwProps_().getProperty('WHATSAPP_REQUIRE_VERIFIED_FORWARD') !== 'true') fwError_('TEMPORARY_ERROR'); }
+// Execution-local numeric diagnostics. No extra requests, sheet writes or secrets.
+let fwTimingContext_ = null;
+function fwTimed_(metric, fn, tableName) {
+  const profile = fwTimingContext_;
+  if (!profile) return fn();
+  const started = Date.now();
+  if (metric === 'readMs') profile.timing.readCalls++;
+  if (metric === 'writeMs') profile.timing.writeCalls++;
+  try { return fn(); } finally {
+    const duration = Math.max(0, Date.now() - started);
+    profile.timing[metric] += duration;
+    const tables = ['Feedback', 'Feedback V2 Links', 'Feedback V2 Orders', 'Orders', 'Order Items', 'Dishes', 'Deliveries'];
+    if (metric === 'readMs' && tables.indexOf(tableName) >= 0) profile.tableReadMs[tableName] = (profile.tableReadMs[tableName] || 0) + duration;
+  }
+}
 // Only reuse reads during one locked operation. Never persist order/link state
 // in CacheService, and discard all table snapshots after any attempted write.
 let fwReadContext_ = null;
@@ -26,20 +41,21 @@ function fwBook_() {
   if (fwReadContext_ && fwReadContext_.book) return fwReadContext_.book;
   const id = fwConfig_('CONTROL_TOWER_SPREADSHEET_ID');
   if (id !== CONTROL_TOWER_SPREADSHEET_ID) fwError_('CONFIGURATION_ERROR');
-  const book = SpreadsheetApp.openById(id);
+  const book = fwTimed_('bookMs', () => SpreadsheetApp.openById(id));
   if (fwReadContext_) fwReadContext_.book = book;
   return book;
 }
 function fwTimezone_() {
   if (fwReadContext_ && fwReadContext_.timezone) return fwReadContext_.timezone;
-  const timezone = fwBook_().getSpreadsheetTimeZone();
+  const book = fwBook_();
+  const timezone = fwTimed_('timezoneMs', () => book.getSpreadsheetTimeZone());
   if (fwReadContext_) fwReadContext_.timezone = timezone;
   return timezone;
 }
 function fwLock_(fn) {
   const lock = LockService.getScriptLock();
   if (lock.hasLock()) return fwWithReads_(fn); // Same execution may already hold the shared sender lock.
-  if (!lock.tryLock(10000)) fwError_('TEMPORARY_ERROR');
+  if (!fwTimed_('lockWaitMs', () => lock.tryLock(10000))) fwError_('TEMPORARY_ERROR');
   try { return fwWithReads_(fn); } finally { lock.releaseLock(); }
 }
 function fwObject_(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
@@ -74,7 +90,7 @@ function fwTable_(book, name, required) {
     return cached;
   }
   const sheet = book.getSheetByName(name); if (!sheet) fwError_('CONFIGURATION_ERROR');
-  const values = sheet.getDataRange().getValues(); const headers = (values[0] || []).map(v => String(v).trim()); const col = Object.create(null);
+  const values = fwTimed_('readMs', () => sheet.getDataRange().getValues(), name); const headers = (values[0] || []).map(v => String(v).trim()); const col = Object.create(null);
   headers.forEach((h, i) => { if (h && Object.prototype.hasOwnProperty.call(col, h)) fwError_('CONFIGURATION_ERROR'); col[h] = i; });
   if (required.some(h => !Object.prototype.hasOwnProperty.call(col, h))) fwError_('CONFIGURATION_ERROR');
   const table = { sheet: sheet, headers: headers, col: col, rows: values.slice(1) };
@@ -114,7 +130,7 @@ function fwBatch_(book, requests) {
   if (!requests.length) return;
   // One atomic Sheets request. Never split rows and completion markers across calls.
   // Do not automatically retry ambiguous transport failures: read persisted state first.
-  try { Sheets.Spreadsheets.batchUpdate({ requests: requests }, book.getId()); }
+  try { fwTimed_('writeMs', () => Sheets.Spreadsheets.batchUpdate({ requests: requests }, book.getId())); }
   finally { if (fwReadContext_) fwReadContext_.tables.clear(); }
 }
 function fwCapacity_(sheet, rowNumber, columns) {
@@ -169,7 +185,7 @@ function fwOrder_(book, orderId) {
 }
 function feedbackV2Eligibility_(order, completed, now) {
   if (completed) return { eligible: false, reason: 'COMPLETED' };
-  if (!Number.isFinite(order.deliveredAt) || now < order.deliveredAt + FW.delay) return { eligible: false, reason: 'BEFORE_96_HOURS' };
+  if (!Number.isFinite(order.deliveredAt) || now < order.deliveredAt + FW.delay) return { eligible: false, reason: 'BEFORE_72_HOURS' };
   return { eligible: true, reason: 'ELIGIBLE' };
 }
 function fwContext_(book, schema, token, now) {
@@ -213,24 +229,42 @@ function fwPublic_(context) {
   return { customerName: context.order.customerName, deliveryDate: context.order.deliveryDate, orderId: context.order.orderId, status: context.completed ? 'COMPLETED' : 'OPEN', dishes: context.order.dishes.map(d => ({ itemCode: d.itemCode, dishName: d.dishName, kitchenName: d.kitchenName, imageUrl: d.imageUrl })), submissionId: r[1], revision: Number(r[6] || 0), draft: context.completed ? null : draft };
 }
 function handleFeedbackWebApiRequest_(e, action) {
-  const reply = data => ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+  const started = Date.now(), previousTiming = fwTimingContext_;
+  let profile = null, outcome = 'TEMPORARY_ERROR';
+  const reply = data => {
+    if (profile) { profile.timing.totalMs = Math.max(0, Date.now() - started); data.timing = profile.timing; }
+    return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+  };
   try {
     if (FW.actions.indexOf(action) < 0) fwError_('INVALID_INPUT');
     const raw = e && e.postData && e.postData.contents;
     if (typeof raw !== 'string' || raw.length > 50000) fwError_('INVALID_INPUT');
     let body; try { body = JSON.parse(raw); } catch (_) { fwError_('INVALID_INPUT'); }
-    fwKeys_(body, ['secret', 'token', 'submission', 'revision', 'submissionId', 'event'], ['secret', 'token']);
+    fwKeys_(body, ['secret', 'token', 'submission', 'revision', 'submissionId', 'event', 'timingId'], ['secret', 'token']);
     const expected = fwConfig_('FLOW_MENU_API_SECRET');
     if (typeof body.secret !== 'string' || body.secret !== expected) fwError_('UNAUTHORISED');
     const required = action === 'feedback_read' ? ['secret', 'token'] : action === 'feedback_event' ? ['secret', 'token', 'event'] : action === 'feedback_submit' ? ['secret', 'token', 'submission', 'revision', 'submissionId'] : ['secret', 'token', 'submission', 'revision'];
-    fwKeys_(body, required, required);
+    fwKeys_(body, required.concat(['timingId']), required);
+    if (body.timingId !== undefined && (typeof body.timingId !== 'string' || !/^[a-f0-9]{32}$/.test(body.timingId))) fwError_('INVALID_INPUT');
+    if (body.timingId && fwProps_().getProperty('FEEDBACK_TIMING_ENABLED') !== 'false') {
+      profile = { requestId: body.timingId, timing: { totalMs: 0, lockWaitMs: 0, readMs: 0, readCalls: 0, writeMs: 0, writeCalls: 0, bookMs: 0, timezoneMs: 0 }, tableReadMs: {} };
+      fwTimingContext_ = profile;
+    }
     if (action === 'feedback_submit' || action === 'feedback_draft') fwRevision_(body.revision);
     fwEnabled_();
-    return reply({ ok: true, result: fwLock_(() => fwRequest_(body, action)) });
+    const result = fwLock_(() => fwRequest_(body, action));
+    outcome = 'OK'; return reply({ ok: true, result: result });
   } catch (e) {
     // Only allowlisted codes. No exception messages/stacks or user payload logging.
     const codes = ['INVALID_INPUT', 'INVALID_LINK', 'EXPIRED', 'REVOKED', 'REPLACED', 'COMPLETED', 'CONFLICT', 'RATE_LIMITED', 'INELIGIBLE', 'UNAUTHORISED', 'LEGACY_IN_PROGRESS'];
-    return reply({ ok: false, error: codes.indexOf(e.code) >= 0 ? e.code : 'TEMPORARY_ERROR' });
+    outcome = codes.indexOf(e.code) >= 0 ? e.code : 'TEMPORARY_ERROR';
+    return reply({ ok: false, error: outcome });
+  } finally {
+    fwTimingContext_ = previousTiming;
+    if (profile) {
+      profile.timing.totalMs = Math.max(0, Date.now() - started);
+      try { console.log(JSON.stringify({ event: 'feedback_timing', requestId: profile.requestId, action: action, outcome: outcome, timing: profile.timing, tableReadMs: profile.tableReadMs })); } catch (_) { /* Diagnostics cannot change an outcome. */ }
+    }
   }
 }
 function fwRequest_(body, action) {
