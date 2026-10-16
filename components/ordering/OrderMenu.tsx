@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import {
   foodMoney, MAX_ORDER_QUANTITY, MINIMUM_ORDER_ITEMS, DELIVERY_FEE_CENTS, orderSelection, fallbackOrderTarget,
-  readPublishedOrderMenu, selectedOrderTarget,
+  readPublishedOrderMenu, selectedOrderTarget, readOrderDraft, orderDraftSignature,
 } from '../../lib/publishedOrderMenu.mjs';
 import styles from './OrderMenu.module.css';
 
@@ -23,9 +23,29 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   const [quantities, setQuantities] = useState<string[]>(() => menu ? menu.meals.map(() => '') : []);
   const [expired, setExpired] = useState(false);
   const [message, setMessage] = useState('');
+  const [draftReady, setDraftReady] = useState(false);
   const record = menu ? { schemaVersion: 1, ...menu } : null;
   const selection = menu ? orderSelection(menu, quantities) : null;
   const ready = Boolean(selection && selection.totalQuantity >= MINIMUM_ORDER_ITEMS && !selection.invalidIndexes.length && !expired);
+
+  useEffect(() => {
+    if (!menu) return;
+    try {
+      const saved = readOrderDraft(window.sessionStorage.getItem('ma-kitchens:order-selection:v1'), menu);
+      if (saved) setQuantities(saved);
+    } catch { /* Ordering still works when browser storage is unavailable. */ }
+    setDraftReady(true);
+  }, [menu]);
+
+  useEffect(() => {
+    if (!menu || !draftReady) return;
+    try {
+      if (expired) window.sessionStorage.removeItem('ma-kitchens:order-selection:v1');
+      else window.sessionStorage.setItem('ma-kitchens:order-selection:v1', JSON.stringify({
+        signature: orderDraftSignature(menu), quantities,
+      }));
+    } catch { /* Browser storage is optional. */ }
+  }, [menu, quantities, draftReady, expired]);
 
   useEffect(() => {
     if (!menu) return;
@@ -66,10 +86,6 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   const unavailable = !menu || expired;
   return (
     <div className={styles.screen}>
-      <header className={styles.header}>
-        <a href="/" className={styles.brand} aria-label="Ma Kitchens home">Ma Kitchens<span className={styles.brandDot} aria-hidden="true">✳</span></a>
-        <span className={styles.headerNote}>Home cooked. With heart.</span>
-      </header>
       <main className={styles.main}>
         <div className={styles.intro}>
           <h1>Choose your dishes</h1>
@@ -129,7 +145,12 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
             </div>
           </div>
         </form>}
-        <footer className={styles.footer}><a href="/privacy">Privacy</a><span>Ma Kitchens · Sydney</span></footer>
+        <section className={styles.explore} aria-label="Explore Ma Kitchens">
+          <h2>More from Ma Kitchens</h2>
+          <p>Meet the story behind your meals and see what’s cooking.</p>
+          <div><a href="/">Explore our website <span aria-hidden="true">↗</span></a><a href="/about">Our story</a><a href="/contact">Get in touch</a></div>
+          {!unavailable && <p className={styles.savedNote}>You can return to your choices in this tab.</p>}
+        </section>
       </main>
     </div>
   );

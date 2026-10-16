@@ -185,3 +185,19 @@ test('Minimum counts total servings across dishes, with a single delivery fee', 
   assert(text.includes('Food subtotal: $69.70')); assert(text.includes('Total before discounts: $79.70'));
   assert.equal(text.split('Delivery fee: $10.00').length - 1, 1);
 });
+
+test('Saved choices restore only for the identical in-date menu', async () => {
+  const m = await modulePromise, menu = m.readPublishedOrderMenu(sample(), now());
+  const raw = JSON.stringify({ signature: m.orderDraftSignature(menu), quantities: ['5'] });
+  assert.deepEqual(m.readOrderDraft(raw, menu, now()), ['5']);
+  assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ dishName: 'Different dish', price: 15 }] }, now()), null);
+  assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ dishName: 'Butter Chicken', price: 16 }] }, now()), null);
+  assert.equal(m.readOrderDraft(raw, menu, new Date('2026-10-22T13:00:00Z')), null);
+});
+test('Malformed saved choices cannot crash ordering or restore invalid quantities', async () => {
+  const m = await modulePromise, menu = m.readPublishedOrderMenu(sample(), now());
+  for (const raw of [null, '{', 'null', '{}']) assert.equal(m.readOrderDraft(raw, menu, now()), null);
+  const saved = quantities => JSON.stringify({ signature: m.orderDraftSignature(menu), quantities });
+  assert.equal(m.readOrderDraft(saved(['1', '2']), menu, now()), null);
+  for (const value of ['-1', '1.5', '1000', 5, {}]) assert.deepEqual(m.readOrderDraft(saved([value]), menu, now()), ['']);
+});

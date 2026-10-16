@@ -1,0 +1,19 @@
+.header { background:#111111; color:#f8efe2; font-family:var(--font-inter),Arial,sans-serif; }
+.inner { max-width:1280px; margin:0 auto; padding:24px 40px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.brand { font-family:var(--font-cormorant),Georgia,serif; font-size:30px; line-height:1.05; letter-spacing:.025em; text-decoration:none; color:inherit; }
+.desktopNav { display:flex; gap:32px; }
+.desktopNav a,.mobileMenu nav a { color:#f8efe2bf; text-transform:uppercase; font-size:13px; font-weight:500; letter-spacing:.22em; text-decoration:none; }
+.desktopNav a:hover,.mobileMenu nav a:hover { color:#fff; }
+.mobileMenu { display:none; }
+.header a:focus-visible,.header summary:focus-visible { outline:2px solid #f8efe2; outline-offset:5px; }
+@media(max-width:767px) {
+ .inner { padding:20px; display:block; }
+ .brand { display:inline-block; font-size:27px; }
+ .desktopNav { display:none; }
+ .mobileMenu { display:block; margin-top:18px; }
+ .mobileMenu summary { display:flex; align-items:center; justify-content:space-between; min-height:44px; cursor:pointer; font-size:11px; text-transform:uppercase; letter-spacing:.12em; list-style:none; border-top:1px solid #f8efe226; }
+ .mobileMenu summary::-webkit-details-marker { display:none; }
+ .mobileMenu summary span { font-size:18px; }
+ .mobileMenu nav { display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; padding:8px 0 0; }
+ .mobileMenu nav a { display:flex; align-items:center; min-height:44px; font-size:12px; }
+}

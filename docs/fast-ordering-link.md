@@ -56,3 +56,8 @@ Run `npm test`, including `tests/published-order-menu.test.cjs`. Tests cover exp
 The selector requires at least five items in total, including multiple servings of one dish. It displays food subtotal, a $10 delivery fee, and total before discounts, and includes those amounts in the WhatsApp draft. Invalid quantities and fewer than five items are also rejected by the message builder.
 
 These MVP rules are shared constants in `lib/publishedOrderMenu.mjs`; they do not automatically synchronize with Menu Config. The selector prepares a WhatsApp message and does not create an order or apply customer discounts. Existing Order Entry remains separate and uses its existing Menu Config rules. Standard Discount % is global; an individual discount needs a per-order/customer override rather than changing that global setting.
+
+### Website navigation and returning to an order
+The ordering layout reuses the existing site Header and Footer. Header has an optional compact mobile navigation mode for this layout; its default rendering on existing pages stays the same. Ordering colours and typography match the current site theme, and links below the menu provide another way to explore Home, About and Contact.
+
+Quantities are saved in sessionStorage for the current browser tab. Returning or reloading restores choices only when delivery cycle/date, dish names/order and prices still match the active menu. Expired menus and malformed drafts are rejected; invalid saved quantities become blank. No customer identity, address or order record is stored. Browsers that block storage can still use ordering, with no recovery guarantee. The fixed order summary remains visible while browsing the ordering page, with space below the footer so links remain reachable.
