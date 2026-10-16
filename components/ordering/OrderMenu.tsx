@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import {
-  foodMoney, MAX_ORDER_QUANTITY, orderSelection, fallbackOrderTarget,
+  foodMoney, MAX_ORDER_QUANTITY, MINIMUM_ORDER_ITEMS, DELIVERY_FEE_CENTS, orderSelection, fallbackOrderTarget,
   readPublishedOrderMenu, selectedOrderTarget,
 } from '../../lib/publishedOrderMenu.mjs';
 import styles from './OrderMenu.module.css';
@@ -25,7 +25,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   const [message, setMessage] = useState('');
   const record = menu ? { schemaVersion: 1, ...menu } : null;
   const selection = menu ? orderSelection(menu, quantities) : null;
-  const ready = Boolean(selection?.items.length && !selection.invalidIndexes.length && !expired);
+  const ready = Boolean(selection && selection.totalQuantity >= MINIMUM_ORDER_ITEMS && !selection.invalidIndexes.length && !expired);
 
   useEffect(() => {
     if (!menu) return;
@@ -57,6 +57,8 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
     } catch (error) {
       if (error instanceof Error && error.message === 'MENU_EXPIRED') {
         setExpired(true); setMessage('This menu has closed. Ask us for the current menu below.');
+      } else if (error instanceof Error && error.message === 'MINIMUM_ORDER_NOT_MET') {
+        setMessage(`Choose at least ${MINIMUM_ORDER_ITEMS} items to continue.`);
       } else setMessage('Enter a whole-number quantity for the dishes you would like.');
     }
   }
@@ -72,7 +74,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
         <div className={styles.intro}>
           <h1>Choose your dishes</h1>
           {unavailable ? <p className={styles.lead}>Our current menu is closed. Get in touch and we’ll help you with what’s coming next.</p> : <>
-            <p className={styles.lead}>Enter quantities for your favourites.<br />Leave everything else blank.</p>
+            <p className={styles.lead}>Enter quantities for your favourites.<br />Leave everything else blank. Minimum order: {MINIMUM_ORDER_ITEMS} items.</p>
             <div className={styles.delivery}><span aria-hidden="true">◷</span> Delivery {menu.deliveryDateDisplay}</div>
           </>}
         </div>
@@ -114,8 +116,12 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
             <div className={styles.orderBarInner}>
               <div className={styles.summary} aria-live="polite" aria-atomic="true">
                 <div><span className={styles.summaryTitle}>{selection?.items.length ? `${selection.items.length} ${selection.items.length === 1 ? 'dish' : 'dishes'} · ${selection.totalQuantity} ${selection.totalQuantity === 1 ? 'item' : 'items'}` : 'Your selection starts here'}</span>
-                  <span className={styles.summaryHint}>Food subtotal · delivery confirmed in WhatsApp</span></div>
-                <strong>{foodMoney(selection?.subtotalCents || 0)}</strong>
+                  <span className={styles.summaryHint}>{(selection?.totalQuantity || 0) < MINIMUM_ORDER_ITEMS ? `Add ${MINIMUM_ORDER_ITEMS - (selection?.totalQuantity || 0)} more ${(MINIMUM_ORDER_ITEMS - (selection?.totalQuantity || 0)) === 1 ? 'item' : 'items'} to continue` : 'Your order is ready to review'}</span></div>
+              </div>
+              <div className={styles.costs} aria-live="polite" aria-atomic="true">
+                <div><span>Food subtotal</span><span>{foodMoney(selection?.subtotalCents || 0)}</span></div>
+                <div><span>Delivery</span><span>{foodMoney(DELIVERY_FEE_CENTS)}</span></div>
+                <div className={styles.total}><span>Total before discounts</span><strong>{foodMoney((selection?.subtotalCents || 0) + DELIVERY_FEE_CENTS)}</strong></div>
               </div>
               {message && <p className={styles.formError} role="alert">{message}</p>}
               <button id="continue-order" className={styles.whatsappButton} type="submit" disabled={!ready}><WhatsAppIcon />Continue to WhatsApp<span aria-hidden="true">↗</span></button>

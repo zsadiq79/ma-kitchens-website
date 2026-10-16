@@ -51,3 +51,8 @@ The publisher creates no triggers, modifies no orders/customer/feedback data and
 ## Verification
 
 Run `npm test`, including `tests/published-order-menu.test.cjs`. Tests cover expiry at Sydney midnight and DST offsets, closed-menu handling, blank/zero omission, selected-only messages, whole-number validation, integer-cent subtotals, overnight handoff refusal, no customer-click fetch, owner checks, publishing preview, idempotence, GitHub conflict handling, withdrawal and secret-free logs. Services are mocked for publisher tests; live owner publishing requires one-time credentials above. The website build and preview must pass before merging. Existing marketing package remains uninstalled and unchanged.
+
+### Minimum order, delivery and discounts
+The selector requires at least five items in total, including multiple servings of one dish. It displays food subtotal, a $10 delivery fee, and total before discounts, and includes those amounts in the WhatsApp draft. Invalid quantities and fewer than five items are also rejected by the message builder.
+
+These MVP rules are shared constants in `lib/publishedOrderMenu.mjs`; they do not automatically synchronize with Menu Config. The selector prepares a WhatsApp message and does not create an order or apply customer discounts. Existing Order Entry remains separate and uses its existing Menu Config rules. Standard Discount % is global; an individual discount needs a per-order/customer override rather than changing that global setting.

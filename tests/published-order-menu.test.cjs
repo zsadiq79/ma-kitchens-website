@@ -12,11 +12,11 @@ const sample = () => ({ schemaVersion: 1, publishedAt: '2026-10-16T09:00:00Z',
 const now = () => new Date('2026-10-16T10:00:00Z');
 
 test('Saved snapshot opens the existing manual WhatsApp number with editable quantities', async () => {
-  const m = await modulePromise, url = m.selectedOrderTarget(sample(), ['2'], now());
+  const m = await modulePromise, url = m.selectedOrderTarget(sample(), ['5'], now());
   assert.equal(url.hostname, 'wa.me'); assert.equal(url.pathname, '/61420246023');
   const message = url.searchParams.get('text');
-  assert(message.includes('Delivery: Thu 22 Oct')); assert(message.includes('2 × Butter Chicken - $30.00'));
-  assert(message.includes('Food subtotal: $30.00')); assert(!message.includes('Delete any dishes'));
+  assert(message.includes('Delivery: Thu 22 Oct')); assert(message.includes('5 × Butter Chicken - $75.00'));
+  assert(message.includes('Food subtotal: $75.00')); assert(!message.includes('Delete any dishes'));
 });
 test('Initial 22 October snapshot has the 13 verified live dishes', async () => {
   const m = await modulePromise, menu = m.readPublishedOrderMenu(snapshot, new Date('2026-10-22T00:00:00Z'));
@@ -51,8 +51,8 @@ test('Invalid prices, mismatched display price and injected dish lines are rejec
 });
 test('Replacing the published snapshot immediately selects the new content', async () => {
   const m = await modulePromise, next = { ...sample(), meals: [{ dishName: 'Replacement dish', price: 18 }] };
-  assert(m.selectedOrderTarget(next, ['1'], now()).searchParams.get('text').includes('Replacement dish - $18'));
-  assert(!m.selectedOrderTarget(next, ['1'], now()).searchParams.get('text').includes('Butter Chicken'));
+  assert(m.selectedOrderTarget(next, ['5'], now()).searchParams.get('text').includes('Replacement dish - $90'));
+  assert(!m.selectedOrderTarget(next, ['5'], now()).searchParams.get('text').includes('Butter Chicken'));
 });
 test('Customer routing never fetches Apps Script and cannot cache past expiry', () => {
   const route = fs.readFileSync(path.join(root, 'app/(ordering)/go/order/current/page.tsx'), 'utf8');
@@ -143,8 +143,8 @@ test('Actual public verification route returns saved menu metadata without a loo
 
 test('Blank and zero quantities are omitted from the WhatsApp order', async () => {
   const m = await modulePromise, record = { ...sample(), meals: [sample().meals[0], { dishName: 'Unwanted dish', price: 12 }, { dishName: 'Also unwanted', price: 10 }] };
-  const text = m.selectedOrderTarget(record, ['2', '', '0'], now()).searchParams.get('text');
-  assert(text.includes('2 × Butter Chicken')); assert(!text.includes('Unwanted')); assert(!text.includes('Also unwanted'));
+  const text = m.selectedOrderTarget(record, ['5', '', '0'], now()).searchParams.get('text');
+  assert(text.includes('5 × Butter Chicken')); assert(!text.includes('Unwanted')); assert(!text.includes('Also unwanted'));
 });
 test('Selecting five dishes includes exactly those five lines', async () => {
   const m = await modulePromise, quantities = snapshot.meals.map((_, i) => i < 5 ? '1' : '');
@@ -163,11 +163,25 @@ test('Food subtotal uses integer cents and multiple servings', async () => {
   const m = await modulePromise, record = { ...sample(), meals: [{ dishName: 'Dish', price: 12.35 }] };
   const menu = m.readPublishedOrderMenu(record, now()); const summary = m.orderSelection(menu, ['3']);
   assert.equal(summary.totalQuantity, 3); assert.equal(summary.subtotalCents, 3705);
-  assert(m.selectedOrderTarget(record, ['3'], now()).searchParams.get('text').includes('Food subtotal: $37.05'));
+  assert(m.selectedOrderTarget(record, ['5'], now()).searchParams.get('text').includes('Food subtotal: $61.75'));
 });
 test('An order left open overnight cannot send an expired menu', async () => {
   const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), ['1'], new Date('2026-10-22T13:00:00Z')), /MENU_EXPIRED/);
 });
 test('Selection cannot reference dishes outside the published snapshot', async () => {
   const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), ['1', '2'], now()), /INVALID_QUANTITY/);
+});
+
+test('One to four items cannot continue; five servings of one dish qualify', async () => {
+  const m = await modulePromise;
+  for (let quantity = 1; quantity < 5; quantity++) assert.throws(() => m.selectedOrderTarget(sample(), [String(quantity)], now()), /MINIMUM_ORDER_NOT_MET/);
+  const text = m.selectedOrderTarget(sample(), ['5'], now()).searchParams.get('text');
+  assert(text.includes('Delivery fee: $10.00')); assert(text.includes('Total before discounts: $85.00'));
+});
+test('Minimum counts total servings across dishes, with a single delivery fee', async () => {
+  const m = await modulePromise;
+  const record = { ...sample(), meals: [...sample().meals, { dishName: 'Daal', price: 12.35 }] };
+  const text = m.selectedOrderTarget(record, ['3', '2'], now()).searchParams.get('text');
+  assert(text.includes('Food subtotal: $69.70')); assert(text.includes('Total before discounts: $79.70'));
+  assert.equal(text.split('Delivery fee: $10.00').length - 1, 1);
 });
