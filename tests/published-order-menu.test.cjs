@@ -19,13 +19,13 @@ test('Saved snapshot opens the existing manual WhatsApp number with editable qua
   assert(message.includes('Food subtotal: $75.00')); assert(!message.includes('Delete any dishes'));
 });
 test('Initial 22 October snapshot has the 13 verified live dishes', async () => {
-  const m = await modulePromise, menu = m.readPublishedOrderMenu(snapshot, new Date('2026-10-22T00:00:00Z'));
+  const m = await modulePromise, menu = m.readPublishedOrderMenu(snapshot, new Date('2026-10-21T00:00:00Z'));
   assert(menu); assert.equal(menu.meals.length, 13); assert.equal(menu.meals[0].dishName, 'Beef Sindhi Biryani');
 });
-test('Expiry occurs at Sydney midnight after delivery, not UTC midnight', async () => {
+test('Ordering closes at 10pm Sydney on the day before delivery', async () => {
   const m = await modulePromise;
-  assert(m.readPublishedOrderMenu(sample(), new Date('2026-10-22T12:59:59Z')));
-  assert.equal(m.readPublishedOrderMenu(sample(), new Date('2026-10-22T13:00:00Z')), null);
+  assert(m.readPublishedOrderMenu(sample(), new Date('2026-10-21T10:59:59Z')));
+  assert.equal(m.readPublishedOrderMenu(sample(), new Date('2026-10-21T11:00:00Z')), null);
 });
 test('Sydney date handles winter and daylight-saving offsets', async () => {
   const m = await modulePromise;
@@ -77,7 +77,7 @@ function publisherFixture() {
     Session: { getEffectiveUser: () => ({ getEmail: () => owner ? 'owner@example.com' : 'other@example.com' }) },
     PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] || null }) },
     LockService: { getScriptLock: () => ({ tryLock: () => { held = true; return true; }, releaseLock: () => { held = false; } }) },
-    Utilities: { formatDate: d => d.toISOString().slice(0, 10), Charset: { UTF_8: 'UTF-8' },
+    Utilities: { formatDate: (d, zone, pattern) => pattern === 'HH' ? new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' }).format(d) : new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d), Charset: { UTF_8: 'UTF-8' },
       base64Encode: s => Buffer.from(s, 'utf8').toString('base64'), base64Decode: s => Buffer.from(s, 'base64'),
       newBlob: b => ({ getDataAsString: () => Buffer.from(b).toString('utf8') }) },
     buildActiveMenu_: () => menu,
@@ -148,7 +148,7 @@ test('Blank and zero quantities are omitted from the WhatsApp order', async () =
 });
 test('Selecting five dishes includes exactly those five lines', async () => {
   const m = await modulePromise, quantities = snapshot.meals.map((_, i) => i < 5 ? '1' : '');
-  const text = m.selectedOrderTarget(snapshot, quantities, new Date('2026-10-22T00:00:00Z')).searchParams.get('text');
+  const text = m.selectedOrderTarget(snapshot, quantities, new Date('2026-10-21T00:00:00Z')).searchParams.get('text');
   assert.equal(text.split('\n').filter(line => /^\d+ × /.test(line)).length, 5);
   assert(!text.includes(snapshot.meals[5].dishName));
 });
@@ -165,8 +165,8 @@ test('Food subtotal uses integer cents and multiple servings', async () => {
   assert.equal(summary.totalQuantity, 3); assert.equal(summary.subtotalCents, 3705);
   assert(m.selectedOrderTarget(record, ['5'], now()).searchParams.get('text').includes('Food subtotal: $61.75'));
 });
-test('An order left open overnight cannot send an expired menu', async () => {
-  const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), ['1'], new Date('2026-10-22T13:00:00Z')), /MENU_EXPIRED/);
+test('An order left open across the cutoff cannot send a closed menu', async () => {
+  const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), ['5'], new Date('2026-10-21T11:00:00Z')), /MENU_EXPIRED/);
 });
 test('Selection cannot reference dishes outside the published snapshot', async () => {
   const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), ['1', '2'], now()), /INVALID_QUANTITY/);
@@ -192,7 +192,7 @@ test('Saved choices restore only for the identical in-date menu', async () => {
   assert.deepEqual(m.readOrderDraft(raw, menu, now()), ['5']);
   assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ dishName: 'Different dish', price: 15 }] }, now()), null);
   assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ dishName: 'Butter Chicken', price: 16 }] }, now()), null);
-  assert.equal(m.readOrderDraft(raw, menu, new Date('2026-10-22T13:00:00Z')), null);
+  assert.equal(m.readOrderDraft(raw, menu, new Date('2026-10-21T11:00:00Z')), null);
 });
 test('Malformed saved choices cannot crash ordering or restore invalid quantities', async () => {
   const m = await modulePromise, menu = m.readPublishedOrderMenu(sample(), now());
@@ -215,4 +215,33 @@ test('Weekly publisher preserves valid photo mappings and safely omits missing p
   const f = publisherFixture(); f.menu.meals[0].imageUrl = 'https://www.makitchens.com.au/menu-images/Dish-0041.jpg';
   f.ctx.publishCurrentOrderingMenu(); assert.equal(f.stored.value.meals[0].imageUrl, '/menu-images/Dish-0041.jpg');
   f.menu.meals[0].imageUrl = 'https://example.com/photo.jpg'; f.ctx.publishCurrentOrderingMenu(); assert.equal(f.stored.value.meals[0].imageUrl, undefined);
+});
+
+test('Cutoff handles winter, month/year boundaries and leap days', async () => {
+  const m = await modulePromise;
+  for (const [delivery, before, at] of [
+    ['2026-07-02', '2026-07-01T11:59:59Z', '2026-07-01T12:00:00Z'],
+    ['2027-01-01', '2026-12-31T10:59:59Z', '2026-12-31T11:00:00Z'],
+    ['2028-03-01', '2028-02-29T10:59:59Z', '2028-02-29T11:00:00Z'],
+  ]) {
+    assert(m.orderingIsOpen(delivery, new Date(before)));
+    assert.equal(m.orderingIsOpen(delivery, new Date(at)), false);
+  }
+  assert.equal(m.orderingCutoffDate('2028-03-01'), '2028-02-29');
+  assert.equal(m.orderingIsOpen('bad', now()), false);
+  assert.equal(m.orderingIsOpen('2026-10-22', new Date('bad')), false);
+  assert.equal(m.orderingIsOpen('2026-10-22', new Date('2026-10-22T00:00:00Z')), false);
+});
+test('Publisher and website agree on the 10pm cutoff in winter and summer', async () => {
+  const m = await modulePromise, f = publisherFixture();
+  for (const [delivery, times] of [
+    ['2026-10-22', ['2026-10-21T10:59:59Z', '2026-10-21T11:00:00Z', '2026-10-22T00:00:00Z']],
+    ['2026-07-02', ['2026-07-01T11:59:59Z', '2026-07-01T12:00:00Z']],
+  ]) for (const time of times) {
+    const date = new Date(time);
+    assert.equal(f.ctx.mkOrderBeforeCutoff_(delivery, date), m.orderingIsOpen(delivery, date));
+    const menu = { ...f.menu, deliveryDate: delivery, menuCycleId: 'MENU-' + delivery };
+    if (m.orderingIsOpen(delivery, date)) assert(f.ctx.mkOrderSnapshot_(menu, date));
+    else assert.throws(() => f.ctx.mkOrderSnapshot_(menu, date), /NO_ACTIVE_IN_DATE_MENU_TO_PUBLISH/);
+  }
 });

@@ -17,11 +17,17 @@ function mkOrderImagePath_(value) {
   return /^\/menu-images\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.(?:jpe?g|png|webp)$/i.test(path) ? path : '';
 }
 
+function mkOrderBeforeCutoff_(deliveryDate, now) {
+  const cutoffDay = new Date(Date.parse(deliveryDate + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
+  const today = Utilities.formatDate(now, MK_ORDER_PUBLISH.timezone, 'yyyy-MM-dd');
+  return today < cutoffDay || (today === cutoffDay && Number(Utilities.formatDate(now, MK_ORDER_PUBLISH.timezone, 'HH')) < 22);
+}
+
 function mkOrderSnapshot_(menu, now) {
   const date = menu && menu.deliveryDate;
   if (!menu || menu.status !== 'ACTIVE' || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
       !Number.isFinite(Date.parse(date + 'T00:00:00Z')) || new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) !== date ||
-      date < Utilities.formatDate(now, MK_ORDER_PUBLISH.timezone, 'yyyy-MM-dd') || menu.menuCycleId !== 'MENU-' + date ||
+      !mkOrderBeforeCutoff_(date, now) || menu.menuCycleId !== 'MENU-' + date ||
       !Array.isArray(menu.meals)) throw new Error('NO_ACTIVE_IN_DATE_MENU_TO_PUBLISH');
   const meals = menu.meals.filter(m => Number(m.remainingServings) > 0).map(m => {
     const name = String(m.dishName || '').trim(), price = Number(m.price), display = String(m.priceDisplay || '').trim();
