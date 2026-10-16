@@ -12,11 +12,11 @@ const sample = () => ({ schemaVersion: 1, publishedAt: '2026-10-16T09:00:00Z',
 const now = () => new Date('2026-10-16T10:00:00Z');
 
 test('Saved snapshot opens the existing manual WhatsApp number with editable quantities', async () => {
-  const m = await modulePromise, url = m.publishedOrderTarget(sample(), now());
+  const m = await modulePromise, url = m.selectedOrderTarget(sample(), ['2'], now());
   assert.equal(url.hostname, 'wa.me'); assert.equal(url.pathname, '/61420246023');
   const message = url.searchParams.get('text');
-  assert(message.includes('Delivery: Thu 22 Oct')); assert(message.includes('1 × Butter Chicken - $15.00'));
-  assert(message.includes('Change 1 to the quantity')); assert(message.includes('Delete any dishes'));
+  assert(message.includes('Delivery: Thu 22 Oct')); assert(message.includes('2 × Butter Chicken - $30.00'));
+  assert(message.includes('Food subtotal: $30.00')); assert(!message.includes('Delete any dishes'));
 });
 test('Initial 22 October snapshot has the 13 verified live dishes', async () => {
   const m = await modulePromise, menu = m.readPublishedOrderMenu(snapshot, new Date('2026-10-22T00:00:00Z'));
@@ -36,7 +36,8 @@ test('Sydney date handles winter and daylight-saving offsets', async () => {
 test('Missing, withdrawn and expired snapshots use the current-menu fallback', async () => {
   const m = await modulePromise;
   for (const record of [null, {}, { ...sample(), withdrawn: true }, { ...sample(), deliveryDate: '2026-10-15', menuCycleId: 'MENU-2026-10-15' }])
-    assert.equal(m.publishedOrderTarget(record, now()).searchParams.get('text'), m.FALLBACK_ORDER_MESSAGE);
+    assert.equal(m.readPublishedOrderMenu(record, now()), null);
+  assert.equal(m.fallbackOrderTarget().searchParams.get('text'), m.FALLBACK_ORDER_MESSAGE);
 });
 test('Invalid date, mismatched cycle and future publication time are rejected', async () => {
   const m = await modulePromise;
@@ -50,13 +51,13 @@ test('Invalid prices, mismatched display price and injected dish lines are rejec
 });
 test('Replacing the published snapshot immediately selects the new content', async () => {
   const m = await modulePromise, next = { ...sample(), meals: [{ dishName: 'Replacement dish', price: 18 }] };
-  assert(m.publishedOrderTarget(next, now()).searchParams.get('text').includes('Replacement dish - $18'));
-  assert(!m.publishedOrderTarget(next, now()).searchParams.get('text').includes('Butter Chicken'));
+  assert(m.selectedOrderTarget(next, ['1'], now()).searchParams.get('text').includes('Replacement dish - $18'));
+  assert(!m.selectedOrderTarget(next, ['1'], now()).searchParams.get('text').includes('Butter Chicken'));
 });
 test('Customer routing never fetches Apps Script and cannot cache past expiry', () => {
-  const route = fs.readFileSync(path.join(root, 'app/go/order/current/route.ts'), 'utf8');
+  const route = fs.readFileSync(path.join(root, 'app/(ordering)/go/order/current/page.tsx'), 'utf8');
   assert(!/\bfetch\s*\(|FLOW_MENU_API|process\.env/.test(route));
-  assert(route.includes("dynamic = 'force-dynamic'")); assert(route.includes("'Cache-Control': 'no-store'"));
+  assert(route.includes("dynamic = 'force-dynamic'")); assert(route.includes('<OrderMenu menu={menu} />'));
 });
 test('Published metadata reports the saved cycle or unavailable status', async () => {
   const m = await modulePromise;
@@ -126,14 +127,10 @@ test('Conflicting GitHub writes release the lock and do not expose provider resp
 test('Publisher logs never expose the private token', () => {
   const f = publisherFixture(); f.ctx.publishCurrentOrderingMenu(); assert(!f.logs.join('').includes('test-private-token'));
 });
-test('Actual customer route returns an uncached 302 to the saved WhatsApp message', async () => {
-  const m = await modulePromise;
-  const route = fs.readFileSync(path.join(root, 'app/go/order/current/route.ts'), 'utf8')
-    .replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
-  const GET = new Function('publishedMenu', 'publishedOrderTarget', route + '\nreturn GET;')(sample(), r => m.publishedOrderTarget(r, now()));
-  const response = await GET();
-  assert.equal(response.status, 302); assert.equal(response.headers.get('Cache-Control'), 'no-store');
-  assert(new URL(response.headers.get('Location')).searchParams.get('text').includes('Butter Chicken'));
+test('The shared link renders the selection page instead of an all-dishes WhatsApp redirect', () => {
+  const page = fs.readFileSync(path.join(root, 'app/(ordering)/go/order/current/page.tsx'), 'utf8');
+  assert(page.includes('readPublishedOrderMenu(publishedMenu)')); assert(page.includes('<OrderMenu menu={menu} />'));
+  assert(!fs.existsSync(path.join(root, 'app/go/order/current/route.ts')));
 });
 test('Actual public verification route returns saved menu metadata without a lookup', async () => {
   const m = await modulePromise;
@@ -142,4 +139,35 @@ test('Actual public verification route returns saved menu metadata without a loo
   const GET = new Function('publishedMenu', 'publishedOrderMetadata', route + '\nreturn GET;')(sample(), r => m.publishedOrderMetadata(r, now()));
   const response = await GET(); assert.equal(response.headers.get('Cache-Control'), 'no-store');
   assert.equal((await response.json()).menuCycleId, 'MENU-2026-10-22');
+});
+
+test('Blank and zero quantities are omitted from the WhatsApp order', async () => {
+  const m = await modulePromise, record = { ...sample(), meals: [sample().meals[0], { dishName: 'Unwanted dish', price: 12 }, { dishName: 'Also unwanted', price: 10 }] };
+  const text = m.selectedOrderTarget(record, ['2', '', '0'], now()).searchParams.get('text');
+  assert(text.includes('2 × Butter Chicken')); assert(!text.includes('Unwanted')); assert(!text.includes('Also unwanted'));
+});
+test('Selecting five dishes includes exactly those five lines', async () => {
+  const m = await modulePromise, quantities = snapshot.meals.map((_, i) => i < 5 ? '1' : '');
+  const text = m.selectedOrderTarget(snapshot, quantities, new Date('2026-10-22T00:00:00Z')).searchParams.get('text');
+  assert.equal(text.split('\n').filter(line => /^\d+ × /.test(line)).length, 5);
+  assert(!text.includes(snapshot.meals[5].dishName));
+});
+test('No selection cannot continue to WhatsApp', async () => {
+  const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), [''], now()), /NO_DISHES_SELECTED/);
+});
+test('Fractional, negative, invalid and oversized quantities cannot continue', async () => {
+  const m = await modulePromise;
+  for (const value of ['1.5', '-1', 'abc', '1000']) assert.throws(() => m.selectedOrderTarget(sample(), [value], now()), /INVALID_QUANTITY/);
+});
+test('Food subtotal uses integer cents and multiple servings', async () => {
+  const m = await modulePromise, record = { ...sample(), meals: [{ dishName: 'Dish', price: 12.35 }] };
+  const menu = m.readPublishedOrderMenu(record, now()); const summary = m.orderSelection(menu, ['3']);
+  assert.equal(summary.totalQuantity, 3); assert.equal(summary.subtotalCents, 3705);
+  assert(m.selectedOrderTarget(record, ['3'], now()).searchParams.get('text').includes('Food subtotal: $37.05'));
+});
+test('An order left open overnight cannot send an expired menu', async () => {
+  const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), ['1'], new Date('2026-10-22T13:00:00Z')), /MENU_EXPIRED/);
+});
+test('Selection cannot reference dishes outside the published snapshot', async () => {
+  const m = await modulePromise; assert.throws(() => m.selectedOrderTarget(sample(), ['1', '2'], now()), /INVALID_QUANTITY/);
 });
