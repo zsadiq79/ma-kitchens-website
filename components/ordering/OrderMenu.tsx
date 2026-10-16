@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
+import Image from 'next/image';
 import {
   foodMoney, MAX_ORDER_QUANTITY, MINIMUM_ORDER_ITEMS, DELIVERY_FEE_CENTS, orderSelection, fallbackOrderTarget,
   readPublishedOrderMenu, selectedOrderTarget, readOrderDraft, orderDraftSignature,
@@ -12,11 +13,19 @@ type Menu = {
   deliveryDate: string;
   deliveryDateDisplay: string;
   publishedAt: string;
-  meals: { dishName: string; price: number; priceDisplay?: string }[];
+  meals: { dishName: string; price: number; priceDisplay?: string; imageUrl?: string }[];
 };
 
 function WhatsAppIcon() {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.9 11.9 0 0 0 12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6A12 12 0 0 0 12 24c6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.5-8.5ZM12 22a10 10 0 0 1-5.1-1.4l-.4-.2-3.7 1 1-3.6-.3-.4A10 10 0 1 1 12 22Zm5.5-7.5c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.5s1.1 2.9 1.3 3.1c.2.2 2.1 3.2 5.1 4.4l1.7.6c.7.2 1.3.2 1.8.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.3-.6-.4Z" /></svg>;
+}
+
+function DishThumbnail({ src, eager }: { src?: string; eager: boolean }) {
+  const [failed, setFailed] = useState(false);
+  return <div className={styles.thumbnail}>
+    {src && !failed ? <Image src={src} alt="" width={96} height={96} sizes="(max-width: 600px) 80px, 96px" loading={eager ? 'eager' : 'lazy'} onError={() => setFailed(true)} /> :
+      <svg aria-hidden="true" viewBox="0 0 48 48" fill="none"><circle cx="26" cy="24" r="13" stroke="currentColor" strokeWidth="1.5" /><circle cx="26" cy="24" r="9" stroke="currentColor" strokeWidth="1.5" /><path d="M7 11v12m-3-12v7c0 5 6 5 6 0v-7M7 23v14m34-26v26m0-26c-5 4-5 12 0 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>}
+  </div>;
 }
 
 export function OrderMenu({ menu }: { menu: Menu | null }) {
@@ -90,7 +99,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
         <div className={styles.intro}>
           <h1>Choose your dishes</h1>
           {unavailable ? <p className={styles.lead}>Our current menu is closed. Get in touch and we’ll help you with what’s coming next.</p> : <>
-            <p className={styles.lead}>Enter quantities for your favourites.<br />Leave everything else blank. Minimum order: {MINIMUM_ORDER_ITEMS} items.</p>
+            <p className={styles.lead}>Enter quantities for your favourites.<br /><span className={styles.minimum}>Minimum order: {MINIMUM_ORDER_ITEMS} items.</span></p>
             <div className={styles.delivery}><span aria-hidden="true">◷</span> Delivery {menu.deliveryDateDisplay}</div>
           </>}
         </div>
@@ -105,7 +114,9 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
               const invalid = Boolean(selection?.invalidIndexes.includes(index));
               const selected = !invalid && Number(quantities[index]) > 0;
               return <div key={index} className={`${styles.dish} ${selected ? styles.selected : ''}`}>
-                <div className={styles.dishInfo}><span className={styles.dishNumber}>{String(index + 1).padStart(2, '0')}</span>
+                <DishThumbnail key={meal.imageUrl || 'no-photo'} src={meal.imageUrl} eager={index < 2} />
+                <div className={styles.dishContent}>
+                <div className={styles.dishInfo}>
                   <div><label htmlFor={`quantity-${index}`} className={styles.dishName}>{meal.dishName}</label>
                     <p className={styles.price}>{foodMoney(Math.round(meal.price * 100))}<span> each</span></p>
                   </div>
@@ -124,6 +135,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
                   </div>
                   {invalid && <p id={`error-${index}`} className={styles.fieldError}>Use a whole number, 1–999.</p>}
                 </div>
+                </div>
               </div>;
             })}
           </div>
@@ -137,7 +149,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
               <div className={styles.costs} aria-live="polite" aria-atomic="true">
                 <div><span>Food subtotal</span><span>{foodMoney(selection?.subtotalCents || 0)}</span></div>
                 <div><span>Delivery</span><span>{foodMoney(DELIVERY_FEE_CENTS)}</span></div>
-                <div className={styles.total}><span>Total before discounts</span><strong>{foodMoney((selection?.subtotalCents || 0) + DELIVERY_FEE_CENTS)}</strong></div>
+                <div className={styles.total}><span>Total</span><strong>{foodMoney((selection?.subtotalCents || 0) + DELIVERY_FEE_CENTS)}</strong></div>
               </div>
               {message && <p className={styles.formError} role="alert">{message}</p>}
               <button id="continue-order" className={styles.whatsappButton} type="submit" disabled={!ready}><WhatsAppIcon />Continue to WhatsApp<span aria-hidden="true">↗</span></button>

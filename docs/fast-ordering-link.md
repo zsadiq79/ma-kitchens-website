@@ -53,7 +53,7 @@ The publisher creates no triggers, modifies no orders/customer/feedback data and
 Run `npm test`, including `tests/published-order-menu.test.cjs`. Tests cover expiry at Sydney midnight and DST offsets, closed-menu handling, blank/zero omission, selected-only messages, whole-number validation, integer-cent subtotals, overnight handoff refusal, no customer-click fetch, owner checks, publishing preview, idempotence, GitHub conflict handling, withdrawal and secret-free logs. Services are mocked for publisher tests; live owner publishing requires one-time credentials above. The website build and preview must pass before merging. Existing marketing package remains uninstalled and unchanged.
 
 ### Minimum order, delivery and discounts
-The selector requires at least five items in total, including multiple servings of one dish. It displays food subtotal, a $10 delivery fee, and total before discounts, and includes those amounts in the WhatsApp draft. Invalid quantities and fewer than five items are also rejected by the message builder.
+The selector requires at least five items in total, including multiple servings of one dish. It displays food subtotal, a $10 delivery fee, and total, and includes those amounts in the WhatsApp draft. Invalid quantities and fewer than five items are also rejected by the message builder.
 
 These MVP rules are shared constants in `lib/publishedOrderMenu.mjs`; they do not automatically synchronize with Menu Config. The selector prepares a WhatsApp message and does not create an order or apply customer discounts. Existing Order Entry remains separate and uses its existing Menu Config rules. Standard Discount % is global; an individual discount needs a per-order/customer override rather than changing that global setting.
 
@@ -61,3 +61,10 @@ These MVP rules are shared constants in `lib/publishedOrderMenu.mjs`; they do no
 The ordering layout reuses the existing site Header and Footer. Header has an optional compact mobile navigation mode for this layout; its default rendering on existing pages stays the same. Ordering colours and typography match the current site theme, and links below the menu provide another way to explore Home, About and Contact.
 
 Quantities are saved in sessionStorage for the current browser tab. Returning or reloading restores choices only when delivery cycle/date, dish names/order and prices still match the active menu. Expired menus and malformed drafts are rejected; invalid saved quantities become blank. No customer identity, address or order record is stored. Browsers that block storage can still use ordering, with no recovery guarantee. The fixed order summary remains visible while browsing the ordering page, with space below the footer so links remain reachable.
+
+### Dish thumbnails
+The saved menu includes optional imageUrl values from the current Weekly Menu rows, matched by dish name within the same cycle. Publisher carries those mappings forward automatically. Only Ma Kitchens /menu-images/ paths are accepted; same-domain absolute URLs normalize to local paths. Missing or invalid photos do not block ordering.
+
+Dish photos use Next Image optimization at thumbnail sizes, with eager loading for the first two photos and lazy loading thereafter. Rounded square photos sit beside dish details; mobile controls sit under the name/price to avoid squeezing long names. A neutral plate icon replaces missing or failed images. Original library photos are used without replacement or generated imagery.
+
+Intro copy keeps minimum order on a separate line; the page and WhatsApp message label the combined amount Total. Individual discounts remain outside this selector.

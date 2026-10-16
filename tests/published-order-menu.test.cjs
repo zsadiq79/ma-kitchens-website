@@ -176,13 +176,13 @@ test('One to four items cannot continue; five servings of one dish qualify', asy
   const m = await modulePromise;
   for (let quantity = 1; quantity < 5; quantity++) assert.throws(() => m.selectedOrderTarget(sample(), [String(quantity)], now()), /MINIMUM_ORDER_NOT_MET/);
   const text = m.selectedOrderTarget(sample(), ['5'], now()).searchParams.get('text');
-  assert(text.includes('Delivery fee: $10.00')); assert(text.includes('Total before discounts: $85.00'));
+  assert(text.includes('Delivery fee: $10.00')); assert(text.includes('Total: $85.00'));
 });
 test('Minimum counts total servings across dishes, with a single delivery fee', async () => {
   const m = await modulePromise;
   const record = { ...sample(), meals: [...sample().meals, { dishName: 'Daal', price: 12.35 }] };
   const text = m.selectedOrderTarget(record, ['3', '2'], now()).searchParams.get('text');
-  assert(text.includes('Food subtotal: $69.70')); assert(text.includes('Total before discounts: $79.70'));
+  assert(text.includes('Food subtotal: $69.70')); assert(text.includes('Total: $79.70'));
   assert.equal(text.split('Delivery fee: $10.00').length - 1, 1);
 });
 
@@ -200,4 +200,19 @@ test('Malformed saved choices cannot crash ordering or restore invalid quantitie
   const saved = quantities => JSON.stringify({ signature: m.orderDraftSignature(menu), quantities });
   assert.equal(m.readOrderDraft(saved(['1', '2']), menu, now()), null);
   for (const value of ['-1', '1.5', '1000', 5, {}]) assert.deepEqual(m.readOrderDraft(saved([value]), menu, now()), ['']);
+});
+
+test('Menu photos normalize to the existing website library, without blocking orders', async () => {
+  const m = await modulePromise;
+  for (const value of ['/menu-images/Dish-0040.webp', 'https://www.makitchens.com.au/menu-images/Dish-0040.webp', 'https://makitchens.com.au/menu-images/Dish-0040.webp']) assert.equal(m.menuImagePath(value), '/menu-images/Dish-0040.webp');
+  for (const value of ['https://example.com/photo.jpg', '//example.com/x.jpg', 'javascript:alert(1)', '/menu-images/../photo.jpg', '/menu-images/a.svg', '/menu-images/a.jpg?x=1', null]) assert.equal(m.menuImagePath(value), '');
+  const record = sample(); record.meals[0].imageUrl = 'https://example.com/photo.jpg';
+  assert.equal(m.readPublishedOrderMenu(record, now()).meals[0].imageUrl, '');
+  assert(m.selectedOrderTarget(record, ['5'], now()));
+  assert.equal(m.readPublishedOrderMenu(snapshot, now()).meals[0].imageUrl, '/menu-images/Dish-0040.webp');
+});
+test('Weekly publisher preserves valid photo mappings and safely omits missing photos', () => {
+  const f = publisherFixture(); f.menu.meals[0].imageUrl = 'https://www.makitchens.com.au/menu-images/Dish-0041.jpg';
+  f.ctx.publishCurrentOrderingMenu(); assert.equal(f.stored.value.meals[0].imageUrl, '/menu-images/Dish-0041.jpg');
+  f.menu.meals[0].imageUrl = 'https://example.com/photo.jpg'; f.ctx.publishCurrentOrderingMenu(); assert.equal(f.stored.value.meals[0].imageUrl, undefined);
 });

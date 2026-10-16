@@ -12,6 +12,11 @@ function mkOrderPublishOwner_() {
   if (!owner || Session.getEffectiveUser().getEmail() !== owner.getEmail()) throw new Error('ORDER_PUBLISH_OWNER_REQUIRED');
 }
 
+function mkOrderImagePath_(value) {
+  const path = typeof value === 'string' ? value.trim().replace(/^https:\/\/(?:www\.)?makitchens\.com\.au(?=\/)/, '') : '';
+  return /^\/menu-images\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.(?:jpe?g|png|webp)$/i.test(path) ? path : '';
+}
+
 function mkOrderSnapshot_(menu, now) {
   const date = menu && menu.deliveryDate;
   if (!menu || menu.status !== 'ACTIVE' || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
@@ -26,6 +31,8 @@ function mkOrderSnapshot_(menu, now) {
       throw new Error('INVALID_PRICE_FOR_ORDER_MESSAGE');
     const result = { dishName: name, price: price };
     if (display) result.priceDisplay = display;
+    const image = mkOrderImagePath_(m.imageUrl);
+    if (image) result.imageUrl = image;
     return result;
   });
   if (!meals.length || meals.length > 100) throw new Error('NO_AVAILABLE_DISHES_TO_PUBLISH');
