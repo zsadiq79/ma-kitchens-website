@@ -1,5 +1,87 @@
 {
   "schemaVersion": 1,
-  "withdrawn": true,
-  "publishedAt": "2026-10-16T23:05:23.557Z"
+  "publishedAt": "2026-10-16T23:09:43.042Z",
+  "menuCycleId": "MENU-2026-10-22",
+  "deliveryDate": "2026-10-22",
+  "deliveryDateDisplay": "Thu 22 Oct",
+  "meals": [
+    {
+      "dishName": "Beef Sindhi Biryani",
+      "price": 18,
+      "priceDisplay": "$18.00",
+      "imageUrl": "/menu-images/Dish-0040.webp"
+    },
+    {
+      "dishName": "Butter Chicken",
+      "price": 15,
+      "priceDisplay": "$15.00",
+      "imageUrl": "/menu-images/Dish-0041.jpg"
+    },
+    {
+      "dishName": "Dhaba Style Chana Daal",
+      "price": 11,
+      "priceDisplay": "$11.00",
+      "imageUrl": "/menu-images/Dish-0042.jpg"
+    },
+    {
+      "dishName": "Qeema Karelaa",
+      "price": 14,
+      "priceDisplay": "$14.00",
+      "imageUrl": "/menu-images/Dish-0043.jpg"
+    },
+    {
+      "dishName": "Royal Shahi Tukray",
+      "price": 12,
+      "priceDisplay": "$12.00",
+      "imageUrl": "/menu-images/Dish-0044.jpeg"
+    },
+    {
+      "dishName": "Masar Chawal",
+      "price": 13,
+      "priceDisplay": "$13.00",
+      "imageUrl": "/menu-images/Dish-0045.jpg"
+    },
+    {
+      "dishName": "Koftay Aalo",
+      "price": 15,
+      "priceDisplay": "$15.00",
+      "imageUrl": "/menu-images/Dish-0046.jpeg"
+    },
+    {
+      "dishName": "Chilli Chicken with Rice",
+      "price": 15,
+      "priceDisplay": "$15.00",
+      "imageUrl": "/menu-images/Dish-0047.jpg"
+    },
+    {
+      "dishName": "Aalo Tikki Pulao",
+      "price": 11,
+      "priceDisplay": "$11.00",
+      "imageUrl": "/menu-images/Dish-0021.png"
+    },
+    {
+      "dishName": "Malai Boti",
+      "price": 17,
+      "priceDisplay": "$17.00",
+      "imageUrl": "/menu-images/Dish-0007.jpeg"
+    },
+    {
+      "dishName": "Aalo Gobhi",
+      "price": 14,
+      "priceDisplay": "$14.00",
+      "imageUrl": "/menu-images/Dish-0004.jpg"
+    },
+    {
+      "dishName": "Achari Keema",
+      "price": 14,
+      "priceDisplay": "$14.00",
+      "imageUrl": "/menu-images/Dish-0038.jpeg"
+    },
+    {
+      "dishName": "Mix Daal",
+      "price": 12,
+      "priceDisplay": "$12.00",
+      "imageUrl": "/menu-images/Dish-0039.jpeg"
+    }
+  ]
 }
