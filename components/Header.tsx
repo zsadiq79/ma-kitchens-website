@@ -1,4 +1,5 @@
 import Link from "next/link";
+import styles from "./OrderingHeader.module.css";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -7,7 +8,23 @@ const navItems = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Header() {
+export function Header({ compactMobile = false }: { compactMobile?: boolean }) {
+  if (compactMobile) return (
+    <header className={styles.header}>
+      <div className={styles.inner}>
+        <Link href="/" className={styles.brand} aria-label="Ma Kitchens home">Ma Kitchens</Link>
+        <nav className={styles.desktopNav} aria-label="Main navigation">
+          {navItems.map(item => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+        </nav>
+        <details className={styles.mobileMenu}>
+          <summary>Explore Ma Kitchens <span aria-hidden="true">☰</span></summary>
+          <nav aria-label="Mobile navigation">
+            {navItems.map(item => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+          </nav>
+        </details>
+      </div>
+    </header>
+  );
   return (
     <header className="bg-ink text-cream">
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-5 sm:px-6 md:flex-row md:items-center md:justify-between md:py-6 lg:px-10">
