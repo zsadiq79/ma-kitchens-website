@@ -16,7 +16,7 @@ const MK_ORDER_REQUEST = Object.freeze({
 });
 
 const MK_ORDER_REQUEST_HEADERS = Object.freeze({
-  'Order Requests': ['Request ID', 'Request Reference', 'Retry Key', 'Payload Hash', 'Recovery Capability Hash', 'Menu Revision', 'Menu Cycle ID', 'Delivery Date', 'Status', 'Customer ID', 'Public Food Subtotal Cents', 'Public Delivery Fee Cents', 'Public Total Cents', 'Owner Discount Percent', 'Linked Order ID', 'Created At', 'Updated At', 'Received At', 'Accepted At', 'Expires At', 'Owner Notes'],
+  'Order Requests': ['Request ID', 'Request Reference', 'Retry Key', 'Payload Hash', 'Recovery Capability Hash', 'Menu Revision', 'Menu Cycle ID', 'Delivery Date', 'Status', 'Customer ID', 'Public Food Subtotal Cents', 'Public Delivery Fee Cents', 'Public Total Cents', 'Owner Discount Percent', 'Linked Order ID', 'Created At', 'Updated At', 'Received At', 'Accepted At', 'Expires At', 'Owner Notes', 'Sender Phone (OWNER)'],
   'Order Request Items': ['Request ID', 'Public Item ID', 'Menu Line ID', 'Item Code', 'Dish Name (SNAPSHOT)', 'Kitchen Name (SNAPSHOT)', 'Cook ID', 'Qty', 'List Price / Unit Cents (SNAPSHOT)', 'Cook Pay / Unit Cents (SNAPSHOT)', 'Public Line Total Cents', 'Menu Revision'],
   'Order Request Events': ['Event ID', 'Request ID', 'Request Reference', 'Event', 'Actor', 'Event At', 'Details JSON', 'Request Version'],
   'Order Menu State': ['Record Type', 'Menu Revision', 'Menu Cycle ID', 'Delivery Date', 'Published At', 'Status', 'Public Item ID', 'Menu Line ID', 'Item Code', 'Cook ID', 'Kitchen Name', 'Dish Name', 'List Price Cents', 'Cook Pay Cents', 'Remaining Servings', 'Image URL', 'Minimum Order Items', 'Delivery Fee Cents']
@@ -71,7 +71,7 @@ function orderRequestOwner_() {
 }
 
 function setupOrderRequestWorkspace() {
-  orderRequestOwner_();
+  mkOwnerBook_();
   const spreadsheet = SpreadsheetApp.openById(CONTROL_TOWER_SPREADSHEET_ID);
   Object.keys(MK_ORDER_REQUEST_HEADERS).forEach(name => {
     let sheet = spreadsheet.getSheetByName(name);
@@ -84,6 +84,8 @@ function setupOrderRequestWorkspace() {
     if (!populated) sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     sheet.setFrozenRows(1);
   });
+  const trigger = ScriptApp.getProjectTriggers().some(item => item.getHandlerFunction() === 'orderRequestInboxOnOpen_' && item.getTriggerSourceId() === spreadsheet.getId());
+  if (!trigger) ScriptApp.newTrigger('orderRequestInboxOnOpen_').forSpreadsheet(spreadsheet).onOpen().create();
   return { ok: true, sheets: Object.keys(MK_ORDER_REQUEST_HEADERS) };
 }
 
@@ -166,6 +168,9 @@ function orderRequestCell_(value) {
 }
 
 function orderRequestUpdateCells_(sheet, startRow, rows, width) {
+  const needed = startRow + rows.length;
+  if (typeof sheet.getMaxRows === 'function' && needed > sheet.getMaxRows())
+    sheet.insertRowsAfter(sheet.getMaxRows(), Math.max(1000, needed - sheet.getMaxRows()));
   return { updateCells: { start: { sheetId: sheet.getSheetId(), rowIndex: startRow, columnIndex: 0 },
     rows: rows.map(row => ({ values: Array.from({ length: width }, (_, index) => orderRequestCell_(row[index])) })),
     fields: 'userEnteredValue' } };
@@ -235,7 +240,13 @@ function orderRequestCapture_(body) {
       return { ...item, published, line, lineTotalCents: published.priceCents * item.quantity };
     });
     const requestId = 'ORQ-' + Utilities.getUuid().toUpperCase();
-    const requestRef = 'MK-' + Utilities.getUuid().replace(/-/g, '').slice(0, 8).toUpperCase();
+    const references = requestSheet.getLastRow() > 1 ? requestSheet.getRange(2, 2, requestSheet.getLastRow() - 1, 1).getValues().map(row => String(row[0])) : [];
+    let requestRef = '';
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const candidate = 'MK-' + Utilities.getUuid().replace(/-/g, '').slice(0, 8).toUpperCase();
+      if (!references.includes(candidate)) { requestRef = candidate; break; }
+    }
+    if (!requestRef) throw new Error('ORDER_REQUEST_BUSY');
     const nowIso = now.toISOString();
     const foodSubtotalCents = matched.reduce((sum, item) => sum + item.lineTotalCents, 0);
     const publicTotalCents = foodSubtotalCents + deliveryFeeCents;
@@ -284,4 +295,135 @@ function handleOrderRequestApi_(e, action) {
       'MINIMUM_ORDER_NOT_MET', 'ITEM_UNAVAILABLE', 'REQUEST_CONFLICT', 'INVALID_RECOVERY_CAPABILITY', 'ORDER_REQUEST_MENU_COLUMNS_MISSING'];
     return orderRequestJson_({ ok: false, error: allowed.indexOf(message) >= 0 ? message : 'ORDER_REQUEST_FAILED' });
   }
+}
+
+// Private owner workspace. These functions are called by a spreadsheet sidebar,
+// never by the public website or the signed capture endpoint.
+function orderRequestInboxOwnerBook_() {
+  const spreadsheet = SpreadsheetApp.openById(CONTROL_TOWER_SPREADSHEET_ID);
+  const owner = spreadsheet.getOwner();
+  const activeEmail = Session.getActiveUser().getEmail();
+  if (!owner || !activeEmail || activeEmail !== owner.getEmail()) throw new Error('ORDER_REQUEST_OWNER_REQUIRED');
+  return spreadsheet;
+}
+
+function orderRequestInboxOnOpen_() {
+  mkOwnerBook_();
+  SpreadsheetApp.getUi().createMenu('Website Requests')
+    .addItem('Open owner order workspace', 'orderRequestOpenInbox')
+    .addToUi();
+}
+
+function orderRequestOpenInbox() {
+  mkOwnerBook_();
+  const html = HtmlService.createHtmlOutputFromFile('OwnerOrderWorkspace').setWidth(1050).setHeight(740);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Ma Kitchens owner orders');
+}
+
+function orderRequestInboxList() {
+  const spreadsheet = mkOwnerBook_();
+  const requestSheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.requestSheet);
+  const itemSheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.itemSheet);
+  if (!requestSheet || !itemSheet || requestSheet.getLastRow() < 2) return { requests: [] };
+  const requestRows = requestSheet.getRange(2, 1, requestSheet.getLastRow() - 1, MK_ORDER_REQUEST_HEADERS['Order Requests'].length).getValues();
+  const items = {};
+  if (itemSheet.getLastRow() > 1) itemSheet.getRange(2, 1, itemSheet.getLastRow() - 1, MK_ORDER_REQUEST_HEADERS['Order Request Items'].length).getValues().forEach(row => {
+    const key = String(row[0] || '');
+    if (!key) return;
+    (items[key] || (items[key] = [])).push({ dishName: String(row[4] || ''), quantity: Number(row[7]) || 0,
+      unitPriceCents: Number(row[8]) || 0, lineTotalCents: Number(row[10]) || 0 });
+  });
+  const requests = requestRows.filter(row => ['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].indexOf(String(row[8])) >= 0)
+    .slice(-100).reverse().map(row => ({ id: String(row[0]), reference: String(row[1]), deliveryDate: String(row[7]), status: String(row[8]),
+      publicTotalCents: Number(row[12]) || 0, receivedAt: String(row[17] || ''), senderPhone: String(row[21] || ''),
+      items: items[String(row[0])] || [] }));
+  return { requests: requests };
+}
+
+function orderRequestOwnerEventRequest_(spreadsheet, requestRow, eventName, detail) {
+  const eventSheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.eventSheet);
+  const now = new Date().toISOString();
+  const requestId = String(requestRow[0]), reference = String(requestRow[1]);
+  let version = 1;
+  if (eventSheet.getLastRow() > 1) {
+    const prior = eventSheet.getRange(2, 2, eventSheet.getLastRow() - 1, 1).getValues();
+    version += prior.filter(row => String(row[0]) === requestId).length;
+  }
+  const row = ['EVT-' + Utilities.getUuid().toUpperCase(), requestId, reference, eventName, Session.getActiveUser().getEmail(), now,
+    JSON.stringify(detail || {}), version];
+  return orderRequestUpdateCells_(eventSheet, eventSheet.getLastRow(), [row], MK_ORDER_REQUEST_HEADERS[MK_ORDER_REQUEST.eventSheet].length);
+}
+
+function orderRequestOwnerFindRow_(spreadsheet, reference) {
+  if (typeof reference !== 'string' || !/^MK-[A-Z0-9]{8}$/.test(reference)) throw new Error('INVALID_REQUEST_REFERENCE');
+  const sheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.requestSheet);
+  if (!sheet || sheet.getLastRow() < 2) throw new Error('REQUEST_NOT_FOUND');
+  const values = sheet.getRange(2, 1, sheet.getLastRow() - 1, MK_ORDER_REQUEST_HEADERS['Order Requests'].length).getValues();
+  const matches = values.map((row, index) => ({ row: row, rowNumber: index + 2 })).filter(item => String(item.row[1]) === reference);
+  if (matches.length !== 1) throw new Error('REQUEST_NOT_FOUND');
+  return { sheet: sheet, row: matches[0].row, rowNumber: matches[0].rowNumber };
+}
+
+function orderRequestMarkReceived(reference, senderPhone, ownerNote) {
+  const spreadsheet = mkOwnerBook_();
+  const normalized = mkPhone_(senderPhone);
+  if (!/^614\d{8}$/.test(normalized)) throw new Error('Enter the sender’s Australian mobile number from WhatsApp.');
+  const note = String(ownerNote || '').trim();
+  if (note.length > 500) throw new Error('Owner note must be 500 characters or fewer.');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const found = orderRequestOwnerFindRow_(spreadsheet, reference), row = found.row;
+    if (!['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(row[8]))) throw new Error('This request cannot be marked received in its current state.');
+    if (row[8] === 'RECEIVED' && String(row[21]) === normalized && !note) return { ok: true };
+    const now = new Date().toISOString(), previousNote = String(row[20] || '');
+    const nextNote = note ? [previousNote, note].filter(Boolean).join('\n') : previousNote;
+    const changes = [
+      orderRequestCellUpdate_(found.sheet, found.rowNumber, 9, 'RECEIVED'),
+      orderRequestCellUpdate_(found.sheet, found.rowNumber, 17, now),
+      orderRequestCellUpdate_(found.sheet, found.rowNumber, 18, now),
+      orderRequestCellUpdate_(found.sheet, found.rowNumber, 21, nextNote),
+      orderRequestCellUpdate_(found.sheet, found.rowNumber, 22, normalized),
+      orderRequestOwnerEventRequest_(spreadsheet, row, 'WHATSAPP_RECEIVED', { senderPhone: normalized, note: note })
+    ];
+    Sheets.Spreadsheets.batchUpdate({ requests: changes }, spreadsheet.getId());
+    return { ok: true };
+  } finally { lock.releaseLock(); }
+}
+
+function orderRequestCellUpdate_(sheet, row, column, value) {
+  const cell = orderRequestCell_(value);
+  return { updateCells: { range: { sheetId: sheet.getSheetId(), startRowIndex: row - 1, endRowIndex: row,
+    startColumnIndex: column - 1, endColumnIndex: column }, rows: [{ values: [cell] }], fields: 'userEnteredValue' } };
+}
+
+function orderRequestFindCustomersBySender(senderPhone) {
+  const spreadsheet = mkOwnerBook_();
+  const normalized = mkPhone_(senderPhone);
+  if (!/^614\d{8}$/.test(normalized)) throw new Error('Enter the sender’s Australian mobile number from WhatsApp.');
+  const customers = mkCustomers_(spreadsheet).filter(customer => { try { return mkPhone_(customer.phone) === normalized; } catch (_) { return false; } });
+  if (customers.length > 1) return { status: 'DUPLICATE', customers: customers.map(orderRequestSafeCustomer_) };
+  if (!customers.length) return { status: 'NO_MATCH', customers: [] };
+  return { status: 'MATCH', customers: customers.map(orderRequestSafeCustomer_) };
+}
+
+function orderRequestSafeCustomer_(customer) {
+  return { id: String(customer.id), name: String(customer.name), phone: '+' + mkPhone_(customer.phone),
+    address: String(customer.address || ''), suburb: String(customer.suburb || ''), postcode: String(customer.postcode || '') };
+}
+
+function orderRequestReject(reference, reason) {
+  const spreadsheet = mkOwnerBook_(), note = String(reason || '').trim();
+  if (!note || note.length > 500) throw new Error('Add a reason of up to 500 characters.');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const found = orderRequestOwnerFindRow_(spreadsheet, reference);
+    if (!['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(found.row[8]))) throw new Error('This request cannot be rejected in its current state.');
+    const now = new Date().toISOString();
+    Sheets.Spreadsheets.batchUpdate({ requests: [orderRequestCellUpdate_(found.sheet, found.rowNumber, 9, 'REJECTED'),
+      orderRequestCellUpdate_(found.sheet, found.rowNumber, 17, now), orderRequestCellUpdate_(found.sheet, found.rowNumber, 21, note),
+      orderRequestOwnerEventRequest_(spreadsheet, found.row, 'REQUEST_REJECTED', { reason: note })] }, spreadsheet.getId());
+    return { ok: true };
+  } finally { lock.releaseLock(); }
 }

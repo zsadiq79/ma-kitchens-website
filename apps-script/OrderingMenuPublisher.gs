@@ -1,6 +1,6 @@
-/* Ma Kitchens ordering-link MVP. Add this as a NEW file in the existing project.
- * Does not replace Code.gs, send WhatsApp messages, modify Sheets or add triggers.
- * Publish writes one public menu JSON file through the existing GitHub/Vercel flow.
+/* Ma Kitchens ordering snapshot publisher, preview candidate.
+ * Publishes public menu JSON and the private authoritative menu state.
+ * Does not send WhatsApp messages. This version refuses the production branch.
  */
 const MK_ORDER_PUBLISH = Object.freeze({
   repository: 'zsadiq79/ma-kitchens-website', branch: 'codex/order-request-capture-preview',

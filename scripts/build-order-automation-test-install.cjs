@@ -1,0 +1,12 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const source = path.join(root, 'apps-script');
+const target = path.join(source, 'test-install');
+const modules = ['OrderAutomationTestBase.gs', 'OrderEngine.gs', 'OrderRequests.gs', 'OwnerOrders.gs', 'OwnerCustomers.gs', 'OwnerOrderSetup.gs', 'OrderingMenuPublisher.gs'];
+fs.mkdirSync(target, { recursive: true });
+const contents = modules.map(name => '// SOURCE: ' + name + '\n' + fs.readFileSync(path.join(source, name), 'utf8')).join('\n\n');
+fs.writeFileSync(path.join(target, 'Code.gs'), contents);
+fs.copyFileSync(path.join(source, 'OwnerOrderWorkspace.html'), path.join(target, 'OwnerOrderWorkspace.html'));
+fs.copyFileSync(path.join(source, 'appsscript.test.json'), path.join(target, 'appsscript.json'));
+console.log('Built isolated test installer with ' + modules.length + ' modules, one dispatcher, and one owner interface.');
