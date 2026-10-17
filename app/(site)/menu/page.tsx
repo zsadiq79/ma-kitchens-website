@@ -53,7 +53,7 @@ export default function MenuPage() {
               <div className="mt-7">
                 <WhatsAppOrderButton />
                 <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/60 sm:text-base">
-                  Open your order in WhatsApp, adjust quantities and remove any dishes you don&apos;t want, then send it to us.
+                  Choose your dishes and quantities, review your total, then send your order on WhatsApp.
                 </p>
               </div>
             </>
