@@ -9,7 +9,7 @@ const testBookId = '1qsayqbrcSdSnwHIRzTvy7qgE2rWYltrqgzz3oykeZcs';
 const date = '2026-10-22', lineId = 'ML-20261022-M0001';
 const copy = value => JSON.parse(JSON.stringify(value));
 
-function fixture() {
+function fixture(options = {}) {
   const state = { now: Date.parse('2026-10-18T00:00:00Z'), owner: 'owner@example.test', env: 'TEST',
     formulaFail: false, throwBefore: false, throwAfter: false, customerPending: false, shiftIds: false, writes: [], batches: 0 };
   class Clock extends Date { constructor(...args) { super(...(args.length ? args : [state.now])); } static now() { return state.now; } }
@@ -21,6 +21,7 @@ function fixture() {
     'Customer Intake': ['Submission ID','Respondent ID','Submitted at','First name','Mobile number','Suburb or postcode','','','WhatsApp Contact (Yes, Ma Kitchens can contact me on WhatsApp about my free meal claim and order)',...Array(10).fill('')],
     'Weekly Menu': ['Menu Line ID','Menu Cycle ID','Delivery Date','Item Code','Dish Name','Cook ID','Menu Kitchen Name','Customer Price','Available Servings','Menu Status','Menu Card Readiness','Availability Status','Cook Section Order','Dish Display Order','Image URL'],
     Dishes: ['Item Code','Cook Pay / Serving','Status'],
+    'Menu Config': ['Setting', 'Value'],
   };
   const ctx = { Date: Clock, Object, Array, Number, String, Math, JSON, RegExp, isNaN,
     CONTROL_TOWER_SPREADSHEET_ID: testBookId, CUSTOMERS_SHEET:'Customers', CUSTOMER_INTAKE_SHEET:'Customer Intake',
@@ -40,7 +41,7 @@ function fixture() {
     Sheets:{Spreadsheets:{batchUpdate:request=>apply(request.requests)}},
   };
   vm.createContext(ctx);
-  for(const name of ['OrderEngine.gs','OrderRequests.gs','OwnerOrders.gs','OwnerCustomers.gs','OwnerOrderSetup.gs'])
+  for(const name of (options.integrated ? ['integration-test/Code.gs'] : ['OrderEngine.gs','OrderRequests.gs','OwnerOrders.gs','OwnerCustomers.gs','OwnerOrderSetup.gs']))
     vm.runInContext(fs.readFileSync(path.join(root,'apps-script',name),'utf8'),ctx);
   const schemas=vm.runInContext('Object.assign({}, MK_ORDER_REQUEST_HEADERS, MK_OWNER_HEADERS)',ctx);
   Object.assign(headers,copy(schemas));
@@ -48,19 +49,20 @@ function fixture() {
   for(const [name,columns]of Object.entries(headers)){
     tables[name]=[columns.slice()];formulas[name]={};
     const id=nextSheetId++;
-    sheets[name]={getSheetId:()=>id,getMaxRows:()=>name==='Orders'?2000:name==='Order Items'?5000:2000,getMaxColumns:()=>columns.length,
+    sheets[name]={getParent:()=>book,getSheetId:()=>id,getMaxRows:()=>name==='Orders'?2000:name==='Order Items'?5000:2000,getMaxColumns:()=>columns.length,
       getLastRow:()=>tables[name].length,getDataRange:()=>({getValues:()=>copy(tables[name]),getDisplayValues:()=>copy(tables[name])}),
       getRange:(row,col,height=1,width=1)=>({getRow:()=>row,getColumn:()=>col,
         getValues:()=>Array.from({length:height},(_,i)=>Array.from({length:width},(_,j)=>tables[name][row+i-1]?.[col+j-1]??'')),
         getDisplayValues:()=>Array.from({length:height},(_,i)=>Array.from({length:width},(_,j)=>String(tables[name][row+i-1]?.[col+j-1]??''))),
         getFormula:()=>formulas[name][row+':'+col]??(name==='Orders'&&[16,17,20,21,22].includes(col)||name==='Order Items'&&[8,10,12,13,19,20,21,22].includes(col)?'=0':'')})};
   }
-  const book={getId:()=>testBookId,getOwner:()=>({getEmail:()=> 'owner@example.test'}),getSheetByName:name=>sheets[name]||null};
+  const book={getSpreadsheetTimeZone:()=> 'Australia/Sydney',getId:()=>testBookId,getOwner:()=>({getEmail:()=> 'owner@example.test'}),getSheetByName:name=>sheets[name]||null};
   function add(name,values){tables[name].push(values);return values}
   const customer=Array(30).fill('');Object.assign(customer,{0:'CUST-000001',1:'Test Person',2:'+61400000001',3:'Greenacre',4:'2190',9:'N',29:'1 Test Street, Greenacre 2190'});add('Customers',customer);
   const intake=Array(19).fill('');Object.assign(intake,{0:'intake-1',2:'2026-09-01T00:00:00Z',3:'Test Person',4:'+61400000001',5:'2190',8:false});add('Customer Intake',intake);
   add('Weekly Menu',[lineId,'MENU-'+date,date,'M0001','Test Dish','COOK-1','Test Kitchen',15,50,'Available','READY','Available',1,1,'']);
   add('Dishes',['M0001',8,'Active']);
+  for(const setting of [['Standard Discount %','20'],['Minimum Order Items','5'],['Delivery Fee','10'],['Free Delivery Threshold','0'],['Free Delivery Threshold Basis','Pre-discount food value']])add('Menu Config',setting);
   // Row 2 in Order Items contains the array anchors and is not used for inputs.
   add('Order Items',Array(30).fill(''));
   function recalculate(){
@@ -106,6 +108,65 @@ function fixture() {
   function request(){const row=Array(22).fill('');Object.assign(row,{0:'ORQ-TEST',1:'MK-1234ABCD',5:'a'.repeat(64),6:'MENU-'+date,7:date,8:'RECEIVED',15:'2026-10-18T00:00:00.000Z',21:'61400000001'});add('Order Requests',row);add('Order Request Items',['ORQ-TEST','i_'+'a'.repeat(24),lineId,'M0001','Test Dish','Test Kitchen','COOK-1',5,1500,800,7500,'a'.repeat(64)]);return row}
   return {ctx,state,tables,sheets,formulas,input,request,add,book};
 }
+
+test('Integrated project creates and deduplicates owner orders using original Menu Config parser',()=>{
+  const f=fixture({integrated:true}), input=f.input();
+  const review=f.ctx.ownerOrderReview(input);
+  const result=f.ctx.ownerOrderAccept(review.id,review.hash);
+  assert.equal(result.orderId,'ORD-000001');
+  assert.equal(f.tables.Orders[1][11],70);
+  assert.equal(f.tables['Order Items'][2][24],8);
+  assert.equal(f.ctx.ownerOrderAccept(review.id,review.hash).orderId,result.orderId);
+  assert.equal(f.tables.Orders.filter(row=>String(row[0]).startsWith('ORD-')).length,1);
+});
+
+test('Integrated legacy writer refuses a pending new-workspace commit and reserves its ID',()=>{
+  const f=fixture({integrated:true});
+  f.add('Order Operation Journal',['OP','REV','ORD-000009','COMMITTING']);
+  assert.throws(()=>f.ctx.mkIntegrationAssertNoPending_(f.book,'legacy'),/Reconcile/);
+  assert.throws(()=>f.ctx.mkIntegrationAssertNoPending_(f.book,'whatsapp'),/Reconcile/);
+  assert.equal(f.ctx.nextOrderId_(f.sheets.Orders),'ORD-000010');
+});
+
+test('Integrated owner writer refuses a pending legacy submission and reserves its ID',()=>{
+  const f=fixture({integrated:true}), review=f.ctx.ownerOrderReview(f.input());
+  f.sheets['Order Entry']={getRange:cell=>({getDisplayValue:()=>cell==='K3'?'COMMITTING':cell==='K6'?'ORD-000012':''})};
+  assert.throws(()=>f.ctx.ownerOrderAccept(review.id,review.hash),/Reconcile the legacy/);
+  assert.equal(f.ctx.nextOrderId_(f.sheets.Orders),'ORD-000013');
+  assert.equal(f.tables.Orders.length,1);
+});
+
+test('Integrated legacy snapshots freeze prices, costs, identity and alternate delivery postcode',()=>{
+  const f=fixture({integrated:true}), cart={items:{M0001:5},deliveryAddress:'5 Alternate Road, Test 2200',postcode:'2200'};
+  const menu={deliveryDate:date}, customer={name:'Test Person',phone:'+61400000001'};
+  const quote={discountPercent:20,minimumOrderItems:5,standardDeliveryFee:10,freeDeliveryThreshold:0,freeDeliveryBasis:'Pre-discount food value',total:70};
+  const requests=f.ctx.mkIntegrationLegacySnapshots_(f.book,cart,menu,customer,quote,2,[3],'OE-test');
+  f.ctx.mkIntegrationBatch_({requests},testBookId);
+  assert.equal(f.tables.Orders[1][30],cart.deliveryAddress);
+  assert.equal(f.tables.Orders[1][33],'2200');
+  assert.equal(f.tables['Order Items'][2][23],15);
+  assert.equal(f.tables['Order Items'][2][24],8);
+  assert.equal(f.tables['Order Items'][2][27],lineId);
+  assert.equal(f.tables['Order Items'][2][28],12);
+  assert.equal(f.tables['Order Items'][2][29],60);
+  quote.total=71;
+  assert.throws(()=>f.ctx.mkIntegrationLegacySnapshots_(f.book,cart,menu,customer,quote,2,[3],'OE-test'),/rounding differs/);
+});
+
+test('Original packing data collector receives accepted owner orders only after confirmation and excludes cancelled items',()=>{
+  const f=fixture({integrated:true}), review=f.ctx.ownerOrderReview(f.input());
+  f.ctx.ownerOrderAccept(review.id,review.hash);
+  f.ctx.getSelectedPackingSlipDate_=()=>new f.ctx.Date(date+'T00:00:00Z');
+  f.tables.Orders[1][2]=date;
+  assert.equal(f.ctx.collectPackingSlipData_().length,0);
+  f.tables.Orders[1][8]='Confirmed';
+  let slips=f.ctx.collectPackingSlipData_();
+  assert.equal(slips.length,1);assert.equal(slips[0].firstName,'Test');assert.equal(slips[0].totalPacks,5);
+  assert.equal(slips[0].items[0].dishName,'Test Dish');
+  f.tables['Order Items'][2][13]='Cancelled';
+  slips=f.ctx.collectPackingSlipData_();assert.equal(slips[0].totalPacks,0);
+  f.tables.Orders[1][8]='Cancelled';assert.equal(f.ctx.collectPackingSlipData_().length,0);
+});
 
 test('Phone matching canonicalises Australian mobile formats and refuses duplicate or mismatched customers',()=>{
   const f=fixture();for(const value of ['0400 000 001','+61 400 000 001','0061400000001'])assert.equal(f.ctx.mkPhone_(value),'61400000001');

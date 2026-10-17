@@ -1,0 +1,222 @@
+{
+  "environment": "TEST",
+  "testSpreadsheet": "1qsayqbrcSdSnwHIRzTvy7qgE2rWYltrqgzz3oykeZcs",
+  "originalModules": [
+    {
+      "name": "Code.gs",
+      "sha256": "ff1db725f7796de0ea6ce38b7a0ccda66a84e36d6d14e863ca79a4a9d4bae26d",
+      "lines": 4728
+    },
+    {
+      "name": "FeedbackDryRun.gs",
+      "sha256": "cb53b0dc1b81045bc64f23ea6aedb7f41939f68297665f99b05db7225c149ad6",
+      "lines": 20
+    },
+    {
+      "name": "FeedbackInteraction.gs",
+      "sha256": "2d769a30a5b020fc585872852efe3e86428c4559f762d2ba3375c703849d77e2",
+      "lines": 1622
+    },
+    {
+      "name": "FeedbackLegacyBridge.gs",
+      "sha256": "6ae54b5cfe4f9c44ea4f71ba44247c9921da6049257fbd430fda3dce436eb9db",
+      "lines": 102
+    },
+    {
+      "name": "FeedbackProductionConfig.gs",
+      "sha256": "5d05b1f9f7235c73ef8e3b911792f46b000137d4457843d762cbe459a947360b",
+      "lines": 425
+    },
+    {
+      "name": "FeedbackSender.gs",
+      "sha256": "5456869bc9aba0d12ed7287006b6ad745d4ff0ce1e01c7f3d2303400537669f2",
+      "lines": 1038
+    },
+    {
+      "name": "FeedbackWeb.gs",
+      "sha256": "115e501520be46a5ad91afecfd73c3508c6b87857fa2a0a13fbe1783dce118e3",
+      "lines": 547
+    },
+    {
+      "name": "FeedbackWebSender.gs",
+      "sha256": "acfec7e5e01599ed1eea5cc0cc9d125b583dfaac4ff8cd7ef6fbb384ed7ec173",
+      "lines": 133
+    },
+    {
+      "name": "PackingSlips.gs",
+      "sha256": "701b3c920fa8a816bfac3e06dd863eac828b5b30e20ed00554e3eb8fc9d8ab4c",
+      "lines": 1268
+    },
+    {
+      "name": "PermanentWhatsAppLog.gs",
+      "sha256": "0bf6986731bbdb21fe24e2213ccae27ff82011d8940c5875f7dae513319f1d39",
+      "lines": 400
+    },
+    {
+      "name": "Routific.gs",
+      "sha256": "8865dac24b36292126751732d4d8f26af7815548b901576d5f533c7b76b69ea3",
+      "lines": 1357
+    },
+    {
+      "name": "RoutificWebhook.gs",
+      "sha256": "5b12cb6ca92d6ac513a5c48a8ed09664ceb966608d839abc017fabe7365ef28c",
+      "lines": 2720
+    }
+  ],
+  "originalFunctionChanges": [
+    {
+      "file": "Code.gs",
+      "function": "doGet"
+    },
+    {
+      "file": "Code.gs",
+      "function": "doPost"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeBook_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "buildActiveMenu_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "nextOrderId_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeCommitRequests_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryPlaceOrder"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeSendConfirmation_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeAddressSetup_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeItemSetup_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "createControlTowerOrder_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "clearOrderInputCells_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "clearOrderItemInputCells_"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "saveFeedbackProductionConfig"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "saveProductionFeedbackSigningKey"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkWhatsAppHandler"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "requireVerifiedWhatsAppForwarding"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "enableProductionFeedbackBackend"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "openProductionFeedback016"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkFeedback026"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "prepareWebsiteFeedbackSender"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkPreparedFeedbackSettings"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "sendFeedback026Only"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "diagnoseFeedback026Conflict"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkRecording026"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "enableWebsiteFeedbackLive"
+    },
+    {
+      "file": "Routific.gs",
+      "function": "sendConfirmedOrdersToRoutific"
+    },
+    {
+      "file": "FeedbackSender.gs",
+      "function": "runFeedbackSender"
+    },
+    {
+      "file": "FeedbackSender.gs",
+      "function": "enableFeedbackLive"
+    },
+    {
+      "file": "FeedbackSender.gs",
+      "function": "installFeedbackAutomation"
+    },
+    {
+      "file": "FeedbackWebSender.gs",
+      "function": "runFeedbackWebSender_"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "generatePackingSlips"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "setupPackingSlips"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "rebuildPackingSlipsTemplate"
+    }
+  ],
+  "addedModules": [
+    "OrderEngine.gs",
+    "OrderRequests.gs",
+    "OwnerOrders.gs",
+    "OwnerCustomers.gs",
+    "OwnerOrderSetup.gs",
+    "OrderingMenuPublisher.gs",
+    "IntegrationTestGuards.gs",
+    "IntegrationDispatcher.gs"
+  ],
+  "functions": 418,
+  "lines": 15887,
+  "codeSha256": "f2dd16fac7fe7b29841096dd6eaaa34043b6d246867825e07b22c1674e22c693",
+  "limitations": [
+    "Current editor publisher setup helpers and original manifest were not supplied.",
+    "Document generation and all network calls are blocked. Packing data and preview remain testable.",
+    "Runtime Google authorization and browser end-to-end tests remain pending."
+  ]
+}
