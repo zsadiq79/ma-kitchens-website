@@ -6,7 +6,7 @@ import { formatMenuDate, getWeeklyMenus } from "@/lib/weeklyMenus";
 export const dynamic = "force-static";
 
 const whatsappOrderUrl =
-  "https://wa.me/61420246023?text=Hi%20Ma%20Kitchens%2C%20I%27d%20like%20to%20order%20from%20this%20week%27s%20menu.";
+  "https://www.makitchens.com.au/go/order/current";
 
 function WhatsAppOrderButton() {
   return (
