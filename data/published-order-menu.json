@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "publishedAt": "2026-10-17T01:52:43.737Z",
   "menuCycleId": "MENU-2026-10-22",
   "deliveryDate": "2026-10-22",
@@ -9,85 +9,102 @@
       "dishName": "Crazy Haleem",
       "price": 14,
       "priceDisplay": "$14.00",
-      "imageUrl": "/menu-images/Dish-0030.png"
+      "imageUrl": "/menu-images/Dish-0030.png",
+      "id": "i_baaeb1439f5441e0a7e29279"
     },
     {
       "dishName": "Qeema Dillema",
       "price": 14,
       "priceDisplay": "$14.00",
-      "imageUrl": "/menu-images/Dish-0059.jpg"
+      "imageUrl": "/menu-images/Dish-0059.jpg",
+      "id": "i_576d880675d4fc4e28bca9cb"
     },
     {
       "dishName": "Stir Fried Veggies",
       "price": 11,
       "priceDisplay": "$11.00",
-      "imageUrl": "/menu-images/Dish-0002.jpg"
+      "imageUrl": "/menu-images/Dish-0002.jpg",
+      "id": "i_32ff4458d6a33018935634e6"
     },
     {
       "dishName": "Chicken Shashlik with White Rice",
       "price": 15,
       "priceDisplay": "$15.00",
-      "imageUrl": "/menu-images/Dish-0061.jpg"
+      "imageUrl": "/menu-images/Dish-0061.jpg",
+      "id": "i_991422515891496fcc3ea039"
     },
     {
       "dishName": "Crème Criminal",
       "price": 10,
       "priceDisplay": "$10.00",
-      "imageUrl": "/menu-images/Dish-0016.jpg"
+      "imageUrl": "/menu-images/Dish-0016.jpg",
+      "id": "i_328a4970a43e45b98f667506"
     },
     {
       "dishName": "Achari Kabuli Biryani",
       "price": 15,
       "priceDisplay": "$15.00",
-      "imageUrl": "/menu-images/Dish-0049.jpeg"
+      "imageUrl": "/menu-images/Dish-0049.jpeg",
+      "id": "i_5b1f4ec4a9ae4be91ac9a3b4"
     },
     {
       "dishName": "Highway Balochi karhai",
       "price": 17,
       "priceDisplay": "$17.00",
-      "imageUrl": "/menu-images/Dish-0050.jpeg"
+      "imageUrl": "/menu-images/Dish-0050.jpeg",
+      "id": "i_f11e386584196dcadf482a8b"
     },
     {
       "dishName": "Desi Phalliya Alo",
       "price": 11,
       "priceDisplay": "$11.00",
-      "imageUrl": "/menu-images/Dish-0051.jpeg"
+      "imageUrl": "/menu-images/Dish-0051.jpeg",
+      "id": "i_108c4767a5b320db2830a79e"
     },
     {
       "dishName": "Tawa Beef Kebab w/ Vegetables",
       "price": 15,
       "priceDisplay": "$15.00",
-      "imageUrl": "/menu-images/Dish-0052.jpeg"
+      "imageUrl": "/menu-images/Dish-0052.jpeg",
+      "id": "i_0d81e9e39188278dbbe8a9b0"
     },
     {
       "dishName": "Dahi Phulkiya Chaat",
       "price": 7,
       "priceDisplay": "$7.00",
-      "imageUrl": "/menu-images/Dish-0053.jpeg"
+      "imageUrl": "/menu-images/Dish-0053.jpeg",
+      "id": "i_edb03068bb596ead4095b146"
     },
     {
       "dishName": "Fudge Brownie Trifle",
       "price": 11,
       "priceDisplay": "$11.00",
-      "imageUrl": "/menu-images/Dish-0054.jpeg"
+      "imageUrl": "/menu-images/Dish-0054.jpeg",
+      "id": "i_9f1a1e9d9795f6192c0a71af"
     },
     {
       "dishName": "Beef Palao",
       "price": 17,
       "priceDisplay": "$17.00",
-      "imageUrl": "/menu-images/Dish-0055.jpeg"
+      "imageUrl": "/menu-images/Dish-0055.jpeg",
+      "id": "i_9b93f1916f465f8e671ccf8f"
     },
     {
       "dishName": "Bhindi",
       "price": 14,
       "priceDisplay": "$14.00",
-      "imageUrl": "/menu-images/Dish-0056.jpg"
+      "imageUrl": "/menu-images/Dish-0056.jpg",
+      "id": "i_5b98ef5142fa57c219ddc4ee"
     },
     {
       "dishName": "Daal Maash",
       "price": 12,
       "priceDisplay": "$12.00",
-      "imageUrl": "/menu-images/Dish-0035.jpg"
+      "imageUrl": "/menu-images/Dish-0035.jpg",
+      "id": "i_99c78c86c3adc8407a100a7c"
     }
-  ]
+  ],
+  "menuRevision": "f2d81367cf41f8ecefac52edfbcea3ae06e02f34d2c514a366583cba5ede1c0b",
+  "minimumOrderItems": 5,
+  "deliveryFeeCents": 1000
 }

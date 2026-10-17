@@ -1,20 +1,27 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Image from 'next/image';
 import {
-  foodMoney, MAX_ORDER_QUANTITY, MINIMUM_ORDER_ITEMS, DELIVERY_FEE_CENTS, orderSelection, fallbackOrderTarget,
-  readPublishedOrderMenu, selectedOrderTarget, readOrderDraft, orderDraftSignature,
+  foodMoney, MAX_ORDER_QUANTITY, orderSelection, fallbackOrderTarget,
+  readPublishedOrderMenu, readOrderDraft, orderDraftSignature,
 } from '../../lib/publishedOrderMenu.mjs';
+import { orderRequestSignature } from '../../lib/orderRequest.mjs';
 import styles from './OrderMenu.module.css';
 
 type Menu = {
+  schemaVersion: 2;
+  menuRevision: string;
+  minimumOrderItems: number;
+  deliveryFeeCents: number;
   menuCycleId: string;
   deliveryDate: string;
   deliveryDateDisplay: string;
   publishedAt: string;
-  meals: { dishName: string; price: number; priceDisplay?: string; imageUrl?: string }[];
+  meals: { id: string; dishName: string; price: number; priceDisplay?: string; imageUrl?: string }[];
 };
+
+type SavedRequest = { signature: string; reference: string; capability: string; whatsappUrl: string };
 
 function WhatsAppIcon() {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.9 11.9 0 0 0 12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6A12 12 0 0 0 12 24c6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.5-8.5ZM12 22a10 10 0 0 1-5.1-1.4l-.4-.2-3.7 1 1-3.6-.3-.4A10 10 0 1 1 12 22Zm5.5-7.5c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.5s1.1 2.9 1.3 3.1c.2.2 2.1 3.2 5.1 4.4l1.7.6c.7.2 1.3.2 1.8.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.3-.6-.4Z" /></svg>;
@@ -31,11 +38,17 @@ function DishThumbnail({ src, eager }: { src?: string; eager: boolean }) {
 export function OrderMenu({ menu }: { menu: Menu | null }) {
   const [quantities, setQuantities] = useState<string[]>(() => menu ? menu.meals.map(() => '') : []);
   const [expired, setExpired] = useState(false);
+  const [stale, setStale] = useState(false);
   const [message, setMessage] = useState('');
   const [draftReady, setDraftReady] = useState(false);
-  const record = menu ? { schemaVersion: 1, ...menu } : null;
+  const [saving, setSaving] = useState(false);
+  const [savedRequest, setSavedRequest] = useState<SavedRequest | null>(null);
+  const saveLock = useRef(false);
+  const minimumOrderItems = menu?.minimumOrderItems ?? 5;
+  const deliveryFeeCents = menu?.deliveryFeeCents ?? 1000;
   const selection = menu ? orderSelection(menu, quantities) : null;
-  const ready = Boolean(selection && selection.totalQuantity >= MINIMUM_ORDER_ITEMS && !selection.invalidIndexes.length && !expired);
+  const currentOrderSignature = menu ? orderRequestSignature(menu, quantities) : '';
+  const ready = Boolean(selection && selection.totalQuantity >= minimumOrderItems && !selection.invalidIndexes.length && !expired && !stale);
 
   useEffect(() => {
     if (!menu) return;
@@ -59,12 +72,23 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   useEffect(() => {
     if (!menu) return;
     const check = () => {
-      if (!readPublishedOrderMenu({ schemaVersion: 1, ...menu })) setExpired(true);
+      if (!readPublishedOrderMenu(menu)) setExpired(true);
     };
     check();
     const timer = window.setInterval(check, 30000);
     return () => window.clearInterval(timer);
   }, [menu]);
+
+  useEffect(() => {
+    if (!menu || !draftReady) return;
+    try {
+      const raw = window.sessionStorage.getItem('ma-kitchens:saved-order-request:v1');
+      const saved = raw ? JSON.parse(raw) as SavedRequest : null;
+      if (saved && typeof saved.signature === 'string' && typeof saved.reference === 'string' &&
+          typeof saved.capability === 'string' && typeof saved.whatsappUrl === 'string' &&
+          saved.signature === currentOrderSignature) setSavedRequest(saved);
+    } catch { /* Recovery from this convenience cache is optional. */ }
+  }, [menu, quantities, draftReady, currentOrderSignature]);
 
   function updateQuantity(index: number, value: string) {
     setQuantities(current => current.map((quantity, i) => i === index ? value : quantity));
@@ -77,36 +101,69 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
     updateQuantity(index, next ? String(next) : '');
   }
 
-  function continueToWhatsApp(event: FormEvent<HTMLFormElement>) {
+  async function continueToWhatsApp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (saveLock.current) return;
+    if (!selection || selection.invalidIndexes.length || selection.totalQuantity < minimumOrderItems || !menu || expired) return;
+    const signature = orderRequestSignature(menu, quantities);
+    if (savedRequest?.signature === signature) {
+      window.location.assign(savedRequest.whatsappUrl);
+      return;
+    }
+    saveLock.current = true;
+    setSaving(true);
+    setMessage('');
     try {
-      // Recheck expiry on the actual tap, even if the page was left open overnight.
-      const url = selectedOrderTarget(record, quantities);
-      window.location.assign(url.toString());
+      const pendingRaw = window.sessionStorage.getItem('ma-kitchens:pending-order-request:v1');
+      let pending: { signature?: string; requestKey?: string } | null = null;
+      try { pending = pendingRaw ? JSON.parse(pendingRaw) : null; } catch { pending = null; }
+      const requestKey = pending?.signature === signature && typeof pending.requestKey === 'string'
+        ? pending.requestKey : crypto.randomUUID();
+      window.sessionStorage.setItem('ma-kitchens:pending-order-request:v1', JSON.stringify({ signature, requestKey }));
+      const response = await fetch('/api/order-requests', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestKey, menuRevision: menu.menuRevision, menuCycleId: menu.menuCycleId,
+          deliveryDate: menu.deliveryDate, items: selection.items.map(item => ({ id: item.id, quantity: item.quantity })) }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok || typeof result.reference !== 'string' ||
+          typeof result.capability !== 'string' || typeof result.whatsappUrl !== 'string') {
+        if (result?.error === 'MENU_CLOSED' || result?.error === 'MENU_STALE' || result?.error === 'MENU_REVISION_MISMATCH') {
+          if (result.error === 'MENU_CLOSED') setExpired(true); else setStale(true);
+        } else if (result?.error === 'ORDER_CAPTURE_UNCERTAIN') {
+          setMessage('We could not confirm the save. Your choices are still here. Try again to check the same request.');
+        } else {
+          setMessage('We could not save your request. Your choices are still here. Please try again.');
+        }
+        return;
+      }
+      const saved: SavedRequest = { signature, reference: result.reference, capability: result.capability, whatsappUrl: result.whatsappUrl };
+      window.sessionStorage.setItem('ma-kitchens:saved-order-request:v1', JSON.stringify(saved));
+      setSavedRequest(saved);
+      window.location.assign(saved.whatsappUrl);
     } catch (error) {
-      if (error instanceof Error && error.message === 'MENU_EXPIRED') {
-        setExpired(true); setMessage('This menu has closed. Ask us for the current menu below.');
-      } else if (error instanceof Error && error.message === 'MINIMUM_ORDER_NOT_MET') {
-        setMessage(`Choose at least ${MINIMUM_ORDER_ITEMS} items to continue.`);
-      } else setMessage('Enter a whole-number quantity for the dishes you would like.');
+      setMessage('We could not confirm the save. Your choices are still here. Try again to check the same request.');
+    } finally {
+      saveLock.current = false;
+      setSaving(false);
     }
   }
 
-  const unavailable = !menu || expired;
+  const unavailable = !menu || expired || stale;
   return (
     <div className={styles.screen}>
       <main className={styles.main}>
         <div className={styles.intro}>
           <h1>Choose your dishes</h1>
-          {unavailable ? <p className={styles.lead}>Our current menu is closed. Get in touch and we’ll help you with what’s coming next.</p> : <>
-            <p className={styles.lead}>Enter quantities for your favourites.<br /><span className={styles.minimum}>Minimum order: {MINIMUM_ORDER_ITEMS} items.</span></p>
+          {unavailable ? <p className={styles.lead}>{stale ? 'This menu has changed. Refresh to load the current dishes before sending a request.' : 'Our current menu is closed. Get in touch and we’ll help you with what’s coming next.'}</p> : <>
+            <p className={styles.lead}>Enter quantities for your favourites.<br /><span className={styles.minimum}>Minimum order: {minimumOrderItems} items.</span></p>
             <div className={styles.delivery}><span aria-hidden="true">◷</span> Delivery {menu.deliveryDateDisplay}</div>
           </>}
         </div>
         {unavailable ? <section className={styles.closed} aria-label="Menu unavailable">
-          <h2>A fresh menu is on its way</h2>
-          <p>Ask us for the current menu on WhatsApp.</p>
-          <a className={styles.whatsappButton} href={fallbackOrderTarget().toString()}><WhatsAppIcon />Ask for the current menu</a>
+          <h2>{stale ? 'Refresh the current menu' : 'A fresh menu is on its way'}</h2>
+          <p>{stale ? 'Your saved choices remain in this tab. Refresh the page to load the latest menu.' : 'Ask us for the current menu on WhatsApp.'}</p>
+          {stale ? <button className={styles.whatsappButton} type="button" onClick={() => window.location.reload()}>Refresh menu</button> : <a className={styles.whatsappButton} href={fallbackOrderTarget().toString()}><WhatsAppIcon />Ask for the current menu</a>}
         </section> : <form onSubmit={continueToWhatsApp} noValidate>
           <div className={styles.listHeading}><h2>This week’s dishes</h2><span>QUANTITY</span></div>
           <div className={styles.dishList}>
@@ -144,16 +201,17 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
             <div className={styles.orderBarInner}>
               <div className={styles.summary} aria-live="polite" aria-atomic="true">
                 <div><span className={styles.summaryTitle}>{selection?.items.length ? `${selection.items.length} ${selection.items.length === 1 ? 'dish' : 'dishes'} · ${selection.totalQuantity} ${selection.totalQuantity === 1 ? 'item' : 'items'}` : 'Your selection starts here'}</span>
-                  <span className={styles.summaryHint}>{(selection?.totalQuantity || 0) < MINIMUM_ORDER_ITEMS ? `Add ${MINIMUM_ORDER_ITEMS - (selection?.totalQuantity || 0)} more ${(MINIMUM_ORDER_ITEMS - (selection?.totalQuantity || 0)) === 1 ? 'item' : 'items'} to continue` : 'Your order is ready to review'}</span></div>
+                  <span className={styles.summaryHint}>{(selection?.totalQuantity || 0) < minimumOrderItems ? `Add ${minimumOrderItems - (selection?.totalQuantity || 0)} more ${(minimumOrderItems - (selection?.totalQuantity || 0)) === 1 ? 'item' : 'items'} to continue` : 'Your order is ready to review'}</span></div>
               </div>
               <div className={styles.costs} aria-live="polite" aria-atomic="true">
                 <div><span>Food subtotal</span><span>{foodMoney(selection?.subtotalCents || 0)}</span></div>
-                <div><span>Delivery</span><span>{foodMoney(DELIVERY_FEE_CENTS)}</span></div>
-                <div className={styles.total}><span>Total</span><strong>{foodMoney((selection?.subtotalCents || 0) + DELIVERY_FEE_CENTS)}</strong></div>
+                <div><span>Delivery</span><span>{foodMoney(deliveryFeeCents)}</span></div>
+                <div className={styles.total}><span>Total</span><strong>{foodMoney((selection?.subtotalCents || 0) + deliveryFeeCents)}</strong></div>
               </div>
               {message && <p className={styles.formError} role="alert">{message}</p>}
-              <button id="continue-order" className={styles.whatsappButton} type="submit" disabled={!ready}><WhatsAppIcon />Continue to WhatsApp<span aria-hidden="true">↗</span></button>
-              <p className={styles.sendNote}>Review your message in WhatsApp, then press Send.</p>
+              <button id="continue-order" className={styles.whatsappButton} type="submit" disabled={!ready || saving}><WhatsAppIcon />{saving ? 'Saving request…' : savedRequest?.signature === currentOrderSignature ? 'Open WhatsApp again' : 'Save request & open WhatsApp'}<span aria-hidden="true">↗</span></button>
+              <p className={styles.sendNote}>{savedRequest?.signature === currentOrderSignature ? `Request ${savedRequest.reference} is saved. Press Send in WhatsApp to send it.` : 'We save a tentative request before opening WhatsApp. Review it there, then press Send.'}</p>
+              {savedRequest?.signature === currentOrderSignature && <p className={styles.sendNote}><a href={`/go/order/request#${savedRequest.capability}`}>Check saved request status</a></p>}
             </div>
           </div>
         </form>}
@@ -167,3 +225,4 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
     </div>
   );
 }
+
