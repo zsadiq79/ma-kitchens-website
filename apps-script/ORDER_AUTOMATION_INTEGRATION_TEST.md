@@ -1,6 +1,6 @@
 # Integrated order automation test candidate
 
-This supersedes the isolated installer for the user's requested integration approach. It is source prepared for the designated TEST project, not a production replacement. The user installed the integrated Code.gs, removed all duplicate .gs files, added OwnerOrderWorkspace.html and saved the reviewed manifest. Configuration and initialization now complete. The owner workspace opens, saved-customer lookup succeeds and the owner confirmed the quote and discount. Acceptance recorded ORD-000053 but verification used stale SpreadsheetApp reads and reported an empty planned ID. The current Code.gs and HTML fix that read path and keep the check control available on error. Install both corrected files, reopen the workspace and open the existing saved review for ORD-000053. Do not create a replacement test order.
+This supersedes the isolated installer for the user's requested integration approach. It is source prepared for the designated TEST project, not a production replacement. The user installed the integrated Code.gs, removed all duplicate .gs files, added OwnerOrderWorkspace.html and saved the reviewed manifest. Configuration and initialization now complete. Both runtime fixes are installed. The owner workspace opens, saved-customer lookup succeeds, and ORD-000053 now reconciles as VERIFIED. A fresh manual acceptance produced ORD-000054, VERIFIED, at AUD 73.00 with five servings and a 10% discount. Independent TEST-sheet reads confirm the alternate order address/postcode, matching snapshots, unchanged customer defaults and correct cook payout/operational checks. The next step is a new TEST web app deployment and preview-only signed website capture. New-customer, legacy and downstream runtime checks also remain pending.
 
 ## Targets
 
@@ -46,11 +46,11 @@ The installation is then guided one step at a time:
 
 ## Evidence and remaining work
 
-110 local Node tests pass, including the second-pass regressions and the earlier integration checks: original function inventory/hashes, shared compilation, service boundaries, public dispatcher restriction, menu enrichment, integrated owner acceptance/deduplication, both cross-writer pending barriers, legacy snapshots/rounding original packing data consumption and publisher helper branch/switch restrictions and supplied manifest setting preservation. Existing public capture/recovery and owner engine tests also pass.
+116 local Node tests pass, including the second-pass regressions and the earlier integration checks: original function inventory/hashes, shared compilation, service boundaries, public dispatcher restriction, menu enrichment, integrated owner acceptance/deduplication, both cross-writer pending barriers, legacy snapshots/rounding original packing data consumption and publisher helper branch/switch restrictions and supplied manifest setting preservation. Runtime regressions cover UI-free initialization, stale reads after commits/customer intake, post-commit read failures and the owner recovery control. Existing public capture/recovery and owner engine tests also pass.
 
-These are mock/source checks. Google authorization, actual legacy form interaction, full Apps Script runtime and browser end-to-end verification remain pending. Deployed consumer mapping and trigger inventory remain production gates. Integration source preparation does not authorize production deployment.
+The automated checks use local mocks/source. Google authorization, initialization, owner workspace, saved-customer lookup, manual acceptance, quote override, alternate delivery address and saved-review reconciliation now also have Google runtime evidence. Actual legacy form interaction, remaining runtime scenarios and browser end-to-end website verification remain pending. Deployed consumer mapping and trigger inventory remain production gates. Integration source preparation does not authorize production deployment.
 
-Regenerate with `node scripts/build-order-integration-test.cjs`. An alternative baseline path can be supplied through `MK_INTEGRATION_BASELINE`. Run `node --test tests/*.test.cjs` afterward. The generated Code.gs is about 16,000 lines and includes 424 functions.
+Regenerate with `node scripts/build-order-integration-test.cjs`. An alternative baseline path can be supplied through `MK_INTEGRATION_BASELINE`. Run `node --test tests/*.test.cjs` afterward. The generated Code.gs is about 16,000 lines and includes 425 functions.
 
 ## Second pass
 
