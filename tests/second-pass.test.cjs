@@ -255,6 +255,13 @@ test('Changed address snapshot formulas fail before any order commit',()=>{
   assert.equal(f.tables.Orders.length,1);assert.equal(f.tables['Order Operation Journal'].length,1);
 });
 
+test('Restoring the old cancellation revenue formula blocks a new order before operational or journal writes',()=>{
+  const f=fixture({integrated:true}),review=f.ctx.ownerOrderReview(f.input());
+  f.formulas.Orders['2:12']=vm.runInContext('MK_OWNER_FORMULA_BASELINE["Orders!L2"]',f.ctx);
+  assert.throws(()=>f.ctx.ownerOrderAccept(review.id,review.hash),/Operational snapshot formula changed: Orders!L2/);
+  assert.equal(f.tables.Orders.length,1);assert.equal(f.tables['Order Operation Journal'].length,1);
+});
+
 test('The original menu selector advances past a closed cycle while preserving dish descriptions and portions',()=>{
   const f=fixture({integrated:true});f.state.now=Date.parse('2026-10-22T01:00:00Z');
   f.tables['Weekly Menu'][0].push('Remaining Servings','Menu Description');f.tables['Weekly Menu'][1].push(50,'Original description');

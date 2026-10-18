@@ -1248,6 +1248,7 @@ function mkAssertOperationalLayout_(book) {
 }
 
 const MK_OWNER_FORMULA_BASELINE = {
+  "Orders!L2": "=ARRAYFORMULA(IF(A2:A2000=\"\",\"\",IF(O2:O2000+IF(P2:P2000=\"\",0,P2:P2000)-IF(Q2:Q2000=\"\",0,Q2:Q2000)<0,0,O2:O2000+IF(P2:P2000=\"\",0,P2:P2000)-IF(Q2:Q2000=\"\",0,Q2:Q2000))))",
   "Order Items!E2": "=MAP(B2:B5000,D2:D5000,W2:W5000,LAMBDA(dt,name,code,IF(name=\"\",\"\",IF(dt=\"\",\"\",IF(code<>\"\",code,IFERROR(INDEX(FILTER('Weekly Menu'!D$2:D$1000,'Weekly Menu'!C$2:C$1000=dt,'Weekly Menu'!E$2:E$1000=name,'Weekly Menu'!U$2:U$1000=\"Available\"),1),\"\"))))))",
   "Orders!G2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AE2:AE2000<>\"\",AE2:AE2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!AD$2:AD$1000,\"\"))))",
   "Orders!E2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!B$2:B$1000,\"\")))",
@@ -1258,6 +1259,7 @@ const MK_OWNER_FORMULA_BASELINE = {
   "Order Items!K2": "=ARRAYFORMULA(IF(E2:E5000=\"\",\"\",XLOOKUP(E2:E5000,Dishes!A$2:A$500,Dishes!F$2:F$500,\"\")))"
 };
 const MK_OWNER_FORMULA_SNAPSHOTS = {
+  "Orders!L2": "=ARRAYFORMULA(IF(A2:A2000=\"\",\"\",IF(I2:I2000=\"Cancelled\",0,IF(O2:O2000+IF(P2:P2000=\"\",0,P2:P2000)-IF(Q2:Q2000=\"\",0,Q2:Q2000)<0,0,O2:O2000+IF(P2:P2000=\"\",0,P2:P2000)-IF(Q2:Q2000=\"\",0,Q2:Q2000)))))",
   "Order Items!E2": "=MAP(B2:B5000,D2:D5000,W2:W5000,LAMBDA(dt,name,code,IF(name=\"\",\"\",IF(dt=\"\",\"\",IF(code<>\"\",code,IFERROR(INDEX(FILTER('Weekly Menu'!D$2:D$1000,'Weekly Menu'!C$2:C$1000=dt,'Weekly Menu'!E$2:E$1000=name,'Weekly Menu'!U$2:U$1000=\"Available\"),1),\"\"))))))",
   "Orders!G2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AE2:AE2000<>\"\",AE2:AE2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!AD$2:AD$1000,\"\"))))",
   "Orders!E2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AF2:AF2000<>\"\",AF2:AF2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!B$2:B$1000,\"\"))))",

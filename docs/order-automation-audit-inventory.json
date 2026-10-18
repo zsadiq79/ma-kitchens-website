@@ -1,6 +1,6 @@
 {
   "scope": "Static function inventory and boundary checks. Individual runtime coverage varies; this is not end-to-end certification.",
-  "codeSha256": "4866e04a364ab1e9850920eb944ae113e66b6003480828524a35999624a9c839",
+  "codeSha256": "24886753982e64ee8c9e0c00dd1c825cebd3660aa4ab1f17267ba2e85c3cd78c",
   "functionCount": 427,
   "moduleFunctionCounts": {
     "Code.gs": 117,
@@ -29,8 +29,8 @@
     {
       "name": "doGet",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16040,
-      "endLine": 16043,
+      "startLine": 16042,
+      "endLine": 16045,
       "calls": [
         "mkIntegrationRequireTest_",
         "orderRequestJson_"
@@ -39,8 +39,8 @@
     {
       "name": "doPost",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16044,
-      "endLine": 16052,
+      "startLine": 16046,
+      "endLine": 16054,
       "calls": [
         "mkIntegrationRequireTest_",
         "handleOrderRequestApi_",
@@ -4132,8 +4132,8 @@
     {
       "name": "setupOwnerOrderWorkspace",
       "module": "OwnerOrderSetup.gs",
-      "startLine": 15606,
-      "endLine": 15658,
+      "startLine": 15608,
+      "endLine": 15660,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -4145,8 +4145,8 @@
     {
       "name": "mkFormulaCell_",
       "module": "OwnerOrderSetup.gs",
-      "startLine": 15660,
-      "endLine": 15664,
+      "startLine": 15662,
+      "endLine": 15666,
       "calls": [
         "orderRequestCellUpdate_"
       ]
@@ -4154,8 +4154,8 @@
     {
       "name": "mkOwnerRowFormulaRequests_",
       "module": "OwnerOrderSetup.gs",
-      "startLine": 15666,
-      "endLine": 15678,
+      "startLine": 15668,
+      "endLine": 15680,
       "calls": [
         "mkFormulaCell_"
       ]
@@ -4163,8 +4163,8 @@
     {
       "name": "mkOrderPublishOwner_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15692,
-      "endLine": 15695,
+      "startLine": 15694,
+      "endLine": 15697,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -4172,8 +4172,8 @@
     {
       "name": "configureOrderingPublisherPreview",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15698,
-      "endLine": 15702,
+      "startLine": 15700,
+      "endLine": 15704,
       "calls": [
         "mkOrderPublishOwner_"
       ]
@@ -4181,8 +4181,8 @@
     {
       "name": "saveOrderingPublisherSettings",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15704,
-      "endLine": 15716,
+      "startLine": 15706,
+      "endLine": 15718,
       "calls": [
         "mkIntegrationNoExternal_",
         "mkOrderPublishOwner_"
@@ -4191,36 +4191,36 @@
     {
       "name": "configureOrderingPublisherProduction",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15718,
-      "endLine": 15720,
+      "startLine": 15720,
+      "endLine": 15722,
       "calls": []
     },
     {
       "name": "mkOrderImagePath_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15722,
-      "endLine": 15725,
+      "startLine": 15724,
+      "endLine": 15727,
       "calls": []
     },
     {
       "name": "mkOrderBeforeCutoff_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15727,
-      "endLine": 15731,
+      "startLine": 15729,
+      "endLine": 15733,
       "calls": []
     },
     {
       "name": "mkOrderHexDigest_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15733,
-      "endLine": 15736,
+      "startLine": 15735,
+      "endLine": 15738,
       "calls": []
     },
     {
       "name": "mkOrderPublicItemId_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15738,
-      "endLine": 15740,
+      "startLine": 15740,
+      "endLine": 15742,
       "calls": [
         "mkOrderHexDigest_"
       ]
@@ -4228,8 +4228,8 @@
     {
       "name": "mkOrderSnapshot_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15742,
-      "endLine": 15777,
+      "startLine": 15744,
+      "endLine": 15779,
       "calls": [
         "mkOrderBeforeCutoff_",
         "mkOrderPublicItemId_",
@@ -4241,8 +4241,8 @@
     {
       "name": "previewCurrentOrderingMenu",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15779,
-      "endLine": 15786,
+      "startLine": 15781,
+      "endLine": 15788,
       "calls": [
         "mkOrderPublishOwner_",
         "mkOrderSnapshot_",
@@ -4252,8 +4252,8 @@
     {
       "name": "mkOrderGithub_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15788,
-      "endLine": 15798,
+      "startLine": 15790,
+      "endLine": 15800,
       "calls": [
         "mkIntegrationFetch_"
       ]
@@ -4261,8 +4261,8 @@
     {
       "name": "publishCurrentOrderingMenu",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15800,
-      "endLine": 15811,
+      "startLine": 15802,
+      "endLine": 15813,
       "calls": [
         "mkOrderPublishOwner_",
         "buildActiveMenu_",
@@ -4274,8 +4274,8 @@
     {
       "name": "withdrawPublishedOrderingMenu",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15813,
-      "endLine": 15819,
+      "startLine": 15815,
+      "endLine": 15821,
       "calls": [
         "mkOrderPublishOwner_",
         "mkOrderRequireMenuStateSheet_",
@@ -4285,8 +4285,8 @@
     {
       "name": "mkOrderRequireMenuStateSheet_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15821,
-      "endLine": 15829,
+      "startLine": 15823,
+      "endLine": 15831,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -4294,8 +4294,8 @@
     {
       "name": "mkOrderSavePublishedState_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15831,
-      "endLine": 15863,
+      "startLine": 15833,
+      "endLine": 15865,
       "calls": [
         "mkOrderRequireMenuStateSheet_",
         "mkOrderPublicItemId_",
@@ -4305,8 +4305,8 @@
     {
       "name": "mkOrderWriteSnapshot_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15865,
-      "endLine": 15901,
+      "startLine": 15867,
+      "endLine": 15903,
       "calls": [
         "mkOrderSavePublishedState_",
         "mkOrderGithub_"
@@ -4315,15 +4315,15 @@
     {
       "name": "mkIntegrationRequireTest_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15909,
-      "endLine": 15913,
+      "startLine": 15911,
+      "endLine": 15915,
       "calls": []
     },
     {
       "name": "mkIntegrationOpenBook_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15914,
-      "endLine": 15918,
+      "startLine": 15916,
+      "endLine": 15920,
       "calls": [
         "mkIntegrationRequireTest_"
       ]
@@ -4331,8 +4331,8 @@
     {
       "name": "mkIntegrationActiveBook_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15919,
-      "endLine": 15924,
+      "startLine": 15921,
+      "endLine": 15926,
       "calls": [
         "mkIntegrationRequireTest_"
       ]
@@ -4340,8 +4340,8 @@
     {
       "name": "mkIntegrationBatch_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15925,
-      "endLine": 15929,
+      "startLine": 15927,
+      "endLine": 15931,
       "calls": [
         "mkIntegrationRequireTest_"
       ]
@@ -4349,30 +4349,12 @@
     {
       "name": "mkIntegrationNoExternal_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15930,
-      "endLine": 15932,
+      "startLine": 15932,
+      "endLine": 15934,
       "calls": []
     },
     {
       "name": "mkIntegrationFetch_",
-      "module": "IntegrationTestGuards.gs",
-      "startLine": 15933,
-      "endLine": 15933,
-      "calls": [
-        "mkIntegrationNoExternal_"
-      ]
-    },
-    {
-      "name": "mkIntegrationDocumentOpen_",
-      "module": "IntegrationTestGuards.gs",
-      "startLine": 15934,
-      "endLine": 15934,
-      "calls": [
-        "mkIntegrationNoExternal_"
-      ]
-    },
-    {
-      "name": "mkIntegrationDocumentCreate_",
       "module": "IntegrationTestGuards.gs",
       "startLine": 15935,
       "endLine": 15935,
@@ -4381,7 +4363,7 @@
       ]
     },
     {
-      "name": "mkIntegrationDriveFile_",
+      "name": "mkIntegrationDocumentOpen_",
       "module": "IntegrationTestGuards.gs",
       "startLine": 15936,
       "endLine": 15936,
@@ -4390,10 +4372,28 @@
       ]
     },
     {
-      "name": "mkIntegrationNewTrigger_",
+      "name": "mkIntegrationDocumentCreate_",
       "module": "IntegrationTestGuards.gs",
       "startLine": 15937,
-      "endLine": 15942,
+      "endLine": 15937,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationDriveFile_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15938,
+      "endLine": 15938,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationNewTrigger_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15939,
+      "endLine": 15944,
       "calls": [
         "mkIntegrationActiveBook_"
       ]
@@ -4401,15 +4401,15 @@
     {
       "name": "configureOrderAutomationIntegrationTest",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15943,
-      "endLine": 15960,
+      "startLine": 15945,
+      "endLine": 15962,
       "calls": []
     },
     {
       "name": "initializeOrderAutomationIntegrationTest",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15961,
-      "endLine": 15971,
+      "startLine": 15963,
+      "endLine": 15973,
       "calls": [
         "mkOwnerBook_",
         "buildActiveMenu_",
@@ -4420,22 +4420,22 @@
     {
       "name": "mkIntegrationAssertNoPending_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15974,
-      "endLine": 15981,
+      "startLine": 15976,
+      "endLine": 15983,
       "calls": []
     },
     {
       "name": "mkIntegrationNextOrderId_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15982,
-      "endLine": 15990,
+      "startLine": 15984,
+      "endLine": 15992,
       "calls": []
     },
     {
       "name": "mkIntegrationLegacySnapshots_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15992,
-      "endLine": 16016,
+      "startLine": 15994,
+      "endLine": 16018,
       "calls": [
         "mkAssertOperationalLayout_",
         "mkMenuLines_",
@@ -4448,8 +4448,8 @@
     {
       "name": "mkIntegrationEnrichMenu_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 16019,
-      "endLine": 16034,
+      "startLine": 16021,
+      "endLine": 16036,
       "calls": [
         "orderRequestBeforeCutoff_",
         "mkIntegrationOpenBook_",
@@ -4460,8 +4460,8 @@
     {
       "name": "buildActiveMenu_",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16039,
-      "endLine": 16039,
+      "startLine": 16041,
+      "endLine": 16041,
       "calls": [
         "mkIntegrationEnrichMenu_",
         "mkIntegrationOriginalMenu_"
@@ -4470,8 +4470,8 @@
     {
       "name": "doGet",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16040,
-      "endLine": 16043,
+      "startLine": 16042,
+      "endLine": 16045,
       "calls": [
         "mkIntegrationRequireTest_",
         "orderRequestJson_"
@@ -4480,8 +4480,8 @@
     {
       "name": "doPost",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16044,
-      "endLine": 16052,
+      "startLine": 16046,
+      "endLine": 16054,
       "calls": [
         "mkIntegrationRequireTest_",
         "handleOrderRequestApi_",
@@ -4491,8 +4491,8 @@
     {
       "name": "simulateLegacyPostInTest",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16053,
-      "endLine": 16056,
+      "startLine": 16055,
+      "endLine": 16058,
       "calls": [
         "mkOwnerBook_",
         "mkIntegrationLegacyDoPost_"
@@ -4501,8 +4501,8 @@
     {
       "name": "integrationTestMenus",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16057,
-      "endLine": 16059,
+      "startLine": 16059,
+      "endLine": 16061,
       "calls": [
         "mkOwnerBook_",
         "orderRequestInboxOnOpen_",
