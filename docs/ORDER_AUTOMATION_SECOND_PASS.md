@@ -50,7 +50,7 @@ Severity describes the potential effect if the earlier candidate were used for o
 - Combined Apps Script syntax and top-level loading: pass. All custom helper calls resolve. Runtime initialization has no top-level service side effects.
 - Generated inventory: `docs/order-automation-audit-inventory.json`. It is a static inventory, not a claim of individual external runtime coverage for every function.
 - Real spreadsheet experiments: pass; temporary test sheet removed.
-- Fresh Vercel build/runtime checks: recorded in the deployment verification section after the corrected commit builds.
+- Fresh Vercel build/runtime checks: pass for the corrected preview commit, as recorded below.
 
 ## Remaining runtime gates
 
@@ -64,4 +64,14 @@ The API rate limits are bounded per process, not a distributed abuse-control ser
 
 ## Deployment verification
 
-Pending the corrected preview commit's build and HTTP read checks. Production remains on its existing branch and deployment.
+The corrected application commit is `f1724abf33422c64d55bee46d42f741606230cf4`. Vercel deployment `dpl_JDsx6Zy5PT9U8XoVs9zJL9NPJBTX` reached READY.
+
+Verified on `https://ma-kitchens-website-d38crzbts-zsadiq79s-projects.vercel.app`:
+
+- `/go/order/current`: HTTP 200; revised estimated-total wording is present.
+- `/go/order/request`: HTTP 200.
+- `/api/order-menu/published`: HTTP 200; 14 dishes, 22 October and revision `f2d81367cf41f8ecefac52edfbcea3ae06e02f34d2c514a366583cba5ede1c0b`.
+- `/api/whatsapp-flow` and `/api/contact`: HTTP 503 with `INTEGRATION_PREVIEW_ROUTE_DISABLED`, proving the deployed preview isolation is active.
+- Test workbook metadata confirms the temporary experiment sheet has been removed.
+
+The live menu remains on the existing production deployment. No production branch was updated, no provider messages were sent, and no dispatch was performed. The preview capture backend still awaits the dedicated Apps Script test deployment and private URL/secret configuration.
