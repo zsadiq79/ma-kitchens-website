@@ -1,6 +1,6 @@
 # Integrated order automation test candidate
 
-This supersedes the isolated installer for the user's requested integration approach. It is source prepared for the designated TEST project, not a production replacement. The user installed the integrated Code.gs, removed all duplicate .gs files, added OwnerOrderWorkspace.html and saved the reviewed manifest. Configuration completed successfully. Initialization stopped at a spreadsheet UI call after schema setup. The corrected installer separates setup from menu creation and must now replace Code.gs before initialization is retried.
+This supersedes the isolated installer for the user's requested integration approach. It is source prepared for the designated TEST project, not a production replacement. The user installed the integrated Code.gs, removed all duplicate .gs files, added OwnerOrderWorkspace.html and saved the reviewed manifest. Configuration and initialization now complete. The owner workspace opens, saved-customer lookup succeeds and the owner confirmed the quote and discount. Acceptance recorded ORD-000053 but verification used stale SpreadsheetApp reads and reported an empty planned ID. The current Code.gs and HTML fix that read path and keep the check control available on error. Install both corrected files, reopen the workspace and open the existing saved review for ORD-000053. Do not create a replacement test order.
 
 ## Targets
 

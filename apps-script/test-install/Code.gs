@@ -656,12 +656,29 @@ function mkLocked_(callback) {
   try { return callback(); } finally { lock.releaseLock(); }
 }
 
-function mkTable_(book, name) {
+function mkOwnerFreshValues_(book, sheet, firstRow, rowCount, width) {
+  if (book.getId() !== MK_OWNER.testBookId) throw new Error('Fresh owner reads require the TEST workbook.');
+  let column = '', remaining = width;
+  while (remaining > 0) { remaining--; column = String.fromCharCode(65 + remaining % 26) + column; remaining = Math.floor(remaining / 26); }
+  const range = "'" + sheet.getName().replace(/'/g, "''") + "'!A" + firstRow + ':' + column + (firstRow + rowCount - 1);
+  // Sheets API writes do not refresh SpreadsheetApp's earlier read snapshot.
+  // Read back through the same API, preserving raw numbers and booleans.
+  const result = Sheets.Spreadsheets.Values.get(book.getId(), range, {
+    valueRenderOption: 'UNFORMATTED_VALUE', dateTimeRenderOption: 'SERIAL_NUMBER', majorDimension: 'ROWS'
+  });
+  return (result.values || []).map(row => Array.from({ length: width }, (_, index) => row[index] === undefined ? '' : row[index]));
+}
+
+function mkTable_(book, name, fresh) {
   const sheet = book.getSheetByName(name);
   if (!sheet) throw new Error('Missing sheet: ' + name + '. Run the test workspace setup.');
-  const values = sheet.getDataRange().getValues();
   const expected = MK_OWNER_HEADERS[name] || MK_ORDER_REQUEST_HEADERS[name];
-  if (expected) orderRequestRequireHeaders_(sheet,expected);
+  const values = fresh ? mkOwnerFreshValues_(book, sheet, 1, sheet.getMaxRows(), expected ? expected.length : sheet.getMaxColumns()) : sheet.getDataRange().getValues();
+  if (expected) {
+    if (fresh) {
+      if (expected.some((header,index) => String((values[0] || [])[index] || '').trim() !== header)) throw new Error('ORDER_REQUEST_NOT_READY');
+    } else orderRequestRequireHeaders_(sheet,expected);
+  }
   return { sheet: sheet, headers: orderRequestHeaderMap_(values[0] || []), rows: values.slice(1) };
 }
 
@@ -689,8 +706,8 @@ function mkDate_(value) {
   return value instanceof Date ? Utilities.formatDate(value, 'Australia/Sydney', 'yyyy-MM-dd') : String(value || '').trim();
 }
 
-function mkCustomers_(book) {
-  const table = mkTable_(book, CUSTOMERS_SHEET);
+function mkCustomers_(book, fresh) {
+  const table = mkTable_(book, CUSTOMERS_SHEET, fresh);
   mkRequire_(table, ['Customer ID', 'Name', 'Phone', 'Postcode', 'WhatsApp Opt-In', 'Default Delivery Address']);
   const h = table.headers;
   return table.rows.map((row, index) => ({ id: String(row[h['Customer ID']] || ''), name: String(row[h.Name] || ''),
@@ -761,10 +778,15 @@ function ownerOrderLookupCustomer(phone) {
   return { status: matches.length > 1 ? 'DUPLICATE' : matches.length ? 'MATCH' : 'NO_MATCH', customers: matches };
 }
 
-function mkOwnerRequest_(book, reference) {
+function mkOwnerRequest_(book, reference, fresh) {
   if (!reference) return null;
-  const found = orderRequestOwnerFindRow_(book, reference);
-  const table = mkTable_(book, MK_ORDER_REQUEST.itemSheet);
+  let found;
+  if (fresh) {
+    const requests = mkTable_(book, MK_ORDER_REQUEST.requestSheet, true), match = mkUnique_(requests, 1, reference);
+    if (!match) throw new Error('REQUEST_NOT_FOUND');
+    found = { sheet: requests.sheet, row: match.row, rowNumber: match.number };
+  } else found = orderRequestOwnerFindRow_(book, reference);
+  const table = mkTable_(book, MK_ORDER_REQUEST.itemSheet, fresh);
   const items = table.rows.filter(row => String(row[0]) === String(found.row[0])).map(row => ({ menuLineId: String(row[2]), quantity: Number(row[7]) }));
   return { found: found, id: String(found.row[0]), reference: reference, date: String(found.row[7]),
     status: String(found.row[8]), linkedOrderId: String(found.row[14] || ''), senderPhone: String(found.row[21] || ''),
@@ -857,7 +879,7 @@ function mkNextOrderId_(orders, journal) {
 
 function mkOwnerFindReview_(book, id) {
   if (typeof id !== 'string' || !/^REV-[a-f0-9-]{36}$/i.test(id)) throw new Error('Invalid review ID.');
-  const table = mkTable_(book, MK_OWNER.reviews), found = mkUnique_(table, 0, id);
+  const table = mkTable_(book, MK_OWNER.reviews, true), found = mkUnique_(table, 0, id);
   if (!found) throw new Error('Review not found.');
   return { table: table, row: found.row, number: found.number };
 }
@@ -912,15 +934,16 @@ function ownerOrderAccept(id, hash) {
     ] }, book.getId());
     try { Sheets.Spreadsheets.batchUpdate({ requests: requests }, book.getId()); }
     catch (_) { throw new Error('SUBMISSION_UNCERTAIN: use Check saved order. Do not create another order.'); }
-    return mkOwnerReconcile_(book, mkOwnerFindReview_(book, id));
+    try { return mkOwnerReconcile_(book, mkOwnerFindReview_(book, id)); }
+    catch (_) { throw new Error('SUBMISSION_UNCERTAIN: the write finished but verification could not complete. Use Check saved order; do not create another order.'); }
   });
 }
 
 function mkOwnerReconcile_(book, saved) {
   const orderId = String(saved.row[8] || '');
   if (!orderId) throw new Error('This review has no planned order.');
-  const orders = mkTable_(book, ORDERS_SHEET), found = mkUnique_(orders, 0, orderId);
-  const items = mkTable_(book, ORDER_ITEMS_SHEET);
+  const orders = mkTable_(book, ORDERS_SHEET, true), found = mkUnique_(orders, 0, orderId);
+  const items = mkTable_(book, ORDER_ITEMS_SHEET, true);
   let lines = items.rows.filter(row => String(row[0]) === orderId);
   const operation = 'OWN-' + saved.row[0];
   if (!found || String(found.row[36] || '') !== operation) {
@@ -932,12 +955,12 @@ function mkOwnerReconcile_(book, saved) {
   let current = found.row;
   for (let attempt = 0; attempt < 8; attempt++) {
     SpreadsheetApp.flush();
-    current = orders.sheet.getRange(found.number, 1, 1, 37).getValues()[0];
+    current = mkOwnerFreshValues_(book, orders.sheet, found.number, 1, 37)[0] || [];
     if (String(current[23]) === 'OK') break;
     Utilities.sleep(200);
   }
   const expected = review.quote.items;
-  lines = mkTable_(book, ORDER_ITEMS_SHEET).rows.filter(row => String(row[0]) === orderId);
+  lines = mkTable_(book, ORDER_ITEMS_SHEET, true).rows.filter(row => String(row[0]) === orderId);
   const snapshotsOK = lines.length === expected.length && expected.every(item => lines.some(line => String(line[27]) === item.menuLineId &&
     String(line[22]) === item.itemCode && String(line[25]) === item.cookId && Number(line[6]) === item.quantity &&
     Math.round(Number(line[23]) * 100) === item.listPriceCents && Math.round(Number(line[24]) * 100) === item.cookPayCents &&
@@ -945,7 +968,7 @@ function mkOwnerReconcile_(book, saved) {
     String(line[4]) === item.itemCode && String(line[5]) === item.cookId && Math.round(Number(line[8]) * 100) === item.listPriceCents &&
     Math.round(Number(line[9]) * 100) === item.unitPriceCents && Math.round(Number(line[10]) * 100) === item.cookPayCents &&
     Math.round(Number(line[11]) * 100) === item.lineTotalCents && Math.round(Number(line[12]) * 100) === item.cookPayCents * item.quantity));
-  const request = review.requestReference ? mkOwnerRequest_(book, review.requestReference) : null;
+  const request = review.requestReference ? mkOwnerRequest_(book, review.requestReference, true) : null;
   const okay = snapshotsOK && String(current[8]) !== 'Cancelled' && String(current[23]) === 'OK' && String(current[22]) === 'OK' &&
     typeof current[11] === 'number' && typeof current[17] === 'number' && String(current[4]) === review.details.name &&
     String(current[5]) === review.details.phone && String(current[6]) === review.details.address && String(current[7]) === review.details.postcode &&
@@ -1096,7 +1119,7 @@ function ownerOrderSaveCustomer(input, operationId) {
     // Formula-driven registry must finish without renumbering historical IDs.
     let matched = null;
     for (let attempt = 0; attempt < 12; attempt++) {
-      SpreadsheetApp.flush(); customers = mkCustomers_(book);
+      SpreadsheetApp.flush(); customers = mkCustomers_(book, true);
       if (!mkCustomerIdsUnchanged_(baseline, customers)) throw new Error('CUSTOMER_ID_REVIEW_REQUIRED: existing IDs shifted. No order has been created.');
       const matches = customers.filter(value => { try { return mkPhone_(value.phone) === details.phone; } catch (_) { return false; } });
       if (matches.length > 1) throw new Error('DUPLICATE_CUSTOMER_PHONE: no order has been created.');

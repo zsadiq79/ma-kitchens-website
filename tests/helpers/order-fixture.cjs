@@ -40,7 +40,14 @@ function fixture(options = {}) {
     getOrderingRules_:()=>({discountPercent:20,minimumOrderItems:5,deliveryFee:10,freeDeliveryThreshold:0,freeDeliveryBasis:'Pre-discount food value'}),
     SpreadsheetApp:{openById:()=>book,flush:()=>recalculate()},
     ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({setMimeType:()=>({getContent:()=>text})})},
-    Sheets:{Spreadsheets:{batchUpdate:request=>apply(request.requests)}},
+    Sheets:{Spreadsheets:{batchUpdate:request=>apply(request.requests),Values:{get:(id,range,options)=>{
+      assert.equal(id,testBookId);assert.equal(options.valueRenderOption,'UNFORMATTED_VALUE');
+      const match=range.match(/^'((?:[^']|'')+)'!A(\d+):([A-Z]+)(\d+)$/);
+      if(!match)throw new Error('Unsupported fresh mock range: '+range);
+      const name=match[1].replace(/''/g,"'"),first=Number(match[2])-1,last=Number(match[4]);
+      const width=[...match[3]].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0);
+      return {values:copy(tables[name].slice(first,last).map(row=>row.slice(0,width)))};
+    }}}},
   };
   vm.createContext(ctx);
   for(const name of (options.integrated ? ['integration-test/Code.gs'] : ['OrderEngine.gs','OrderRequests.gs','OwnerOrders.gs','OwnerCustomers.gs','OwnerOrderSetup.gs']))
@@ -51,7 +58,7 @@ function fixture(options = {}) {
   for(const [name,columns]of Object.entries(headers)){
     tables[name]=[columns.slice()];formulas[name]={};
     const id=nextSheetId++;
-    sheets[name]={getParent:()=>book,getSheetId:()=>id,getMaxRows:()=>name==='Orders'?2000:name==='Order Items'?5000:2000,getMaxColumns:()=>columns.length,
+    sheets[name]={getParent:()=>book,getName:()=>name,getSheetId:()=>id,getMaxRows:()=>name==='Orders'?2000:name==='Order Items'?5000:2000,getMaxColumns:()=>columns.length,
       getLastRow:()=>tables[name].length,getDataRange:()=>({getValues:()=>copy(tables[name]),getDisplayValues:()=>copy(tables[name])}),
       getRange:(row,col,height=1,width=1)=>{if(typeof row==='string'){const match=row.match(/^([A-Z]+)([0-9]+)$/);col=[...match[1]].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0);row=Number(match[2])}return {getRow:()=>row,getColumn:()=>col,
         getValues:()=>Array.from({length:height},(_,i)=>Array.from({length:width},(_,j)=>tables[name][row+i-1]?.[col+j-1]??'')),

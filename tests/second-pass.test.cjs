@@ -30,6 +30,61 @@ test('Integrated initialization finishes and can retry after partial setup witho
   assert.equal(JSON.stringify(f.tables['Order Items']),itemsBefore);
 });
 
+function freezeSpreadsheetReads(f){
+  for(const [name,sheet] of Object.entries(f.sheets)){
+    const snapshot=JSON.parse(JSON.stringify(f.tables[name])),getRange=sheet.getRange;
+    sheet.getDataRange=()=>({getValues:()=>JSON.parse(JSON.stringify(snapshot)),getDisplayValues:()=>JSON.parse(JSON.stringify(snapshot))});
+    sheet.getRange=(row,col,height=1,width=1)=>{
+      const range=getRange(row,col,height,width),first=range.getRow()-1,column=range.getColumn()-1;
+      range.getValues=()=>Array.from({length:height},(_,i)=>Array.from({length:width},(_,j)=>snapshot[first+i]?.[column+j]??''));
+      range.getDisplayValues=()=>range.getValues().map(row=>row.map(value=>String(value)));
+      return range;
+    };
+  }
+}
+
+test('An accepted manual order verifies through fresh API reads even when every SpreadsheetApp read stays at its pre-commit snapshot',()=>{
+  const f=fixture({integrated:true}),r=f.ctx.ownerOrderReview(f.input());freezeSpreadsheetReads(f);
+  const result=f.ctx.ownerOrderAccept(r.id,r.hash);assert.equal(result.state,'VERIFIED');
+  assert.equal(result.orderId,'ORD-000001');assert.equal(f.tables.Orders.length,2);
+  assert.equal(f.tables['Owner Order Reviews'][1][8],result.orderId);
+  assert.equal(f.ctx.ownerOrderAccept(r.id,r.hash).orderId,result.orderId);assert.equal(f.tables.Orders.length,2);
+});
+
+test('Website request acceptance verifies the new link while SpreadsheetApp still shows its unaccepted snapshot',()=>{
+  const f=fixture({integrated:true});f.request();const r=f.ctx.ownerOrderReview(f.input({requestReference:'MK-1234ABCD'}));
+  freezeSpreadsheetReads(f);const result=f.ctx.ownerOrderAccept(r.id,r.hash);
+  assert.equal(result.state,'VERIFIED');assert.equal(f.tables['Order Requests'][1][8],'ACCEPTED');
+  assert.equal(f.tables['Order Requests'][1][14],result.orderId);assert.equal(f.tables.Orders.length,2);
+});
+
+test('Customer intake recalculation is read freshly even when SpreadsheetApp keeps its earlier customer list',()=>{
+  const f=fixture({integrated:true});freezeSpreadsheetReads(f);
+  const result=f.ctx.ownerOrderSaveCustomer(f.input({customerId:'',senderPhone:'0400000002',name:'New Person',consent:'NO'}),crypto.randomUUID());
+  assert.equal(result.status,'READY');assert.equal(result.customer.name,'New Person');assert.equal(f.tables.Customers.length,3);
+});
+
+test('A read failure after the atomic commit preserves one order and can be checked using the original review',()=>{
+  const f=fixture({integrated:true}),r=f.ctx.ownerOrderReview(f.input()),get=f.ctx.Sheets.Spreadsheets.Values.get;
+  let failed=false;f.ctx.Sheets.Spreadsheets.Values.get=(...args)=>{
+    if(!failed&&f.tables.Orders.length===2&&args[1].startsWith("'Owner Order Reviews'")){failed=true;throw new Error('Read service unavailable');}
+    return get(...args);
+  };
+  assert.throws(()=>f.ctx.ownerOrderAccept(r.id,r.hash),/SUBMISSION_UNCERTAIN/);
+  assert.equal(f.tables.Orders.length,2);assert.equal(f.ctx.ownerOrderCheck(r.id).state,'VERIFIED');
+  assert.equal(f.ctx.ownerOrderAccept(r.id,r.hash).orderId,'ORD-000001');assert.equal(f.tables.Orders.length,2);
+});
+
+test('An uncertain owner acceptance leaves Check saved order available with the original review identity',async()=>{
+  const html=fs.readFileSync(path.join(root,'apps-script/OwnerOrderWorkspace.html'),'utf8');
+  const handler=html.match(/\$\('accept'\)\.onclick=(.*);/)[1],nodes=Object.fromEntries(['accept','check','copy','manualSent','outcome'].map(id=>[id,{hidden:id==='check'}]));
+  const ctx={$:id=>nodes[id],review:{id:'REV-original',hash:'original-hash'},task:async fn=>{try{await fn()}catch(error){ctx.error=error.message;}},
+    invoke:async(name,id,hash)=>{assert.equal(name,'ownerOrderAccept');assert.equal(id,'REV-original');assert.equal(hash,'original-hash');throw new Error('SUBMISSION_UNCERTAIN');}};
+  vm.createContext(ctx);const accept=vm.runInContext('('+handler+')',ctx);await accept();
+  assert.equal(nodes.check.hidden,false);assert.equal(nodes.accept.hidden,true);assert.equal(nodes.copy.hidden,true);
+  assert.equal(ctx.review.id,'REV-original');assert.match(nodes.outcome.textContent,/Check saved order/);
+});
+
 test('A failed recovery cannot clear the review while leaving its journal COMMITTING',()=>{
   const f=fixture({integrated:true}),r=f.ctx.ownerOrderReview(f.input());
   f.state.throwBefore=true;assert.throws(()=>f.ctx.ownerOrderAccept(r.id,r.hash),/UNCERTAIN/);

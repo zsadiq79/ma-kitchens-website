@@ -235,9 +235,9 @@
     "IntegrationTestGuards.gs",
     "IntegrationDispatcher.gs"
   ],
-  "functions": 424,
-  "lines": 16016,
-  "codeSha256": "cf329b2cd1305e02b8848d4fda731efffdf3f2d100a41a965580b67d51634967",
+  "functions": 425,
+  "lines": 16039,
+  "codeSha256": "74d47dc5671832068810577b59b72821da58909700549e44fc872c5c199338c4",
   "limitations": [
     "Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.",
     "Document generation and all network calls are blocked. Packing data and preview remain testable.",

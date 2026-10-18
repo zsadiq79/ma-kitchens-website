@@ -78,7 +78,7 @@ function ownerOrderSaveCustomer(input, operationId) {
     // Formula-driven registry must finish without renumbering historical IDs.
     let matched = null;
     for (let attempt = 0; attempt < 12; attempt++) {
-      SpreadsheetApp.flush(); customers = mkCustomers_(book);
+      SpreadsheetApp.flush(); customers = mkCustomers_(book, true);
       if (!mkCustomerIdsUnchanged_(baseline, customers)) throw new Error('CUSTOMER_ID_REVIEW_REQUIRED: existing IDs shifted. No order has been created.');
       const matches = customers.filter(value => { try { return mkPhone_(value.phone) === details.phone; } catch (_) { return false; } });
       if (matches.length > 1) throw new Error('DUPLICATE_CUSTOMER_PHONE: no order has been created.');
