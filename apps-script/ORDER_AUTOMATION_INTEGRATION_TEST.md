@@ -31,7 +31,7 @@ Existing Order Entry and the new owner workspace share the ScriptLock. New commi
 
 ## Before installing
 
-The handoff explicitly did not include the complete current editor `OrderingMenuPublisher.gs` or `appsscript.json`. Obtain those two files without secrets and compare them. Retain any editor-only setup helpers and account for existing services/scopes. Also compare the current editor file list with the twelve baseline names and publisher; obtain any genuinely additional source instead of deleting it blindly.
+The current editor `OrderingMenuPublisher.gs` was supplied and reviewed on 18 October. Its three setup helpers are now retained, with the preview branch updated to `codex/order-request-capture-preview`. Production switching is blocked, and the integrated test package blocks token collection because publishing network calls are disabled. The original `appsscript.json` remains pending; obtain it without secrets and compare services/scopes before installation. Also compare the current editor file list with the twelve baseline names and publisher; obtain any genuinely additional source instead of deleting it blindly.
 
 After that comparison, regenerate the package. In the confirmed TEST editor only, replace Code.gs with the consolidated file, remove the now-duplicated .gs files, add OwnerOrderWorkspace.html, and merge/install the reviewed test manifest. Keep the live editor untouched. Do not run the package while duplicate original modules remain.
 
@@ -46,8 +46,8 @@ The installation is then guided one step at a time:
 
 ## Evidence and remaining work
 
-82 local Node tests pass, including ten integration checks: original function inventory/hashes, shared compilation, service boundaries, public dispatcher restriction, menu enrichment, integrated owner acceptance/deduplication, both cross-writer pending barriers, legacy snapshots/rounding and original packing data consumption. Existing public capture/recovery and owner engine tests also pass.
+83 local Node tests pass, including eleven integration checks: original function inventory/hashes, shared compilation, service boundaries, public dispatcher restriction, menu enrichment, integrated owner acceptance/deduplication, both cross-writer pending barriers, legacy snapshots/rounding original packing data consumption and publisher helper branch/switch restrictions. Existing public capture/recovery and owner engine tests also pass.
 
-These are mock/source checks. Google authorization, actual legacy form interaction, full Apps Script runtime and browser end-to-end verification remain pending. Publisher editor helpers, original manifest, deployed consumer mapping and trigger inventory remain production gates. Integration source preparation does not authorize production deployment.
+These are mock/source checks. Google authorization, actual legacy form interaction, full Apps Script runtime and browser end-to-end verification remain pending. The original manifest, deployed consumer mapping and trigger inventory remain production gates. Integration source preparation does not authorize production deployment.
 
-Regenerate with `node scripts/build-order-integration-test.cjs`. An alternative baseline path can be supplied through `MK_INTEGRATION_BASELINE`. Run `node --test tests/*.test.cjs` afterward. The generated Code.gs is about 15,900 lines and includes 418 functions.
+Regenerate with `node scripts/build-order-integration-test.cjs`. An alternative baseline path can be supplied through `MK_INTEGRATION_BASELINE`. Run `node --test tests/*.test.cjs` afterward. The generated Code.gs is about 15,900 lines and includes 421 functions.

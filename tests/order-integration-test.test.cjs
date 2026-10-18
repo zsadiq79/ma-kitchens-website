@@ -50,6 +50,16 @@ test('Public deployment exposes signed request routes only; legacy handler remai
     assert.equal(JSON.parse(ctx.doPost({parameter:{action}})).error,'LEGACY_INGRESS_DISABLED_IN_TEST');
   assert.equal(routed.length,2);assert.equal(typeof ctx.mkIntegrationLegacyDoPost_,'function');
 });
+
+test('Editor publisher helpers target the current preview branch and prevent production switching or token collection in test',()=>{
+  const {ctx}=context(), saved={};
+  ctx.mkOrderPublishOwner_=()=>{};
+  ctx.PropertiesService={getScriptProperties:()=>({setProperty:(key,value)=>{saved[key]=value}})};
+  assert.equal(ctx.configureOrderingPublisherPreview().branch,'codex/order-request-capture-preview');
+  assert.equal(saved.ORDER_MENU_GITHUB_BRANCH,'codex/order-request-capture-preview');
+  assert.throws(()=>ctx.configureOrderingPublisherProduction(),/PRODUCTION_SWITCH_DISABLED/);
+  assert.throws(()=>ctx.saveOrderingPublisherSettings(),/EXTERNAL_ACTION_BLOCKED/);
+});
 test('Menu adapter retains portions and descriptions while adding durable menu identities and current capacity',()=>{
   const {ctx}=context();
   ctx.orderRequestBeforeCutoff_=()=>true;

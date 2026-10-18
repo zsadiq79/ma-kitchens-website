@@ -71,6 +71,8 @@ const originalEvidence = originals.map(name => ({name, sha256: crypto.createHash
   lines: fs.readFileSync(path.join(baseline,name),'utf8').split('\n').length}));
 const added = ['OrderEngine.gs', 'OrderRequests.gs', 'OwnerOrders.gs', 'OwnerCustomers.gs', 'OwnerOrderSetup.gs', 'OrderingMenuPublisher.gs'];
 for (const name of added) modules.set(name, fs.readFileSync(path.join(source, name), 'utf8'));
+modules.set('OrderingMenuPublisher.gs', modules.get('OrderingMenuPublisher.gs').replace('function saveOrderingPublisherSettings() {',
+  'function saveOrderingPublisherSettings() {\n  mkIntegrationNoExternal_(); // No publishing credential is needed for the blocked test publisher.'));
 modules.set('OwnerOrders.gs', modules.get('OwnerOrders.gs').replace('    const orderId = mkNextOrderId_(orders, journal),',
   "    mkIntegrationAssertNoPending_(book,'owner');\n    const orderId = mkIntegrationNextOrderId_(orders.sheet),"));
 modules.set('OwnerOrderSetup.gs', modules.get('OwnerOrderSetup.gs').replace("trigger.getHandlerFunction() !== 'orderRequestInboxOnOpen_'",
@@ -126,5 +128,5 @@ fs.copyFileSync(path.join(source,'appsscript.test.json'),path.join(target,'appss
 fs.writeFileSync(path.join(target,'source-manifest.json'),JSON.stringify({environment:'TEST',testSpreadsheet:testId,originalModules:originalEvidence,
   originalFunctionChanges:changes,addedModules:[...added,'IntegrationTestGuards.gs','IntegrationDispatcher.gs'],functions:names.length,
   lines:output.split('\n').length,codeSha256:crypto.createHash('sha256').update(output).digest('hex'),
-  limitations:['Current editor publisher setup helpers and original manifest were not supplied.','Document generation and all network calls are blocked. Packing data and preview remain testable.','Runtime Google authorization and browser end-to-end tests remain pending.']},null,2));
+  limitations:['Current editor publisher and three setup helpers reviewed from user-supplied source on 18 October 2026; original manifest remains pending.','Document generation and all network calls are blocked. Packing data and preview remain testable.','Runtime Google authorization and browser end-to-end tests remain pending.']},null,2));
 console.log(JSON.stringify({originalModules:originals.length,totalFunctions:names.length,lines:output.split('\n').length,bytes:Buffer.byteLength(output)}));

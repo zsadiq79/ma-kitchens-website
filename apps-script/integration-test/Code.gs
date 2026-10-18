@@ -15550,6 +15550,31 @@ function mkOrderPublishOwner_() {
   if (!owner || Session.getEffectiveUser().getEmail() !== owner.getEmail()) throw new Error('ORDER_PUBLISH_OWNER_REQUIRED');
 }
 
+/* Current editor setup helpers, retained for the preview candidate. */
+function configureOrderingPublisherPreview() {
+  mkOrderPublishOwner_();
+  PropertiesService.getScriptProperties().setProperty('ORDER_MENU_GITHUB_BRANCH', MK_ORDER_PUBLISH.branch);
+  return { ok: true, branch: MK_ORDER_PUBLISH.branch };
+}
+
+function saveOrderingPublisherSettings() {
+  mkIntegrationNoExternal_(); // No publishing credential is needed for the blocked test publisher.
+  mkOrderPublishOwner_();
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.prompt('Menu publisher setup', 'Paste your GitHub token here. Do not share this dialog.', ui.ButtonSet.OK_CANCEL);
+  if (response.getSelectedButton() !== ui.Button.OK) return;
+  const token = response.getResponseText().trim();
+  if (!/^github_pat_[A-Za-z0-9_]+$/.test(token)) throw new Error('Paste the complete fine-grained GitHub token.');
+  const props = PropertiesService.getScriptProperties();
+  props.setProperties({ ORDER_MENU_GITHUB_TOKEN: token, ORDER_MENU_GITHUB_BRANCH: MK_ORDER_PUBLISH.branch }, false);
+  if (props.getProperty('ORDER_MENU_GITHUB_TOKEN') !== token) throw new Error('Token was not saved.');
+  return { ok: true, branch: MK_ORDER_PUBLISH.branch };
+}
+
+function configureOrderingPublisherProduction() {
+  throw new Error('PRODUCTION_SWITCH_DISABLED_IN_PREVIEW_CANDIDATE');
+}
+
 function mkOrderImagePath_(value) {
   const path = typeof value === 'string' ? value.trim().replace(/^https:\/\/(?:www\.)?makitchens\.com\.au(?=\/)/, '') : '';
   return /^\/menu-images\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.(?:jpe?g|png|webp)$/i.test(path) ? path : '';

@@ -211,11 +211,11 @@
     "IntegrationTestGuards.gs",
     "IntegrationDispatcher.gs"
   ],
-  "functions": 418,
-  "lines": 15887,
-  "codeSha256": "f2dd16fac7fe7b29841096dd6eaaa34043b6d246867825e07b22c1674e22c693",
+  "functions": 421,
+  "lines": 15912,
+  "codeSha256": "5c66834fcddf4fd79e461c23b885d532ec353ceac62afedeb0298f179d528fef",
   "limitations": [
-    "Current editor publisher setup helpers and original manifest were not supplied.",
+    "Current editor publisher and three setup helpers reviewed from user-supplied source on 18 October 2026; original manifest remains pending.",
     "Document generation and all network calls are blocked. Packing data and preview remain testable.",
     "Runtime Google authorization and browser end-to-end tests remain pending."
   ]
