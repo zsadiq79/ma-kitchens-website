@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 import publishedMenu from '../../../data/published-order-menu.json';
 import { NextResponse } from 'next/server';
 import { orderRateLimited, readOrderJson, orderBackendEndpoint } from '../../../lib/orderApiBoundary.mjs';
-import { normalizeOrderRequest, orderRequestMessage } from '../../../lib/orderRequest.mjs';
+import { normalizeOrderRequest, orderRequestMessage, validOrderReference } from '../../../lib/orderRequest.mjs';
 import { ORDERING_WHATSAPP_NUMBER, readPublishedOrderMenu } from '../../../lib/publishedOrderMenu.mjs';
 
 export const runtime = 'nodejs';
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: code }, { status, headers: { 'Cache-Control': 'no-store' } });
     }
     const reference = (result as { reference?: unknown }).reference;
-    if (typeof reference !== 'string' || !/^MK-[A-Z0-9]{8}$/.test(reference)) throw new Error('BACKEND_FAILED');
+    if (typeof reference !== 'string' || !validOrderReference(reference)) throw new Error('BACKEND_FAILED');
     const message = orderRequestMessage(menu, normalized, reference);
     const target = new URL(`https://wa.me/${ORDERING_WHATSAPP_NUMBER}`);
     target.searchParams.set('text', message);

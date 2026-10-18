@@ -53,7 +53,7 @@ export function OrderRequestRecovery() {
     <a href="/go/order/current" style={{ color: '#476548', fontSize: 13, textDecoration: 'none' }}>← Back to the menu</a>
     <h1 style={{ margin: '28px 0 8px', fontSize: 30 }}>Your order request</h1>
     {loading ? <p>Checking your saved request…</p> : result ? <section aria-live="polite">
-      <p style={{ color: '#476548', fontWeight: 700, fontSize: 18 }}>{result.reference}</p>
+      <p style={{ color: '#476548', fontWeight: 700, fontSize: 18 }}>Order ref: {result.reference}</p>
       <p>{statusText[result.status] || 'Your request status has been updated.'}</p>
       <dl style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px 18px', marginTop: 24 }}>
         <dt>Delivery date</dt><dd style={{ margin: 0 }}>{result.deliveryDate}</dd>

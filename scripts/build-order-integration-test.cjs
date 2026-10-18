@@ -138,6 +138,7 @@ function integrationTestMenus() {
 `;
 modules.set('IntegrationDispatcher.gs', dispatcher);
 const output = '/* INTEGRATED TEST ONLY. Includes all 12 supplied original modules and new order modules.\n' +
+  ' * Installer revision: 2026-10-18 numeric order references.\n' +
   ' * Replace all .gs files in the TEST project with this single Code.gs only.\n * No production deployment. Network and document operations are blocked.\n */\n' +
   [...modules].map(([name, text]) => '\n// ==================== SOURCE: ' + name + ' ====================\n' + text).join('\n');
 const names = [...output.matchAll(/^function\s+(\w+)\s*\(/gm)].map(match => match[1]);

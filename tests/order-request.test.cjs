@@ -63,9 +63,21 @@ test('Prepared WhatsApp message carries saved reference and public quote without
   const m = await modulePromise, menu = (await import(pathToFileURL(path.join(root, 'lib/publishedOrderMenu.mjs')))).readPublishedOrderMenu(record, now);
   const request = m.normalizeOrderRequest(record, input([{ id: record.meals[0].id, quantity: 5 }]), now);
   const message = m.orderRequestMessage(menu, request, 'MK-AB12CD34');
-  assert(message.includes('Request reference: MK-AB12CD34'));
+  assert(message.endsWith('Order ref: MK-AB12CD34'));
   assert(message.includes('5 × Butter Chicken - $75.00'));
   assert(message.includes('Delivery fee: $10.00'));
   assert(message.includes('not confirmed until Ma Kitchens accepts it'));
   assert(!/name:|address:|phone:/i.test(message));
+});
+
+test('New numeric references use the same plain footer in initial and recovered WhatsApp messages',async()=>{
+  const m=await modulePromise,menu=(await import(pathToFileURL(path.join(root,'lib/publishedOrderMenu.mjs')))).readPublishedOrderMenu(record,now);
+  const request=m.normalizeOrderRequest(record,input([{id:record.meals[0].id,quantity:5}]),now);
+  for(const ref of ['1000','1234','10000']){
+    const initial=m.orderRequestMessage(menu,request,ref),recovered=m.orderRequestFollowUpMessage(ref,record.deliveryDate);
+    assert.equal(initial.split('Order ref:').length,2);assert.ok(initial.endsWith('Order ref: '+ref));
+    assert.ok(recovered.endsWith('Order ref: '+ref));assert.doesNotMatch(initial,/Request reference:/);
+  }
+  assert.ok(m.validOrderReference('MK-AB12CD34'));
+  for(const value of ['0001','123','1234\nFake line','1e4','-1234',1234,null])assert.equal(m.validOrderReference(value),false);
 });

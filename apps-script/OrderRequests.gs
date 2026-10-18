@@ -174,6 +174,28 @@ function orderRequestExisting_(sheet, retryKey) {
   return matches[0] || null;
 }
 
+function orderRequestValidReference_(value) {
+  return typeof value === 'string' && /^(?:[1-9]\d{3,14}|MK-[A-Z0-9]{8})$/.test(value);
+}
+
+// Called with the capture ScriptLock held. Reserve before writing so a failed
+// or uncertain write can leave a gap, but can never reuse an issued number.
+function orderRequestAllocateReference_(sheet) {
+  const props = PropertiesService.getScriptProperties(), key = 'ORDER_REQUEST_LAST_REFERENCE';
+  const references = sheet.getLastRow() > 1 ? sheet.getRange(2, 2, sheet.getLastRow() - 1, 1).getValues().map(row => String(row[0])) : [];
+  let highest = 999;
+  references.forEach(reference => { if (/^[1-9]\d{3,14}$/.test(reference)) highest = Math.max(highest, Number(reference)); });
+  const prior = props.getProperty(key);
+  if (prior !== null && prior !== undefined && prior !== '') {
+    if (!/^[1-9]\d{3,14}$/.test(prior)) throw new Error('ORDER_REQUEST_NOT_READY');
+    highest = Math.max(highest, Number(prior));
+  }
+  const next = highest + 1;
+  if (!Number.isSafeInteger(next) || next > 999999999999999) throw new Error('ORDER_REQUEST_NOT_READY');
+  props.setProperty(key, String(next));
+  return String(next);
+}
+
 function orderRequestCapture_(body) {
   const requestKey = String(body.requestKey || '').toLowerCase();
   const revision = String(body.menuRevision || ''), cycleId = String(body.menuCycleId || ''), deliveryDate = String(body.deliveryDate || '');
@@ -236,13 +258,7 @@ function orderRequestCapture_(body) {
       return { ...item, published, line, lineTotalCents: published.priceCents * item.quantity };
     });
     const requestId = 'ORQ-' + Utilities.getUuid().toUpperCase();
-    const references = requestSheet.getLastRow() > 1 ? requestSheet.getRange(2, 2, requestSheet.getLastRow() - 1, 1).getValues().map(row => String(row[0])) : [];
-    let requestRef = '';
-    for (let attempt = 0; attempt < 10; attempt++) {
-      const candidate = 'MK-' + Utilities.getUuid().replace(/-/g, '').slice(0, 8).toUpperCase();
-      if (!references.includes(candidate)) { requestRef = candidate; break; }
-    }
-    if (!requestRef) throw new Error('ORDER_REQUEST_BUSY');
+    const requestRef = orderRequestAllocateReference_(requestSheet);
     const nowIso = now.toISOString();
     const foodSubtotalCents = matched.reduce((sum, item) => sum + item.lineTotalCents, 0);
     const publicTotalCents = foodSubtotalCents + deliveryFeeCents;
@@ -351,7 +367,7 @@ function orderRequestOwnerEventRequest_(spreadsheet, requestRow, eventName, deta
 }
 
 function orderRequestOwnerFindRow_(spreadsheet, reference) {
-  if (typeof reference !== 'string' || !/^MK-[A-Z0-9]{8}$/.test(reference)) throw new Error('INVALID_REQUEST_REFERENCE');
+  if (!orderRequestValidReference_(reference)) throw new Error('INVALID_REQUEST_REFERENCE');
   const sheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.requestSheet);
   if (!sheet || sheet.getLastRow() < 2) throw new Error('REQUEST_NOT_FOUND');
   const values = sheet.getRange(2, 1, sheet.getLastRow() - 1, MK_ORDER_REQUEST_HEADERS['Order Requests'].length).getValues();

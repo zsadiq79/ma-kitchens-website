@@ -59,6 +59,14 @@ test('A real quantity change still requires a reason when RPC object fields arri
   assert.equal(f.ctx.ownerOrderReview(input).review.quote.totalQuantity,6);
 });
 
+test('Owner lookup, review and acceptance support numeric references while preserving legacy records',()=>{
+  const f=fixture({integrated:true});f.request();f.tables['Order Requests'][1][1]='1234';
+  assert.equal(f.ctx.ownerOrderOpenRequest('1234').reference,'1234');
+  const review=f.ctx.ownerOrderReview(f.input({requestReference:'1234'})),result=f.ctx.ownerOrderAccept(review.id,review.hash);
+  assert.equal(result.state,'VERIFIED');assert.equal(f.tables.Orders[1][35],'1234');
+  const legacy=fixture({integrated:true});legacy.request();assert.equal(legacy.ctx.ownerOrderOpenRequest('MK-1234ABCD').reference,'MK-1234ABCD');
+});
+
 test('An accepted manual order verifies through fresh API reads even when every SpreadsheetApp read stays at its pre-commit snapshot',()=>{
   const f=fixture({integrated:true}),r=f.ctx.ownerOrderReview(f.input());freezeSpreadsheetReads(f);
   const result=f.ctx.ownerOrderAccept(r.id,r.hash);assert.equal(result.state,'VERIFIED');
@@ -205,6 +213,27 @@ test('Unexpected upstream error text cannot be reflected to a public capture res
   const ctx=await route('app/api/order-requests/route.ts',{fetch:async()=>{const r=Response.json({ok:false,error:'private provider URL or secret details'});Object.defineProperty(r,'url',{value:'https://script.googleusercontent.com/macros/echo'});return r}});
   const response=await ctx.POST(new Request('https://audit-preview.test/api/order-requests',{method:'POST',headers:{origin:'https://audit-preview.test','x-real-ip':'private-error-audit'},body:JSON.stringify({requestKey:crypto.randomUUID(),menuRevision:menu.menuRevision,menuCycleId:menu.menuCycleId,deliveryDate:menu.deliveryDate,items:[{id:menu.meals[0].id,quantity:5}]})}));
   assert.equal(response.status,503);assert.equal((await response.json()).error,'ORDER_CAPTURE_FAILED');
+});
+
+test('The HTTP capture contract accepts numeric and legacy references and formats the WhatsApp footer consistently',async()=>{
+  const menu=JSON.parse(fs.readFileSync(path.join(root,'data/published-order-menu.json'),'utf8'));
+  for(const reference of ['1234','MK-A1B2C3D4']){
+    const ctx=await route('app/api/order-requests/route.ts',{fetch:async()=>{const r=Response.json({ok:true,reference});Object.defineProperty(r,'url',{value:'https://script.googleusercontent.com/macros/echo'});return r;}});
+    const response=await ctx.POST(new Request('https://audit-preview.test/api/order-requests',{method:'POST',headers:{origin:'https://audit-preview.test','x-real-ip':'reference-'+reference},body:JSON.stringify({requestKey:crypto.randomUUID(),menuRevision:menu.menuRevision,menuCycleId:menu.menuCycleId,deliveryDate:menu.deliveryDate,items:[{id:menu.meals[0].id,quantity:5}]})}));
+    const data=await response.json();assert.equal(response.status,200);assert.equal(data.reference,reference);
+    assert.ok(new URL(data.whatsappUrl).searchParams.get('text').endsWith('Order ref: '+reference));
+  }
+});
+
+test('Numeric reference recovery still requires the private recovery capability and never permits guessing by order number',async()=>{
+  const ctx=await route('app/api/order-requests/recovery/route.ts',{fetch:async()=>{const r=Response.json({ok:true,found:true,reference:'1234',status:'UNASSIGNED',deliveryDate:date,publicTotalCents:8500,createdAt:'2026-10-18T00:00:00Z'});Object.defineProperty(r,'url',{value:'https://script.googleusercontent.com/macros/echo'});return r;}});
+  for(const input of [{reference:'1234'},{capability:'1234'}]){
+    const response=await ctx.POST(new Request('https://audit-preview.test/api/order-requests/recovery',{method:'POST',headers:{origin:'https://audit-preview.test','x-real-ip':'numeric-recovery-invalid'},body:JSON.stringify(input)}));
+    assert.equal(response.status,400);
+  }
+  const response=await ctx.POST(new Request('https://audit-preview.test/api/order-requests/recovery',{method:'POST',headers:{origin:'https://audit-preview.test','x-real-ip':'numeric-recovery-valid'},body:JSON.stringify({capability:'a'.repeat(43)})}));
+  const data=await response.json();assert.equal(response.status,200);assert.equal(data.reference,'1234');
+  assert.ok(new URL(data.whatsappUrl).searchParams.get('text').endsWith('Order ref: 1234'));assert.equal(data.customerId,undefined);
 });
 
 test('The retained Flow endpoint bounds encrypted requests before decryption and rejects an invalid signature',async()=>{

@@ -18,6 +18,7 @@ function signedEvent(action, body) {
 }
 
 function fixture() {
+  const properties = { ORDER_REQUEST_API_SECRET: secret };
   const definitions = {
     'Order Requests': 'Request ID,Request Reference,Retry Key,Payload Hash,Recovery Capability Hash,Menu Revision,Menu Cycle ID,Delivery Date,Status,Customer ID,Public Food Subtotal Cents,Public Delivery Fee Cents,Public Total Cents,Owner Discount Percent,Linked Order ID,Created At,Updated At,Received At,Accepted At,Expires At,Owner Notes,Sender Phone (OWNER)',
     'Order Request Items': 'Request ID,Public Item ID,Menu Line ID,Item Code,Dish Name (SNAPSHOT),Kitchen Name (SNAPSHOT),Cook ID,Qty,List Price / Unit Cents (SNAPSHOT),Cook Pay / Unit Cents (SNAPSHOT),Public Line Total Cents,Menu Revision',
@@ -41,7 +42,7 @@ function fixture() {
     Date, JSON, Object, Array, Number, String, RegExp, Math, isNaN,
     CONTROL_TOWER_SPREADSHEET_ID: 'test-sheet', WEEKLY_MENU_SHEET: 'Weekly Menu',
     ContentService: { MimeType: { JSON: 'application/json' }, createTextOutput: content },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: name => name === 'ORDER_REQUEST_API_SECRET' ? secret : null }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: name => properties[name] ?? null, setProperty: (name,value) => { properties[name]=String(value); } }) },
     SpreadsheetApp: { openById: () => ({ getSheetByName: name => sheets[name] || null, getId: () => 'test-sheet' }) },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
     Sheets: { Spreadsheets: { batchUpdate: request => {
@@ -75,7 +76,7 @@ function fixture() {
   };
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(root, 'apps-script/OrderRequests.gs'), 'utf8'), ctx);
-  return { ctx, data };
+  return { ctx, data, properties };
 }
 
 function payload(patch = {}) {
@@ -90,7 +91,7 @@ function invoke(f, action, body) {
 
 test('A public capture writes only unassigned request records and snapshots selected items', () => {
   const f = fixture(), result = invoke(f, 'order_request_capture', payload());
-  assert.equal(result.ok, true); assert.equal(result.status, 'UNASSIGNED'); assert.match(result.reference, /^MK-[A-F0-9]{8}$/);
+  assert.equal(result.ok, true); assert.equal(result.status, 'UNASSIGNED'); assert.equal(result.reference, '1000');
   const req = f.data['Order Requests'][1], line = f.data['Order Request Items'][1], event = f.data['Order Request Events'][1];
   assert.equal(req[8], 'UNASSIGNED'); assert.equal(req[9], ''); assert.equal(req[12], 8500);
   assert.equal(line[2], menuLineId); assert.equal(line[3], 'M0001'); assert.equal(line[4], 'Test dish');
@@ -104,6 +105,39 @@ test('Retry after a saved response returns the same reference without duplicate 
   assert.equal(second.reference, first.reference); assert.equal(second.created, false);
   assert.equal(f.data['Order Requests'].length, 2); assert.equal(f.data['Order Request Items'].length, 2);
   assert.equal(f.data['Order Request Events'].length, 2);
+});
+
+test('Numeric references are unique for new requests and a successful retry does not consume another number',()=>{
+  const f=fixture(),body=payload();
+  assert.equal(invoke(f,'order_request_capture',body).reference,'1000');
+  assert.equal(invoke(f,'order_request_capture',body).reference,'1000');
+  assert.equal(f.properties.ORDER_REQUEST_LAST_REFERENCE,'1000');
+  const next=invoke(f,'order_request_capture',payload({requestKey:crypto.randomUUID(),recoveryCapability:Buffer.alloc(32,8).toString('base64url')}));
+  assert.equal(next.reference,'1001');assert.equal(f.data['Order Requests'].length,3);
+});
+
+test('Numeric numbering grows beyond four digits and resumes above existing ledger numbers',()=>{
+  const f=fixture();f.properties.ORDER_REQUEST_LAST_REFERENCE='9999';
+  assert.equal(invoke(f,'order_request_capture',payload()).reference,'10000');
+  const prior=f.data['Order Requests'][1].slice();prior[0]='ORQ-existing';prior[1]='10005';prior[2]=crypto.randomUUID();f.data['Order Requests'].push(prior);
+  f.properties.ORDER_REQUEST_LAST_REFERENCE='10000';
+  const next=invoke(f,'order_request_capture',payload({requestKey:crypto.randomUUID(),recoveryCapability:Buffer.alloc(32,9).toString('base64url')}));
+  assert.equal(next.reference,'10006');
+});
+
+test('A failed request write leaves a numbering gap rather than reusing a reserved reference',()=>{
+  const f=fixture(),write=f.ctx.Sheets.Spreadsheets.batchUpdate;
+  f.ctx.Sheets.Spreadsheets.batchUpdate=()=>{throw new Error('Write failed before application');};
+  assert.equal(invoke(f,'order_request_capture',payload()).ok,false);
+  assert.equal(f.properties.ORDER_REQUEST_LAST_REFERENCE,'1000');assert.equal(f.data['Order Requests'].length,1);
+  f.ctx.Sheets.Spreadsheets.batchUpdate=write;
+  assert.equal(invoke(f,'order_request_capture',payload()).reference,'1001');assert.equal(f.data['Order Requests'].length,2);
+});
+
+test('Invalid reference counter state fails before a request or items are written',()=>{
+  const f=fixture();f.properties.ORDER_REQUEST_LAST_REFERENCE='not-a-number';
+  assert.equal(invoke(f,'order_request_capture',payload()).error,'ORDER_REQUEST_NOT_READY');
+  assert.equal(f.data['Order Requests'].length,1);assert.equal(f.data['Order Request Items'].length,1);
 });
 
 test('Same retry key with changed quantities returns a conflict', () => {

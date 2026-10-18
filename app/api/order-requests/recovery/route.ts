@@ -2,6 +2,7 @@ import { createHmac } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { orderRateLimited, readOrderJson, orderBackendEndpoint } from '../../../../lib/orderApiBoundary.mjs';
 import { ORDERING_WHATSAPP_NUMBER } from '../../../../lib/publishedOrderMenu.mjs';
+import { orderRequestFollowUpMessage, validOrderReference } from '../../../../lib/orderRequest.mjs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -53,13 +54,13 @@ export async function POST(request: Request) {
     const found = (result as { found: boolean }).found;
     if (!found) return NextResponse.json({ ok: true, found: false }, { headers: { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });
     const value = result as { reference?: unknown; status?: unknown; deliveryDate?: unknown; publicTotalCents?: unknown; createdAt?: unknown };
-    if (typeof value.reference !== 'string' || !/^MK-[A-Z0-9]{8}$/.test(value.reference) ||
+    if (typeof value.reference !== 'string' || !validOrderReference(value.reference) ||
         typeof value.status !== 'string' || !/^(UNASSIGNED|RECEIVED|UNDER_REVIEW|ACCEPTED|REJECTED|EXPIRED)$/.test(value.status) ||
         typeof value.deliveryDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value.deliveryDate) ||
         !Number.isSafeInteger(value.publicTotalCents) || Number(value.publicTotalCents) < 0 ||
         typeof value.createdAt !== 'string' || value.createdAt.length > 40) throw new Error();
     const whatsappUrl = new URL(`https://wa.me/${ORDERING_WHATSAPP_NUMBER}`);
-    whatsappUrl.searchParams.set('text', `Hi Ma Kitchens, please review my saved tentative order request ${value.reference}. Delivery: ${value.deliveryDate}. Please confirm availability and the final total.`);
+    whatsappUrl.searchParams.set('text', orderRequestFollowUpMessage(value.reference, value.deliveryDate));
     return NextResponse.json({ ok: true, found: true, capability, whatsappUrl:whatsappUrl.toString(), reference: value.reference, status: value.status,
       deliveryDate: value.deliveryDate, publicTotalCents: value.publicTotalCents, createdAt: value.createdAt },
       { headers: { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });

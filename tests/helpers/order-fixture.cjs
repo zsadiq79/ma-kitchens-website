@@ -13,7 +13,7 @@ function fixture(options = {}) {
   const state = { now: Date.parse('2026-10-18T00:00:00Z'), owner: 'owner@example.test', env: 'TEST',
     formulaFail: false, throwBefore: false, throwAfter: false, failRecovery: false, customerPending: false, shiftIds: false, writes: [], batches: 0 };
   class Clock extends Date { constructor(...args) { super(...(args.length ? args : [state.now])); } static now() { return state.now; } }
-  const tables = {}, sheets = {}, formulas = {};
+  const tables = {}, sheets = {}, formulas = {}, scriptProperties = {};
   const headers = {
     Orders: ['Order ID','Order Date','Delivery Date','Customer ID','Customer Name','Phone','Delivery Address','Postcode','Order Status','Payment Status','Delivery Window','Order Total','Delivery Status','Notes','Items Subtotal','Delivery Fee','Free Delivery Discount (AUTO)','Cook Payout','Contribution Before Delivery Cost','Total Qty','Discounted Qty (AUTO)','Order Rules Control','Capacity Control','Order Check','Ready to Confirm?','Pricing Discount % (SNAPSHOT)','Pricing Delivery Fee (SNAPSHOT)','Free Delivery Threshold (SNAPSHOT)','Free Delivery Basis (SNAPSHOT)','Minimum Order Items (SNAPSHOT)','Delivery Address (SNAPSHOT)','Customer Name (SNAPSHOT)','Phone (SNAPSHOT)','Postcode (SNAPSHOT)','Delivery Instructions (SNAPSHOT)','Request Reference (SNAPSHOT)','Owner Operation ID'],
     'Order Items': ['Order ID','Delivery Date','Order Status','Dish Name','Item Code (AUTO, INTERNAL)','Cook ID','Qty','Price Treatment (AUTO)','List Price','Customer Unit Price','Cook Pay / Unit','Line Total','Cook Payout','Fulfilment Status','Ordered Qty / Cycle','Available Servings / Cycle','Capacity Check','Notes','Offer Eligible (AUTO)','Free Promo Qty (LEGACY)','Discounted Qty (AUTO)','Full Price Qty (LEGACY)','Item Code (SNAPSHOT)','List Price (SNAPSHOT)','Cook Pay (SNAPSHOT)','Cook ID (SNAPSHOT)','Kitchen Name (SNAPSHOT)','Menu Line ID (SNAPSHOT)','Customer Unit Price (SNAPSHOT)','Line Total (SNAPSHOT)'],
@@ -28,7 +28,7 @@ function fixture(options = {}) {
     WEEKLY_MENU_SHEET:'Weekly Menu', DISHES_SHEET:'Dishes', ORDERS_SHEET:'Orders', ORDER_ITEMS_SHEET:'Order Items',
     DELIVERY_WINDOW:'4–10 PM', PAYMENT_PAYID:'0420 246 023',
     Session: {getActiveUser:()=>({getEmail:()=>state.owner}),getEffectiveUser:()=>({getEmail:()=> 'owner@example.test'})},
-    PropertiesService:{getScriptProperties:()=>({getProperty:key=>key==='ORDER_AUTOMATION_ENV'?state.env:key==='ORDER_REQUEST_API_SECRET'?'audit-signing-secret-with-at-least-32-characters':null})},
+    PropertiesService:{getScriptProperties:()=>({getProperty:key=>key==='ORDER_AUTOMATION_ENV'?state.env:key==='ORDER_REQUEST_API_SECRET'?'audit-signing-secret-with-at-least-32-characters':scriptProperties[key]??null,setProperty:(key,value)=>{scriptProperties[key]=String(value);}})},
     LockService:{getScriptLock:()=>({hasLock:()=>false,waitLock(){},tryLock:()=>true,releaseLock(){}})},
     Utilities:{getUuid:()=>crypto.randomUUID(),DigestAlgorithm:{SHA_256:'sha256'},Charset:{UTF_8:'UTF-8'},sleep(){},
       computeHmacSha256Signature:(value,key)=>[...crypto.createHmac('sha256',key).update(String(value)).digest()],
