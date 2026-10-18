@@ -236,8 +236,8 @@
     "IntegrationDispatcher.gs"
   ],
   "functions": 425,
-  "lines": 16039,
-  "codeSha256": "74d47dc5671832068810577b59b72821da58909700549e44fc872c5c199338c4",
+  "lines": 16040,
+  "codeSha256": "e491c959e1947b79796f6f8cdf2f94c290841c76e0d8481b41e2557bf41c196a",
   "limitations": [
     "Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.",
     "Document generation and all network calls are blocked. Packing data and preview remain testable.",

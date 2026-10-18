@@ -43,6 +43,22 @@ function freezeSpreadsheetReads(f){
   }
 }
 
+test('Unchanged request selections survive RPC reordering of the quantity and menuLineId object fields',()=>{
+  const f=fixture({integrated:true});f.request();
+  const input=f.input({requestReference:'MK-1234ABCD',items:[{quantity:5,menuLineId:lineId}]});
+  const review=f.ctx.ownerOrderReview(input);assert.equal(review.review.quote.totalQuantity,5);
+  assert.equal(f.ctx.ownerOrderAccept(review.id,review.hash).state,'VERIFIED');assert.equal(f.tables.Orders.length,2);
+});
+
+test('A real quantity change still requires a reason when RPC object fields arrive in a different order',()=>{
+  const f=fixture({integrated:true});f.request();
+  const input=f.input({requestReference:'MK-1234ABCD',items:[{quantity:6,menuLineId:lineId}]});
+  assert.throws(()=>f.ctx.ownerOrderReview(input),/reason for changing/);
+  assert.equal(f.tables['Owner Order Reviews'].length,1);assert.equal(f.tables.Orders.length,1);
+  input.revisionReason='Customer explicitly requested six servings';
+  assert.equal(f.ctx.ownerOrderReview(input).review.quote.totalQuantity,6);
+});
+
 test('An accepted manual order verifies through fresh API reads even when every SpreadsheetApp read stays at its pre-commit snapshot',()=>{
   const f=fixture({integrated:true}),r=f.ctx.ownerOrderReview(f.input());freezeSpreadsheetReads(f);
   const result=f.ctx.ownerOrderAccept(r.id,r.hash);assert.equal(result.state,'VERIFIED');

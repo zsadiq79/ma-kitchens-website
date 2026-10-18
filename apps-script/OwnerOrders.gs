@@ -180,8 +180,9 @@ function mkOwnerPrepare_(book, input) {
   if (request) {
     if (request.linkedOrderId || !['RECEIVED', 'UNDER_REVIEW'].includes(request.status)) throw new Error('Mark the actual WhatsApp message received before reviewing, or open the already recorded order.');
     if (request.date !== date || !request.senderPhone || mkPhone_(request.senderPhone) !== details.phone) throw new Error('Request sender or delivery date does not match.');
-    const original = request.items.slice().sort((a, b) => a.menuLineId.localeCompare(b.menuLineId));
-    const edited = input.items.slice().sort((a, b) => a.menuLineId.localeCompare(b.menuLineId));
+    // Compare dish/quantity values, independent of RPC object property order.
+    const original = request.items.map(item => [item.menuLineId, item.quantity]).sort((a, b) => a[0].localeCompare(b[0]));
+    const edited = input.items.map(item => [item.menuLineId, item.quantity]).sort((a, b) => a[0].localeCompare(b[0]));
     if (mkJson_(original) !== mkJson_(edited) && !details.revisionReason) throw new Error('Add a reason for changing the saved dish selection.');
   }
   const today = Utilities.formatDate(new Date(), 'Australia/Sydney', 'yyyy-MM-dd');
