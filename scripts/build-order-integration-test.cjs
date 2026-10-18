@@ -124,9 +124,11 @@ new vm.Script(output, {filename:'Integrated-Code.gs'}).runInNewContext({});
 fs.mkdirSync(target,{recursive:true});
 fs.writeFileSync(path.join(target,'Code.gs'),output);
 fs.copyFileSync(path.join(source,'OwnerOrderWorkspace.html'),path.join(target,'OwnerOrderWorkspace.html'));
-fs.copyFileSync(path.join(source,'appsscript.test.json'),path.join(target,'appsscript.json'));
+const editorManifest = JSON.parse(fs.readFileSync(path.join(source,'integration-reference','appsscript.editor.json'),'utf8'));
+const testManifest = JSON.parse(fs.readFileSync(path.join(source,'appsscript.test.json'),'utf8'));
+fs.writeFileSync(path.join(target,'appsscript.json'),JSON.stringify({...editorManifest,oauthScopes:testManifest.oauthScopes},null,2)+'\n');
 fs.writeFileSync(path.join(target,'source-manifest.json'),JSON.stringify({environment:'TEST',testSpreadsheet:testId,originalModules:originalEvidence,
   originalFunctionChanges:changes,addedModules:[...added,'IntegrationTestGuards.gs','IntegrationDispatcher.gs'],functions:names.length,
   lines:output.split('\n').length,codeSha256:crypto.createHash('sha256').update(output).digest('hex'),
-  limitations:['Current editor publisher and three setup helpers reviewed from user-supplied source on 18 October 2026; original manifest remains pending.','Document generation and all network calls are blocked. Packing data and preview remain testable.','Runtime Google authorization and browser end-to-end tests remain pending.']},null,2));
+  limitations:['Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.','Document generation and all network calls are blocked. Packing data and preview remain testable.','Runtime Google authorization and browser end-to-end tests remain pending.']},null,2));
 console.log(JSON.stringify({originalModules:originals.length,totalFunctions:names.length,lines:output.split('\n').length,bytes:Buffer.byteLength(output)}));

@@ -11,6 +11,13 @@ function context(env='TEST') {
     Sheets:{Spreadsheets:{batchUpdate:()=>{calls.push('batch')}}}};
   vm.createContext(ctx);vm.runInContext(source,ctx);return {ctx,calls};
 }
+test('Integrated manifest retains supplied editor settings and adds explicit test scopes',()=>{
+  const original=JSON.parse(fs.readFileSync(path.join(folder,'..','integration-reference','appsscript.editor.json'),'utf8'));
+  const installed=JSON.parse(fs.readFileSync(path.join(folder,'appsscript.json'),'utf8'));
+  for(const key of Object.keys(original))assert.deepEqual(installed[key],original[key]);
+  assert.ok(installed.oauthScopes.includes('https://www.googleapis.com/auth/userinfo.email'));
+  assert.ok(installed.oauthScopes.includes('https://www.googleapis.com/auth/spreadsheets'));
+});
 test('Integrated package has all baseline functions, exact source origins and one public dispatcher',()=>{
   assert.equal(manifest.originalModules.length,12);
   assert.equal(crypto.createHash('sha256').update(source).digest('hex'),manifest.codeSha256);
