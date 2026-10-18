@@ -29,8 +29,30 @@ function insert(fn, text) { return fn.replace(/\{/, '{\n' + text + '\n'); }
 changeFunction('Code.gs', 'doGet', old => old.replace('function doGet(', 'function mkIntegrationLegacyDoGet_('));
 changeFunction('Code.gs', 'doPost', old => old.replace('function doPost(', 'function mkIntegrationLegacyDoPost_('));
 changeFunction('Code.gs', 'oeBook_', old => old.replace(liveId, testId).replace('Session.getEffectiveUser()', 'Session.getActiveUser()'));
-changeFunction('Code.gs', 'buildActiveMenu_', old => old.replace('function buildActiveMenu_(', 'function mkIntegrationOriginalMenu_('));
+changeFunction('Code.gs', 'buildActiveMenu_', old => old.replace('function buildActiveMenu_(', 'function mkIntegrationOriginalMenu_(')
+  .replace('    eligibleRows.push({', "    if(!orderRequestBeforeCutoff_(Utilities.formatDate(deliveryDate,timeZone,'yyyy-MM-dd'),new Date()))continue;\n    eligibleRows.push({"));
 changeFunction('Code.gs', 'nextOrderId_', () => 'function nextOrderId_(ordersSheet) { return mkIntegrationNextOrderId_(ordersSheet); }');
+changeFunction('Code.gs','oeCustomerForCommit_',()=>`function oeCustomerForCommit_(b,s,p) {
+  const result=ownerOrderSaveCustomer({senderPhone:p.cart.orderCustomerPhone,customerId:p.customer?p.customer.id:'',name:p.draft.name,
+    address:p.cart.deliveryAddress,postcode:p.draft.postcode,instructions:p.draft.instructions,
+    consent:p.draft.consent==='Keep existing'?'KEEP':p.draft.consent==='Yes'?'YES':'NO',updateDefault:false},p.draftId);
+  if(result.status!=='READY')throw new Error(result.message||'Customer recalculation is pending. Retry the same draft.');
+  return Object.assign({},result.customer,{row:result.customer.rowNumber});
+}`);
+changeFunction('PackingSlips.gs','collectPackingSlipData_',old=>old
+  .replace("    orderStatus: headerIndex_(orderHeaders, 'Order Status'),", "    orderStatus: headerIndex_(orderHeaders, 'Order Status'),\n    orderCheck: optionalHeaderIndex_(orderHeaders,'Order Check'),")
+  .replace("    const orderDeliveryDate =", "    if(orderCol.orderCheck>=0 && String(row[orderCol.orderCheck]).trim()!=='OK')continue;\n    const orderDeliveryDate =")
+  .replace("    const customerName =", "    if(totalPacks<=0)continue;\n    const customerName ="));
+changeFunction('PackingSlips.gs','cleanDeliveryNote_',old=>old.replace(".replace(/\\r\\n/g, '\\n')", ".replace(/\\r\\n/g, '\\n').replace(/^(?:OWN-REV-[a-f0-9-]{36}|Order Entry draft [a-f0-9-]{36})(?:\\s*\\|\\s*(?:Delivery instructions:\\s*)?)?/i,'')"));
+changeFunction('PermanentWhatsAppLog.gs','whatsappLogStatusRank_',old=>old.replace("case 'sent':\n      return 1;","case 'sent':\n      return 2;").replace("case 'delivered':\n      return 2;","case 'delivered':\n      return 3;").replace("case 'read':\n      return 3;","case 'read':\n      return 4;").replace("case 'failed':\n      return 4;","case 'failed':\n      return 1;"));
+changeFunction('FeedbackWeb.gs','fwOrder_',old=>old
+  .replace("const rows = menu.rows.filter(m => value(menu, m, 'Item Code') === code); if (rows.length !== 1) fwError_('CONFIGURATION_ERROR');\n    const m = rows[0]; seen.add(code);",
+    "const rows = menu.rows.filter(m => value(menu, m, 'Item Code') === code);\n    const snapshotted = value(items,r,'Cook ID (SNAPSHOT)') && value(items,r,'Kitchen Name (SNAPSHOT)') && value(items,r,'Dish Name');\n    if (rows.length > 1 || (!snapshotted && rows.length !== 1)) fwError_('CONFIGURATION_ERROR');\n    const m = rows[0] || []; seen.add(code);")
+  .replace("dishName: fwString_(value(menu, m, 'Dish Name'), 160, 1), kitchenName: fwString_(value(menu, m, 'Menu Kitchen Name'), 160)",
+    "dishName: fwString_(value(items,r,'Dish Name') || value(menu,m,'Dish Name'),160,1), kitchenName: fwString_(value(items,r,'Kitchen Name (SNAPSHOT)') || value(menu,m,'Menu Kitchen Name'),160)")
+  .replace("cookId: value(menu, m, 'Cook ID')", "cookId: value(items,r,'Cook ID (SNAPSHOT)') || value(menu,m,'Cook ID')"));
+changeFunction('FeedbackWeb.gs','fwPrimeWebReads_',old=>old.replace("'Order Items': ['Order ID', 'Order Status', 'Fulfilment Status', 'Item Code (AUTO, INTERNAL)', 'Qty']",
+  "'Order Items': ['Order ID', 'Order Status', 'Fulfilment Status', 'Item Code (AUTO, INTERNAL)', 'Qty', 'Dish Name', 'Cook ID (SNAPSHOT)', 'Kitchen Name (SNAPSHOT)']"));
 changeFunction('Code.gs', 'oeCommitRequests_', old => old.replace('  return requests;',
   "  requests.push(...mkIntegrationLegacySnapshots_(b,p.cart,p.menu,c,p.quote,orderRow,itemRows,'OE-'+p.draftId));\n  return requests;"));
 changeFunction('Code.gs', 'orderEntryPlaceOrder', old => old

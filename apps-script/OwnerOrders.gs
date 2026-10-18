@@ -18,7 +18,9 @@ function mkOwnerBook_() {
 }
 
 function mkLocked_(callback) {
-  const lock = LockService.getScriptLock(); lock.waitLock(15000);
+  const lock = LockService.getScriptLock();
+  if (lock.hasLock()) return callback();
+  lock.waitLock(15000);
   try { return callback(); } finally { lock.releaseLock(); }
 }
 
@@ -26,6 +28,8 @@ function mkTable_(book, name) {
   const sheet = book.getSheetByName(name);
   if (!sheet) throw new Error('Missing sheet: ' + name + '. Run the test workspace setup.');
   const values = sheet.getDataRange().getValues();
+  const expected = MK_OWNER_HEADERS[name] || MK_ORDER_REQUEST_HEADERS[name];
+  if (expected) orderRequestRequireHeaders_(sheet,expected);
   return { sheet: sheet, headers: orderRequestHeaderMap_(values[0] || []), rows: values.slice(1) };
 }
 
@@ -170,6 +174,9 @@ function mkOwnerPrepare_(book, input) {
 function ownerOrderReview(input) {
   const book = mkOwnerBook_();
   return mkLocked_(() => {
+    const existingReviews = mkTable_(book,MK_OWNER.reviews);
+    if (input && existingReviews.rows.some(row=>String(row[12])===String(input.draftKey) && row[8]))
+      throw new Error('This draft already has a saved or uncertain order. Open its saved review, or start a new manual order.');
     const review = mkOwnerPrepare_(book, input), id = 'REV-' + Utilities.getUuid(), now = new Date().toISOString();
     const table = mkTable_(book, MK_OWNER.reviews), requests = [];
     if (review.requestReference) {
@@ -234,6 +241,7 @@ function ownerOrderAccept(id, hash) {
     const input = JSON.parse(saved.row[4]), review = mkOwnerPrepare_(book, input);
     if (orderRequestDigest_(mkJson_(review)) !== hash) throw new Error('REVIEW_CHANGED: customer, request, menu or pricing changed. Review again.');
     const orders = mkTable_(book, ORDERS_SHEET), items = mkTable_(book, ORDER_ITEMS_SHEET);
+    mkAssertOperationalLayout_(book);
     mkRequire_(orders, ['Customer Name (SNAPSHOT)', 'Phone (SNAPSHOT)', 'Postcode (SNAPSHOT)', 'Owner Operation ID']);
     mkRequire_(items, ['List Price (SNAPSHOT)', 'Cook Pay (SNAPSHOT)', 'Cook ID (SNAPSHOT)', 'Customer Unit Price (SNAPSHOT)', 'Line Total (SNAPSHOT)']);
     const orderRow = mkEmptyRows_(orders, 1, [1, 2, 3, 4, 9, 10, 11, 14, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37], 2, 2000)[0];
@@ -244,7 +252,7 @@ function ownerOrderAccept(id, hash) {
     const confirmation = mkConfirmation_(review, orderId);
     const requests = mkSetColumns_(orders.sheet, orderRow, { 1: orderId, 2: mkSerial_(new Date()), 3: mkDeliverySerial_(review.deliveryDate),
       4: review.details.customerId, 9: 'Pending', 10: 'Payment Requested', 11: DELIVERY_WINDOW,
-      14: operation + (review.details.instructions ? ' | ' + review.details.instructions : ''),
+      14: review.details.instructions,
       26: review.quote.discountPercent, 27: review.quote.standardDeliveryFeeCents / 100, 28: review.quote.freeDeliveryThresholdCents / 100,
       29: review.quote.freeDeliveryBasis, 30: review.quote.minimumOrderItems, 31: review.details.address,
       32: review.details.name, 33: review.details.phone, 34: review.details.postcode, 35: review.details.instructions,
@@ -329,9 +337,11 @@ function ownerOrderRecover(id) {
     const orders = mkTable_(book, ORDERS_SHEET), items = mkTable_(book, ORDER_ITEMS_SHEET), operation = 'OWN-' + id, orderId = String(saved.row[8]);
     if (orders.rows.some(row => String(row[0]) === orderId || String(row[36]) === operation) ||
         items.rows.some(row => String(row[0]) === orderId || String(row[17]) === operation)) return mkOwnerReconcile_(book, saved);
-    Sheets.Spreadsheets.batchUpdate({ requests: mkSetColumns_(saved.table.sheet, saved.number, { 4: 'NOT_RECORDED', 8: new Date().toISOString(), 9: '' }) }, book.getId());
     const journal = mkTable_(book, MK_OWNER.journal), operationRow = mkUnique_(journal, 1, id);
-    if (operationRow) Sheets.Spreadsheets.batchUpdate({ requests: mkSetColumns_(journal.sheet, operationRow.number, { 4: 'NOT_RECORDED', 6: new Date().toISOString() }) }, book.getId());
+    if (!operationRow) throw new Error('Recovery journal is missing. Reconcile before continuing.');
+    const now = new Date().toISOString(), changes = mkSetColumns_(saved.table.sheet, saved.number, { 4: 'NOT_RECORDED', 8: now, 9: '' });
+    changes.push(...mkSetColumns_(journal.sheet, operationRow.number, { 4: 'NOT_RECORDED', 6: now }));
+    Sheets.Spreadsheets.batchUpdate({ requests: changes }, book.getId());
     return { state: 'NOT_RECORDED', message: 'No order or items were written. Review the current form again before accepting.' };
   });
 }
@@ -341,6 +351,7 @@ function ownerOrderMarkManualSend(id) {
   return mkLocked_(() => {
     const saved = mkOwnerFindReview_(book, id);
     if (String(saved.row[3]) !== 'VERIFIED') throw new Error('Verify the saved order before marking a manual send.');
+    if (mkOwnerReconcile_(book, saved).state !== 'VERIFIED') throw new Error('Saved order changed. Check it before marking a manual send.');
     if (!saved.row[11]) {
       const requests = mkSetColumns_(saved.table.sheet, saved.number, { 12: new Date().toISOString() });
       if (saved.row[1]) {

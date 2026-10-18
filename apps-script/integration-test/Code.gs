@@ -3502,6 +3502,7 @@ function mkIntegrationOriginalMenu_() {
       continue;
     }
 
+    if(!orderRequestBeforeCutoff_(Utilities.formatDate(deliveryDate,timeZone,'yyyy-MM-dd'),new Date()))continue;
     eligibleRows.push({
       rowIndex: rowIndex,
       row: row,
@@ -4134,30 +4135,11 @@ function orderEntryReview() {
   });
 }
 function oeCustomerForCommit_(b,s,p) {
-  let c=p.customer;
-  const consent=p.draft.consent==='Keep existing'?(c&&c.consent==='Y'):p.draft.consent==='Yes';
-  const changed=!c || (p.draft.consent!=='Keep existing'&&((c.consent==='Y')!==consent));
-  if(!changed){if(!c.address)oeBatch_(b,[oeCell_(b.getSheetByName(CUSTOMERS_SHEET),c.row,30,p.cart.deliveryAddress)]);return c;}
-  const intake=b.getSheetByName(CUSTOMER_INTAKE_SHEET),data=intake.getRange(1,1,intake.getMaxRows(),19).getValues(),header=data[0];
-  if(header[0]!=='Submission ID'||header[4]!=='Mobile number'||header[8]!=='WhatsApp Contact (Yes, Ma Kitchens can contact me on WhatsApp about my free meal claim and order)')throw new Error('Customer Intake schema changed.');
-  const submission='OE-'+p.draftId;
-  if(changed&&!data.some(r=>r[0]===submission)){
-    const phone=c?String(c.phone):'+'+p.cart.orderCustomerPhone;
-    const previous=data.slice(1).filter(r=>normalisePhoneDigits_(r[4])===p.cart.orderCustomerPhone).sort((a,b)=>new Date(b[2])-new Date(a[2]))[0];
-    const row=previous?previous.slice():new Array(19).fill('');
-    row[0]=submission;row[1]='OE-'+p.draftId;row[2]=new Date();row[3]=p.draft.name;row[4]=phone;row[5]=c&&previous?previous[5]:p.draft.postcode;row[8]=consent;row[9]='control_tower_order';row[10]='control_tower_order';row[18]='Order Entry '+p.draftId;
-    const blank=data.findIndex((r,i)=>i>0&&!r[0]);if(blank<0)throw new Error('Customer Intake is full.');
-    const requests=row.map((v,i)=>oeCell_(intake,blank+1,i+1,v instanceof Date?oeSerial_(v,b):v));
-    oeBatch_(b,requests);
-  }
-  for(let i=0;i<12;i++){
-    SpreadsheetApp.flush();c=oeFindCustomer_(oeCustomers_(b),p.draft);
-    if(c&&(!changed||((c.consent==='Y')===consent)))break;
-    Utilities.sleep(250);
-  }
-  if(!c||!c.id||((c.consent==='Y')!==consent))throw new Error('Customer or consent has not recalculated yet. No order created. Retry Place order.');
-  if(!c.address)oeBatch_(b,[oeCell_(b.getSheetByName(CUSTOMERS_SHEET),c.row,30,p.cart.deliveryAddress)]);
-  return c;
+  const result=ownerOrderSaveCustomer({senderPhone:p.cart.orderCustomerPhone,customerId:p.customer?p.customer.id:'',name:p.draft.name,
+    address:p.cart.deliveryAddress,postcode:p.draft.postcode,instructions:p.draft.instructions,
+    consent:p.draft.consent==='Keep existing'?'KEEP':p.draft.consent==='Yes'?'YES':'NO',updateDefault:false},p.draftId);
+  if(result.status!=='READY')throw new Error(result.message||'Customer recalculation is pending. Retry the same draft.');
+  return Object.assign({},result.customer,{row:result.customer.rowNumber});
 }
 function oeEmptyRows_(values,count,start,columns) {
   const rows=[];values.forEach((r,i)=>{if((columns||[0]).every(c=>r[c]===''||r[c]===undefined)&&rows.length<count)rows.push(i+start);});
@@ -8139,7 +8121,7 @@ function fwPrimeWebReads_(book, token) {
   const hash = fwHash_(fwToken_(token));
   const sources = {
     'Orders': ['Order ID', 'Order Status', 'Delivery Date', 'Customer ID', 'Customer Name'],
-    'Order Items': ['Order ID', 'Order Status', 'Fulfilment Status', 'Item Code (AUTO, INTERNAL)', 'Qty'],
+    'Order Items': ['Order ID', 'Order Status', 'Fulfilment Status', 'Item Code (AUTO, INTERNAL)', 'Qty', 'Dish Name', 'Cook ID (SNAPSHOT)', 'Kitchen Name (SNAPSHOT)'],
     'Dishes': ['Item Code', 'Cook ID', 'Dish Name', 'Menu Kitchen Name', 'Image URL'],
     'Deliveries': ['Order ID', 'Delivery Status', 'Delivered At', 'Feedback Status', 'Feedback Requested At', 'Feedback Completed At', 'Routific ID']
   };
@@ -8250,12 +8232,14 @@ function fwOrder_(book, orderId) {
   const dishes = []; const seen = new Set();
   eligible.forEach(r => {
     const code = value(items, r, 'Item Code (AUTO, INTERNAL)'); if (!/^[A-Za-z0-9_-]{1,80}$/.test(code) || seen.has(code)) return;
-    const rows = menu.rows.filter(m => value(menu, m, 'Item Code') === code); if (rows.length !== 1) fwError_('CONFIGURATION_ERROR');
-    const m = rows[0]; seen.add(code);
+    const rows = menu.rows.filter(m => value(menu, m, 'Item Code') === code);
+    const snapshotted = value(items,r,'Cook ID (SNAPSHOT)') && value(items,r,'Kitchen Name (SNAPSHOT)') && value(items,r,'Dish Name');
+    if (rows.length > 1 || (!snapshotted && rows.length !== 1)) fwError_('CONFIGURATION_ERROR');
+    const m = rows[0] || []; seen.add(code);
     const image = value(menu, m, 'Image URL');
     // No arbitrary images/referrer destinations from sheet data.
     const imageUrl = /^https:\/\/(?:www\.)?makitchens\.com\.au\/menu-images\/[A-Za-z0-9_.-]+$/.test(image) ? image.replace(/^https:\/\/(?:www\.)?makitchens\.com\.au/, '') : '';
-    dishes.push({ itemCode: fwString_(code, 80, 1), dishName: fwString_(value(menu, m, 'Dish Name'), 160, 1), kitchenName: fwString_(value(menu, m, 'Menu Kitchen Name'), 160), imageUrl: imageUrl, cookId: value(menu, m, 'Cook ID') });
+    dishes.push({ itemCode: fwString_(code, 80, 1), dishName: fwString_(value(items,r,'Dish Name') || value(menu,m,'Dish Name'),160,1), kitchenName: fwString_(value(items,r,'Kitchen Name (SNAPSHOT)') || value(menu,m,'Menu Kitchen Name'),160), imageUrl: imageUrl, cookId: value(items,r,'Cook ID (SNAPSHOT)') || value(menu,m,'Cook ID') });
   });
   if (!dishes.length || dishes.length > 50) fwError_('INELIGIBLE');
   const date = o[0].row[orders.col['Delivery Date']];
@@ -9012,6 +8996,7 @@ function collectPackingSlipData_() {
     customerName: headerIndex_(orderHeaders, 'Customer Name'),
     deliveryAddress: headerIndex_(orderHeaders, 'Delivery Address'),
     orderStatus: headerIndex_(orderHeaders, 'Order Status'),
+    orderCheck: optionalHeaderIndex_(orderHeaders,'Order Check'),
     deliveryWindow: headerIndex_(orderHeaders, 'Delivery Window'),
     notes: headerIndex_(orderHeaders, 'Notes')
   };
@@ -9099,6 +9084,7 @@ function collectPackingSlipData_() {
       continue;
     }
 
+    if(orderCol.orderCheck>=0 && String(row[orderCol.orderCheck]).trim()!=='OK')continue;
     const orderDeliveryDate =
       parseFlexibleDate_(row[orderCol.deliveryDate]);
 
@@ -9117,6 +9103,7 @@ function collectPackingSlipData_() {
       0
     );
 
+    if(totalPacks<=0)continue;
     const customerName =
       String(row[orderCol.customerName] || '').trim();
 
@@ -9265,7 +9252,7 @@ function firstName_(fullName) {
 function cleanDeliveryNote_(note) {
   const cleaned =
     String(note || '')
-      .replace(/\r\n/g, '\n')
+      .replace(/\r\n/g, '\n').replace(/^(?:OWN-REV-[a-f0-9-]{36}|Order Entry draft [a-f0-9-]{36})(?:\s*\|\s*(?:Delivery instructions:\s*)?)?/i,'')
       .trim();
 
   if (!cleaned) {
@@ -10275,13 +10262,13 @@ function whatsappLogStatusRank_(
     case 'accepted':
       return 0;
     case 'sent':
-      return 1;
-    case 'delivered':
       return 2;
-    case 'read':
+    case 'delivered':
       return 3;
-    case 'failed':
+    case 'read':
       return 4;
+    case 'failed':
+      return 1;
     default:
       return -1;
   }
@@ -14640,13 +14627,20 @@ function orderRequestHeaderMap_(headers) {
   return result;
 }
 
+function orderRequestRequireHeaders_(sheet, expected) {
+  if (!sheet || !expected) throw new Error('ORDER_REQUEST_NOT_READY');
+  const actual = sheet.getRange(1,1,1,expected.length).getValues()[0] || [];
+  if (expected.some((value,index)=>String(actual[index]||'').trim() !== value)) throw new Error('ORDER_REQUEST_NOT_READY');
+}
+
 function orderRequestReadMenuState_(spreadsheet) {
   const sheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.menuStateSheet);
   if (!sheet || sheet.getLastRow() < 2) throw new Error('ORDER_REQUEST_NOT_READY');
   const values = sheet.getDataRange().getValues();
+  orderRequestRequireHeaders_(sheet,MK_ORDER_REQUEST_HEADERS['Order Menu State']);
   const columns = orderRequestHeaderMap_(values[0]);
   const meta = values.slice(1).find(row => String(row[columns['Record Type']] || '') === 'STATE');
-  if (!meta) throw new Error('ORDER_REQUEST_NOT_READY');
+  if (!meta || values.slice(1).filter(row => String(row[columns['Record Type']] || '') === 'STATE').length !== 1) throw new Error('ORDER_REQUEST_NOT_READY');
   const state = {
     revision: String(meta[columns['Menu Revision']] || ''), cycleId: String(meta[columns['Menu Cycle ID']] || ''),
     deliveryDate: String(meta[columns['Delivery Date']] || ''), publishedAt: String(meta[columns['Published At']] || ''),
@@ -14658,6 +14652,7 @@ function orderRequestReadMenuState_(spreadsheet) {
     if (String(row[columns['Record Type']] || '') !== 'ITEM') return;
     const id = String(row[columns['Public Item ID']] || '');
     if (!id) return;
+    if (items[id]) throw new Error('MENU_STALE');
     items[id] = {
       id, menuLineId: String(row[columns['Menu Line ID']] || ''), itemCode: String(row[columns['Item Code']] || ''),
       cookId: String(row[columns['Cook ID']] || ''), kitchenName: String(row[columns['Kitchen Name']] || ''),
@@ -14677,30 +14672,12 @@ function orderRequestBeforeCutoff_(deliveryDate, now) {
 }
 
 function orderRequestLiveLines_(spreadsheet, state) {
-  const sheet = spreadsheet.getSheetByName(WEEKLY_MENU_SHEET);
-  if (!sheet) throw new Error('ORDER_REQUEST_NOT_READY');
-  const values = sheet.getDataRange().getValues();
-  const columns = orderRequestHeaderMap_(values[0]);
-  const required = ['Menu Line ID', 'Menu Cycle ID', 'Delivery Date', 'Item Code', 'Dish Name', 'Cook ID', 'Menu Kitchen Name', 'Customer Price', 'Remaining Servings', 'Menu Status', 'Availability Status', 'Menu Card Readiness'];
-  if (required.some(name => columns[name] === undefined)) throw new Error('ORDER_REQUEST_MENU_COLUMNS_MISSING');
-  const lines = {};
-  values.slice(1).forEach(row => {
-    const id = String(row[columns['Menu Line ID']] || '').trim();
-    if (!id) return;
-    let date = '';
-    const rawDate = row[columns['Delivery Date']];
-    if (rawDate instanceof Date && !isNaN(rawDate.getTime())) date = Utilities.formatDate(rawDate, MK_ORDER_REQUEST.timezone, 'yyyy-MM-dd');
-    else if (typeof rawDate === 'string') date = rawDate.trim();
-    lines[id] = {
-      id, cycleId: String(row[columns['Menu Cycle ID']] || '').trim(), deliveryDate: date,
-      itemCode: String(row[columns['Item Code']] || '').trim(), dishName: String(row[columns['Dish Name']] || '').trim(),
-      cookId: String(row[columns['Cook ID']] || '').trim(), kitchenName: String(row[columns['Menu Kitchen Name']] || '').trim(),
-      priceCents: Math.round(Number(row[columns['Customer Price']] || 0) * 100),
-      remainingServings: Number(row[columns['Remaining Servings']] || 0),
-      menuStatus: String(row[columns['Menu Status']] || '').trim(),
-      availabilityStatus: String(row[columns['Availability Status']] || '').trim(),
-      readiness: String(row[columns['Menu Card Readiness']] || '').trim()
-    };
+  const lines = {}, committed = mkCommitted_(spreadsheet, state.deliveryDate);
+  mkMenuLines_(spreadsheet,state.deliveryDate).forEach(line => {
+    if (lines[line.menuLineId]) throw new Error('MENU_STALE');
+    if (!Number.isSafeInteger(line.capacity) || line.capacity < 0) throw new Error('MENU_STALE');
+    lines[line.menuLineId] = Object.assign({},line,{id:line.menuLineId,
+      remainingServings:Math.max(0,line.capacity-(committed[line.menuLineId]||0))});
   });
   return lines;
 }
@@ -14724,8 +14701,9 @@ function orderRequestUpdateCells_(sheet, startRow, rows, width) {
 function orderRequestExisting_(sheet, retryKey) {
   if (sheet.getLastRow() < 2) return null;
   const values = sheet.getRange(2, 1, sheet.getLastRow() - 1, MK_ORDER_REQUEST_HEADERS['Order Requests'].length).getValues();
-  for (const row of values) if (String(row[2] || '') === retryKey) return row;
-  return null;
+  const matches = values.filter(row=>String(row[2]||'')===retryKey);
+  if (matches.length > 1) throw new Error('REQUEST_CONFLICT');
+  return matches[0] || null;
 }
 
 function orderRequestCapture_(body) {
@@ -14734,6 +14712,8 @@ function orderRequestCapture_(body) {
   const capability = String(body.recoveryCapability || '');
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(requestKey) ||
       !/^[a-f0-9]{64}$/.test(revision) || !/^MENU-\d{4}-\d{2}-\d{2}$/.test(cycleId) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate) || !Number.isFinite(Date.parse(deliveryDate+'T00:00:00Z')) ||
+      new Date(deliveryDate+'T00:00:00Z').toISOString().slice(0,10) !== deliveryDate || cycleId !== 'MENU-'+deliveryDate ||
       !/^[A-Za-z0-9_-]{43}$/.test(capability) || !Array.isArray(body.items) || !body.items.length || body.items.length > MK_ORDER_REQUEST.maxItems)
     throw new Error('INVALID_REQUEST');
 
@@ -14745,6 +14725,7 @@ function orderRequestCapture_(body) {
       throw new Error('INVALID_ITEMS');
     seen[item.id] = true; items.push({ id: item.id, quantity: item.quantity }); totalQty += item.quantity;
   });
+  items.sort((a,b)=>a.id.localeCompare(b.id));
 
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(10000)) throw new Error('ORDER_REQUEST_BUSY');
@@ -14754,6 +14735,8 @@ function orderRequestCapture_(body) {
     const itemSheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.itemSheet);
     const eventSheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.eventSheet);
     if (!requestSheet || !itemSheet || !eventSheet) throw new Error('ORDER_REQUEST_NOT_READY');
+    [[requestSheet,MK_ORDER_REQUEST.requestSheet],[itemSheet,MK_ORDER_REQUEST.itemSheet],[eventSheet,MK_ORDER_REQUEST.eventSheet]]
+      .forEach(([sheet,name])=>orderRequestRequireHeaders_(sheet,MK_ORDER_REQUEST_HEADERS[name]));
 
     const payloadHash = orderRequestDigest_(JSON.stringify([revision, cycleId, deliveryDate, items.map(item => [item.id, item.quantity])]));
     const existing = orderRequestExisting_(requestSheet, requestKey);
@@ -14770,17 +14753,17 @@ function orderRequestCapture_(body) {
     if (!orderRequestBeforeCutoff_(deliveryDate, now)) throw new Error('MENU_CLOSED');
     const rules = getOrderingRules_();
     const deliveryFeeCents = Math.round(Number(rules.deliveryFee) * 100);
-    if (totalQty < Number(rules.minimumOrderItems))
-      throw new Error('MINIMUM_ORDER_NOT_MET');
     if (state.minimumOrderItems !== Number(rules.minimumOrderItems) || state.deliveryFeeCents !== deliveryFeeCents)
       throw new Error('MENU_STALE');
+    if (totalQty < Number(rules.minimumOrderItems)) throw new Error('MINIMUM_ORDER_NOT_MET');
     const live = orderRequestLiveLines_(spreadsheet, state);
     const matched = items.map(item => {
       const published = state.items[item.id];
       const line = published && live[published.menuLineId];
       if (!published || !line || line.id !== published.menuLineId || line.cycleId !== cycleId || line.deliveryDate !== deliveryDate ||
           line.itemCode !== published.itemCode || line.priceCents !== published.priceCents || line.menuStatus !== 'Available' ||
-          line.availabilityStatus !== 'Available' || line.readiness !== 'READY') throw new Error('MENU_STALE');
+          line.dishName !== published.dishName || line.cookId !== published.cookId || line.kitchenName !== published.kitchenName ||
+          line.dishStatus !== 'Active' || line.availabilityStatus !== 'Available' || line.readiness !== 'READY') throw new Error('MENU_STALE');
       if (line.remainingServings < item.quantity) throw new Error('ITEM_UNAVAILABLE');
       return { ...item, published, line, lineTotalCents: published.priceCents * item.quantity };
     });
@@ -14919,7 +14902,7 @@ function orderRequestMarkReceived(reference, senderPhone, ownerNote) {
   lock.waitLock(10000);
   try {
     const found = orderRequestOwnerFindRow_(spreadsheet, reference), row = found.row;
-    if (!['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(row[8]))) throw new Error('This request cannot be marked received in its current state.');
+    if (row[14] || !['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(row[8]))) throw new Error('This request cannot be marked received in its current state.');
     if (row[8] === 'RECEIVED' && String(row[21]) === normalized && !note) return { ok: true };
     const now = new Date().toISOString(), previousNote = String(row[20] || '');
     const nextNote = note ? [previousNote, note].filter(Boolean).join('\n') : previousNote;
@@ -14964,7 +14947,7 @@ function orderRequestReject(reference, reason) {
   lock.waitLock(10000);
   try {
     const found = orderRequestOwnerFindRow_(spreadsheet, reference);
-    if (!['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(found.row[8]))) throw new Error('This request cannot be rejected in its current state.');
+    if (found.row[14] || !['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(found.row[8]))) throw new Error('This request cannot be rejected in its current state.');
     const now = new Date().toISOString();
     mkIntegrationBatch_({ requests: [orderRequestCellUpdate_(found.sheet, found.rowNumber, 9, 'REJECTED'),
       orderRequestCellUpdate_(found.sheet, found.rowNumber, 17, now), orderRequestCellUpdate_(found.sheet, found.rowNumber, 21, note),
@@ -14995,7 +14978,9 @@ function mkOwnerBook_() {
 }
 
 function mkLocked_(callback) {
-  const lock = LockService.getScriptLock(); lock.waitLock(15000);
+  const lock = LockService.getScriptLock();
+  if (lock.hasLock()) return callback();
+  lock.waitLock(15000);
   try { return callback(); } finally { lock.releaseLock(); }
 }
 
@@ -15003,6 +14988,8 @@ function mkTable_(book, name) {
   const sheet = book.getSheetByName(name);
   if (!sheet) throw new Error('Missing sheet: ' + name + '. Run the test workspace setup.');
   const values = sheet.getDataRange().getValues();
+  const expected = MK_OWNER_HEADERS[name] || MK_ORDER_REQUEST_HEADERS[name];
+  if (expected) orderRequestRequireHeaders_(sheet,expected);
   return { sheet: sheet, headers: orderRequestHeaderMap_(values[0] || []), rows: values.slice(1) };
 }
 
@@ -15147,6 +15134,9 @@ function mkOwnerPrepare_(book, input) {
 function ownerOrderReview(input) {
   const book = mkOwnerBook_();
   return mkLocked_(() => {
+    const existingReviews = mkTable_(book,MK_OWNER.reviews);
+    if (input && existingReviews.rows.some(row=>String(row[12])===String(input.draftKey) && row[8]))
+      throw new Error('This draft already has a saved or uncertain order. Open its saved review, or start a new manual order.');
     const review = mkOwnerPrepare_(book, input), id = 'REV-' + Utilities.getUuid(), now = new Date().toISOString();
     const table = mkTable_(book, MK_OWNER.reviews), requests = [];
     if (review.requestReference) {
@@ -15211,6 +15201,7 @@ function ownerOrderAccept(id, hash) {
     const input = JSON.parse(saved.row[4]), review = mkOwnerPrepare_(book, input);
     if (orderRequestDigest_(mkJson_(review)) !== hash) throw new Error('REVIEW_CHANGED: customer, request, menu or pricing changed. Review again.');
     const orders = mkTable_(book, ORDERS_SHEET), items = mkTable_(book, ORDER_ITEMS_SHEET);
+    mkAssertOperationalLayout_(book);
     mkRequire_(orders, ['Customer Name (SNAPSHOT)', 'Phone (SNAPSHOT)', 'Postcode (SNAPSHOT)', 'Owner Operation ID']);
     mkRequire_(items, ['List Price (SNAPSHOT)', 'Cook Pay (SNAPSHOT)', 'Cook ID (SNAPSHOT)', 'Customer Unit Price (SNAPSHOT)', 'Line Total (SNAPSHOT)']);
     const orderRow = mkEmptyRows_(orders, 1, [1, 2, 3, 4, 9, 10, 11, 14, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37], 2, 2000)[0];
@@ -15222,7 +15213,7 @@ function ownerOrderAccept(id, hash) {
     const confirmation = mkConfirmation_(review, orderId);
     const requests = mkSetColumns_(orders.sheet, orderRow, { 1: orderId, 2: mkSerial_(new Date()), 3: mkDeliverySerial_(review.deliveryDate),
       4: review.details.customerId, 9: 'Pending', 10: 'Payment Requested', 11: DELIVERY_WINDOW,
-      14: operation + (review.details.instructions ? ' | ' + review.details.instructions : ''),
+      14: review.details.instructions,
       26: review.quote.discountPercent, 27: review.quote.standardDeliveryFeeCents / 100, 28: review.quote.freeDeliveryThresholdCents / 100,
       29: review.quote.freeDeliveryBasis, 30: review.quote.minimumOrderItems, 31: review.details.address,
       32: review.details.name, 33: review.details.phone, 34: review.details.postcode, 35: review.details.instructions,
@@ -15307,9 +15298,11 @@ function ownerOrderRecover(id) {
     const orders = mkTable_(book, ORDERS_SHEET), items = mkTable_(book, ORDER_ITEMS_SHEET), operation = 'OWN-' + id, orderId = String(saved.row[8]);
     if (orders.rows.some(row => String(row[0]) === orderId || String(row[36]) === operation) ||
         items.rows.some(row => String(row[0]) === orderId || String(row[17]) === operation)) return mkOwnerReconcile_(book, saved);
-    mkIntegrationBatch_({ requests: mkSetColumns_(saved.table.sheet, saved.number, { 4: 'NOT_RECORDED', 8: new Date().toISOString(), 9: '' }) }, book.getId());
     const journal = mkTable_(book, MK_OWNER.journal), operationRow = mkUnique_(journal, 1, id);
-    if (operationRow) mkIntegrationBatch_({ requests: mkSetColumns_(journal.sheet, operationRow.number, { 4: 'NOT_RECORDED', 6: new Date().toISOString() }) }, book.getId());
+    if (!operationRow) throw new Error('Recovery journal is missing. Reconcile before continuing.');
+    const now = new Date().toISOString(), changes = mkSetColumns_(saved.table.sheet, saved.number, { 4: 'NOT_RECORDED', 8: now, 9: '' });
+    changes.push(...mkSetColumns_(journal.sheet, operationRow.number, { 4: 'NOT_RECORDED', 6: now }));
+    mkIntegrationBatch_({ requests: changes }, book.getId());
     return { state: 'NOT_RECORDED', message: 'No order or items were written. Review the current form again before accepting.' };
   });
 }
@@ -15319,6 +15312,7 @@ function ownerOrderMarkManualSend(id) {
   return mkLocked_(() => {
     const saved = mkOwnerFindReview_(book, id);
     if (String(saved.row[3]) !== 'VERIFIED') throw new Error('Verify the saved order before marking a manual send.');
+    if (mkOwnerReconcile_(book, saved).state !== 'VERIFIED') throw new Error('Saved order changed. Check it before marking a manual send.');
     if (!saved.row[11]) {
       const requests = mkSetColumns_(saved.table.sheet, saved.number, { 12: new Date().toISOString() });
       if (saved.row[1]) {
@@ -15366,6 +15360,15 @@ function mkCustomerIdsUnchanged_(baseline, customers) {
   return Object.keys(baseline).every(id => current[id] === baseline[id]);
 }
 
+function mkCustomerIntakeSerial_(value) {
+  if (value instanceof Date && Number.isFinite(value.getTime())) return mkSerial_(value);
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0 && value < 1000000) return value;
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    const parsed = new Date(value); if (Number.isFinite(parsed.getTime())) return mkSerial_(parsed);
+  }
+  throw new Error('Customer intake has an invalid timestamp. Reconcile it before adding a submission.');
+}
+
 function ownerOrderSaveCustomer(input, operationId) {
   const book = mkOwnerBook_();
   if (typeof operationId !== 'string' || !/^[a-f0-9-]{36}$/i.test(operationId)) throw new Error('Invalid customer operation identity.');
@@ -15381,6 +15384,11 @@ function ownerOrderSaveCustomer(input, operationId) {
       customer = matches[0] || null;
       if (customer && !details.customerId && baseline[customer.id]) throw new Error('An existing customer unexpectedly matched the new customer attempt. Reconcile the registry.');
       if (customer && operation.row[5] && String(operation.row[5]) !== customer.id) throw new Error('Customer operation identity changed.');
+      if (!mkCustomerIdsUnchanged_(baseline, customers)) throw new Error('CUSTOMER_ID_REVIEW_REQUIRED: existing IDs shifted. No order has been created.');
+      if (String(operation.row[4]) === 'READY') {
+        if (!customer || customer.id !== String(operation.row[5])) throw new Error('Saved customer operation no longer matches the registry.');
+        return { status: 'READY', customer: customer };
+      }
     } else {
       customer = mkCustomerMatch_(customers, details.phone, details.customerId);
       if (customer && details.name !== customer.name) throw new Error('Existing customer name differs. Reload the saved customer.');
@@ -15393,16 +15401,15 @@ function ownerOrderSaveCustomer(input, operationId) {
       const now = new Date(), submissionId = 'OWN-CUSTOMER-' + operationId;
       if (intake.rows.some(row => String(row[0]) === submissionId)) throw new Error('Customer operation journal is missing. Reconcile this intake attempt.');
       const previous = customer ? intake.rows.filter(row => String(row[4]) === customer.phone)
-        .sort((a, b) => new Date(b[2]).getTime() - new Date(a[2]).getTime())[0] : null;
+        .sort((a, b) => mkCustomerIntakeSerial_(b[2]) - mkCustomerIntakeSerial_(a[2]))[0] : null;
       if (customer && !previous) throw new Error('Existing customer intake record could not be verified.');
       const values = previous ? previous.slice(0, 19) : Array(19).fill('');
-      const latestTime = intake.rows.reduce((maximum, row) => {
-        const date = row[2] instanceof Date ? row[2].getTime() : NaN;
-        return Number.isFinite(date) ? Math.max(maximum, date) : maximum;
-      }, now.getTime());
-      const submitted = new Date(Math.max(now.getTime(), latestTime + 1000));
-      values[0] = submissionId; values[1] = submissionId; values[2] = mkSerial_(submitted);
-      values[3] = details.name; values[4] = customer ? customer.phone : '+' + details.phone;
+      const latestSerial = intake.rows.reduce((maximum, row) => row[4] === '' || row[4] === undefined ? maximum :
+        Math.max(maximum,mkCustomerIntakeSerial_(row[2])),mkSerial_(now));
+      values[0] = submissionId; values[1] = submissionId; values[2] = latestSerial + 1 / 86400;
+      // QUERY infers the phone column as numeric in the existing registry.
+      // Preserve an existing intake value's type; new AU numbers are safe integers.
+      values[3] = details.name; values[4] = customer ? previous[4] : Number(details.phone);
       if (!customer || details.updateDefault) values[5] = details.postcode;
       values[8] = details.consent === 'KEEP' ? customer.consent === 'Y' : details.consent === 'YES';
       values[9] = 'owner_order_workspace'; values[10] = 'owner_order_workspace';
@@ -15410,6 +15417,7 @@ function ownerOrderSaveCustomer(input, operationId) {
       const intakeRow = mkEmptyRows_(intake, 1, [1, 2, 3, 4, 5], 2, intake.sheet.getMaxRows())[0];
       const operationNumber = operations.sheet.getLastRow() + 1, nowIso = now.toISOString();
       mkIntegrationBatch_({ requests: [orderRequestUpdateCells_(intake.sheet, intakeRow - 1, [values], 19),
+        {updateCells:{start:{sheetId:intake.sheet.getSheetId(),rowIndex:intakeRow-1,columnIndex:2},rows:[{values:[{userEnteredValue:{numberValue:values[2]},userEnteredFormat:{numberFormat:{type:'DATE_TIME',pattern:'yyyy-mm-dd hh:mm:ss'}}}]}],fields:'userEnteredValue,userEnteredFormat.numberFormat'}},
         orderRequestUpdateCells_(operations.sheet, operationNumber - 1, [[operationId, payloadHash, details.phone, mkJson_(baseline),
           'INTAKE_SAVED', customer ? customer.id : '', nowIso]], MK_OWNER_HEADERS[MK_OWNER.customers].length)] }, book.getId());
       operation = { number: operationNumber, row: [operationId, payloadHash, details.phone, mkJson_(baseline), 'INTAKE_SAVED', customer ? customer.id : '', nowIso] };
@@ -15440,7 +15448,97 @@ function ownerOrderSaveCustomer(input, operationId) {
 
 // ==================== SOURCE: OwnerOrderSetup.gs ====================
 /* Test-only schema migration. Historical rows retain their original formula fallback. */
+
+const MK_OWNER_OPERATIONAL_LAYOUT = {
+  "Orders": [
+    "Order ID",
+    "Order Date",
+    "Delivery Date",
+    "Customer ID",
+    "Customer Name",
+    "Phone",
+    "Delivery Address",
+    "Postcode",
+    "Order Status",
+    "Payment Status",
+    "Delivery Window",
+    "Order Total",
+    "Delivery Status",
+    "Notes",
+    "Items Subtotal",
+    "Delivery Fee",
+    "Free Delivery Discount (AUTO)",
+    "Cook Payout",
+    "Contribution Before Delivery Cost",
+    "Total Qty",
+    "Discounted Qty (AUTO)",
+    "Order Rules Control",
+    "Capacity Control",
+    "Order Check",
+    "Ready to Confirm?",
+    "Pricing Discount % (SNAPSHOT)",
+    "Pricing Delivery Fee (SNAPSHOT)",
+    "Free Delivery Threshold (SNAPSHOT)",
+    "Free Delivery Basis (SNAPSHOT)",
+    "Minimum Order Items (SNAPSHOT)",
+    "Delivery Address (SNAPSHOT)",
+    "Customer Name (SNAPSHOT)",
+    "Phone (SNAPSHOT)",
+    "Postcode (SNAPSHOT)",
+    "Delivery Instructions (SNAPSHOT)",
+    "Request Reference (SNAPSHOT)",
+    "Owner Operation ID"
+  ],
+  "Order Items": [
+    "Order ID",
+    "Delivery Date",
+    "Order Status",
+    "Dish Name",
+    "Item Code (AUTO, INTERNAL)",
+    "Cook ID",
+    "Qty",
+    "Price Treatment (AUTO)",
+    "List Price",
+    "Customer Unit Price",
+    "Cook Pay / Unit",
+    "Line Total",
+    "Cook Payout",
+    "Fulfilment Status",
+    "Ordered Qty / Cycle",
+    "Available Servings / Cycle",
+    "Capacity Check",
+    "Notes",
+    "Offer Eligible (AUTO)",
+    "Free Promo Qty (LEGACY)",
+    "Discounted Qty (AUTO)",
+    "Full Price Qty (LEGACY)",
+    "Item Code (SNAPSHOT)",
+    "List Price (SNAPSHOT)",
+    "Cook Pay (SNAPSHOT)",
+    "Cook ID (SNAPSHOT)",
+    "Kitchen Name (SNAPSHOT)",
+    "Menu Line ID (SNAPSHOT)",
+    "Customer Unit Price (SNAPSHOT)",
+    "Line Total (SNAPSHOT)"
+  ]
+};
+function mkAssertOperationalLayout_(book) {
+  Object.keys(MK_OWNER_OPERATIONAL_LAYOUT).forEach(name => {
+    const sheet = book.getSheetByName(name), expected = MK_OWNER_OPERATIONAL_LAYOUT[name];
+    if (!sheet || sheet.getMaxColumns() < expected.length) throw new Error('Operational schema needs setup: ' + name);
+    const actual = sheet.getRange(1,1,1,expected.length).getDisplayValues()[0];
+    if (expected.some((header,index) => actual[index] !== header)) throw new Error('Operational columns moved or changed: ' + name);
+  });
+  Object.keys(MK_OWNER_FORMULA_SNAPSHOTS).forEach(key=>{
+    const split=key.lastIndexOf('!'),sheet=book.getSheetByName(key.slice(0,split));
+    if(sheet.getRange(key.slice(split+1)).getFormula()!==MK_OWNER_FORMULA_SNAPSHOTS[key])
+      throw new Error('Operational snapshot formula changed: '+key);
+  });
+}
+
 const MK_OWNER_FORMULA_BASELINE = {
+  "Order Items!E2": "=MAP(B2:B5000,D2:D5000,W2:W5000,LAMBDA(dt,name,code,IF(name=\"\",\"\",IF(dt=\"\",\"\",IF(code<>\"\",code,IFERROR(INDEX(FILTER('Weekly Menu'!D$2:D$1000,'Weekly Menu'!C$2:C$1000=dt,'Weekly Menu'!E$2:E$1000=name,'Weekly Menu'!U$2:U$1000=\"Available\"),1),\"\"))))))",
+  "Orders!G2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AE2:AE2000<>\"\",AE2:AE2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!AD$2:AD$1000,\"\"))))",
   "Orders!E2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!B$2:B$1000,\"\")))",
   "Orders!F2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!C$2:C$1000,\"\")))",
   "Orders!H2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!E$2:E$1000,\"\")))",
@@ -15449,6 +15547,8 @@ const MK_OWNER_FORMULA_BASELINE = {
   "Order Items!K2": "=ARRAYFORMULA(IF(E2:E5000=\"\",\"\",XLOOKUP(E2:E5000,Dishes!A$2:A$500,Dishes!F$2:F$500,\"\")))"
 };
 const MK_OWNER_FORMULA_SNAPSHOTS = {
+  "Order Items!E2": "=MAP(B2:B5000,D2:D5000,W2:W5000,LAMBDA(dt,name,code,IF(name=\"\",\"\",IF(dt=\"\",\"\",IF(code<>\"\",code,IFERROR(INDEX(FILTER('Weekly Menu'!D$2:D$1000,'Weekly Menu'!C$2:C$1000=dt,'Weekly Menu'!E$2:E$1000=name,'Weekly Menu'!U$2:U$1000=\"Available\"),1),\"\"))))))",
+  "Orders!G2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AE2:AE2000<>\"\",AE2:AE2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!AD$2:AD$1000,\"\"))))",
   "Orders!E2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AF2:AF2000<>\"\",AF2:AF2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!B$2:B$1000,\"\"))))",
   "Orders!F2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AG2:AG2000<>\"\",AG2:AG2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!C$2:C$1000,\"\"))))",
   "Orders!H2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AH2:AH2000<>\"\",AH2:AH2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!E$2:E$1000,\"\"))))",
@@ -15528,7 +15628,7 @@ function mkOwnerRowFormulaRequests_(orders, orderRow, items, itemRows) {
       throw new Error('Order item formula coverage is missing at row ' + row + '. Extend the formulas first.');
     const unit = items.getRange(row, 10).getFormula(), total = items.getRange(row, 12).getFormula();
     requests.push(mkFormulaCell_(items, row, 10, '=IF(AC' + row + '<>"",AC' + row + ',' + unit.slice(1) + ')'));
-    requests.push(mkFormulaCell_(items, row, 12, '=IF(AD' + row + '<>"",IF(OR(C' + row + '="Cancelled",N' + row + '="Cancelled"),0,AD' + row + '),' + total.slice(1) + ')'));
+    requests.push(mkFormulaCell_(items, row, 12, '=IF(AC' + row + '<>"",IF(OR(C' + row + '="Cancelled",N' + row + '="Cancelled"),0,ROUND(G' + row + '*AC' + row + ',2)),' + total.slice(1) + ')'));
   });
   return requests;
 }
@@ -15719,6 +15819,9 @@ function mkOrderSavePublishedState_(snapshot, sourceMenu) {
 }
 
 function mkOrderWriteSnapshot_(snapshot, sourceMenu) {
+  // Close the authoritative capture state before any provider call can fail.
+  // The public deployment may continue serving its prior bundled menu briefly.
+  if (snapshot.withdrawn) mkOrderSavePublishedState_(snapshot,null);
   const props = PropertiesService.getScriptProperties();
   const token = props.getProperty('ORDER_MENU_GITHUB_TOKEN');
   if (!token || /[\r\n]/.test(token)) throw new Error('SET_ORDER_MENU_GITHUB_TOKEN_PRIVATELY');
@@ -15732,15 +15835,15 @@ function mkOrderWriteSnapshot_(snapshot, sourceMenu) {
   const body = JSON.stringify(snapshot, null, 2) + '\n';
   // Ignore publishedAt when deciding whether an identical menu needs another deployment.
   if (current.encoding === 'base64' && typeof current.content === 'string') {
-    try {
-      const old = JSON.parse(Utilities.newBlob(Utilities.base64Decode(current.content.replace(/\s/g, ''))).getDataAsString());
-      const withoutTime = record => { const copy = Object.assign({}, record); delete copy.publishedAt; return copy; };
-      if (JSON.stringify(withoutTime(old)) === JSON.stringify(withoutTime(snapshot))) {
+    let old = null;
+    try { old = JSON.parse(Utilities.newBlob(Utilities.base64Decode(current.content.replace(/\s/g, ''))).getDataAsString()); }
+    catch (_) { /* A validated snapshot can replace invalid saved JSON. */ }
+    const withoutTime = record => { const copy = Object.assign({}, record); delete copy.publishedAt; return copy; };
+    if (old && JSON.stringify(withoutTime(old)) === JSON.stringify(withoutTime(snapshot))) {
         mkOrderSavePublishedState_(snapshot, sourceMenu);
         const result = { changed: false, menuCycleId: snapshot.menuCycleId || '', branch: branch, note: 'Identical menu already committed. Check website deployment status.' };
         console.log(JSON.stringify(result)); return result;
-      }
-    } catch (_) { /* Replace an invalid old snapshot only with a validated newly built one. */ }
+    }
   }
   const response = mkOrderGithub_('put', api, token, { branch: branch, sha: current.sha,
     message: snapshot.withdrawn ? 'Withdraw published WhatsApp ordering menu' : 'Publish WhatsApp ordering menu ' + snapshot.deliveryDate,
@@ -15843,6 +15946,7 @@ function mkIntegrationNextOrderId_(orders) {
 }
 
 function mkIntegrationLegacySnapshots_(book, cart, menu, customer, quote, orderRow, itemRows, operation) {
+  mkAssertOperationalLayout_(book);
   const lines = mkMenuLines_(book, menu.deliveryDate), input = {
     deliveryDate: menu.deliveryDate, discountPercent: quote.discountPercent,
     discountReason: 'Existing legacy cart pricing rules',

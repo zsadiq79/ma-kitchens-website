@@ -86,6 +86,30 @@
     },
     {
       "file": "Code.gs",
+      "function": "oeCustomerForCommit_"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "collectPackingSlipData_"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "cleanDeliveryNote_"
+    },
+    {
+      "file": "PermanentWhatsAppLog.gs",
+      "function": "whatsappLogStatusRank_"
+    },
+    {
+      "file": "FeedbackWeb.gs",
+      "function": "fwOrder_"
+    },
+    {
+      "file": "FeedbackWeb.gs",
+      "function": "fwPrimeWebReads_"
+    },
+    {
+      "file": "Code.gs",
       "function": "oeCommitRequests_"
     },
     {
@@ -211,9 +235,9 @@
     "IntegrationTestGuards.gs",
     "IntegrationDispatcher.gs"
   ],
-  "functions": 421,
-  "lines": 15912,
-  "codeSha256": "5c66834fcddf4fd79e461c23b885d532ec353ceac62afedeb0298f179d528fef",
+  "functions": 424,
+  "lines": 16016,
+  "codeSha256": "58e5ed9678f4b6fa05ce05f2d30465373fa44090a3d0a7a5a2484854a43227dd",
   "limitations": [
     "Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.",
     "Document generation and all network calls are blocked. Packing data and preview remain testable.",

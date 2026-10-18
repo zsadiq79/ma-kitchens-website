@@ -95,13 +95,20 @@ function orderRequestHeaderMap_(headers) {
   return result;
 }
 
+function orderRequestRequireHeaders_(sheet, expected) {
+  if (!sheet || !expected) throw new Error('ORDER_REQUEST_NOT_READY');
+  const actual = sheet.getRange(1,1,1,expected.length).getValues()[0] || [];
+  if (expected.some((value,index)=>String(actual[index]||'').trim() !== value)) throw new Error('ORDER_REQUEST_NOT_READY');
+}
+
 function orderRequestReadMenuState_(spreadsheet) {
   const sheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.menuStateSheet);
   if (!sheet || sheet.getLastRow() < 2) throw new Error('ORDER_REQUEST_NOT_READY');
   const values = sheet.getDataRange().getValues();
+  orderRequestRequireHeaders_(sheet,MK_ORDER_REQUEST_HEADERS['Order Menu State']);
   const columns = orderRequestHeaderMap_(values[0]);
   const meta = values.slice(1).find(row => String(row[columns['Record Type']] || '') === 'STATE');
-  if (!meta) throw new Error('ORDER_REQUEST_NOT_READY');
+  if (!meta || values.slice(1).filter(row => String(row[columns['Record Type']] || '') === 'STATE').length !== 1) throw new Error('ORDER_REQUEST_NOT_READY');
   const state = {
     revision: String(meta[columns['Menu Revision']] || ''), cycleId: String(meta[columns['Menu Cycle ID']] || ''),
     deliveryDate: String(meta[columns['Delivery Date']] || ''), publishedAt: String(meta[columns['Published At']] || ''),
@@ -113,6 +120,7 @@ function orderRequestReadMenuState_(spreadsheet) {
     if (String(row[columns['Record Type']] || '') !== 'ITEM') return;
     const id = String(row[columns['Public Item ID']] || '');
     if (!id) return;
+    if (items[id]) throw new Error('MENU_STALE');
     items[id] = {
       id, menuLineId: String(row[columns['Menu Line ID']] || ''), itemCode: String(row[columns['Item Code']] || ''),
       cookId: String(row[columns['Cook ID']] || ''), kitchenName: String(row[columns['Kitchen Name']] || ''),
@@ -132,30 +140,12 @@ function orderRequestBeforeCutoff_(deliveryDate, now) {
 }
 
 function orderRequestLiveLines_(spreadsheet, state) {
-  const sheet = spreadsheet.getSheetByName(WEEKLY_MENU_SHEET);
-  if (!sheet) throw new Error('ORDER_REQUEST_NOT_READY');
-  const values = sheet.getDataRange().getValues();
-  const columns = orderRequestHeaderMap_(values[0]);
-  const required = ['Menu Line ID', 'Menu Cycle ID', 'Delivery Date', 'Item Code', 'Dish Name', 'Cook ID', 'Menu Kitchen Name', 'Customer Price', 'Remaining Servings', 'Menu Status', 'Availability Status', 'Menu Card Readiness'];
-  if (required.some(name => columns[name] === undefined)) throw new Error('ORDER_REQUEST_MENU_COLUMNS_MISSING');
-  const lines = {};
-  values.slice(1).forEach(row => {
-    const id = String(row[columns['Menu Line ID']] || '').trim();
-    if (!id) return;
-    let date = '';
-    const rawDate = row[columns['Delivery Date']];
-    if (rawDate instanceof Date && !isNaN(rawDate.getTime())) date = Utilities.formatDate(rawDate, MK_ORDER_REQUEST.timezone, 'yyyy-MM-dd');
-    else if (typeof rawDate === 'string') date = rawDate.trim();
-    lines[id] = {
-      id, cycleId: String(row[columns['Menu Cycle ID']] || '').trim(), deliveryDate: date,
-      itemCode: String(row[columns['Item Code']] || '').trim(), dishName: String(row[columns['Dish Name']] || '').trim(),
-      cookId: String(row[columns['Cook ID']] || '').trim(), kitchenName: String(row[columns['Menu Kitchen Name']] || '').trim(),
-      priceCents: Math.round(Number(row[columns['Customer Price']] || 0) * 100),
-      remainingServings: Number(row[columns['Remaining Servings']] || 0),
-      menuStatus: String(row[columns['Menu Status']] || '').trim(),
-      availabilityStatus: String(row[columns['Availability Status']] || '').trim(),
-      readiness: String(row[columns['Menu Card Readiness']] || '').trim()
-    };
+  const lines = {}, committed = mkCommitted_(spreadsheet, state.deliveryDate);
+  mkMenuLines_(spreadsheet,state.deliveryDate).forEach(line => {
+    if (lines[line.menuLineId]) throw new Error('MENU_STALE');
+    if (!Number.isSafeInteger(line.capacity) || line.capacity < 0) throw new Error('MENU_STALE');
+    lines[line.menuLineId] = Object.assign({},line,{id:line.menuLineId,
+      remainingServings:Math.max(0,line.capacity-(committed[line.menuLineId]||0))});
   });
   return lines;
 }
@@ -179,8 +169,9 @@ function orderRequestUpdateCells_(sheet, startRow, rows, width) {
 function orderRequestExisting_(sheet, retryKey) {
   if (sheet.getLastRow() < 2) return null;
   const values = sheet.getRange(2, 1, sheet.getLastRow() - 1, MK_ORDER_REQUEST_HEADERS['Order Requests'].length).getValues();
-  for (const row of values) if (String(row[2] || '') === retryKey) return row;
-  return null;
+  const matches = values.filter(row=>String(row[2]||'')===retryKey);
+  if (matches.length > 1) throw new Error('REQUEST_CONFLICT');
+  return matches[0] || null;
 }
 
 function orderRequestCapture_(body) {
@@ -189,6 +180,8 @@ function orderRequestCapture_(body) {
   const capability = String(body.recoveryCapability || '');
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(requestKey) ||
       !/^[a-f0-9]{64}$/.test(revision) || !/^MENU-\d{4}-\d{2}-\d{2}$/.test(cycleId) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate) || !Number.isFinite(Date.parse(deliveryDate+'T00:00:00Z')) ||
+      new Date(deliveryDate+'T00:00:00Z').toISOString().slice(0,10) !== deliveryDate || cycleId !== 'MENU-'+deliveryDate ||
       !/^[A-Za-z0-9_-]{43}$/.test(capability) || !Array.isArray(body.items) || !body.items.length || body.items.length > MK_ORDER_REQUEST.maxItems)
     throw new Error('INVALID_REQUEST');
 
@@ -200,6 +193,7 @@ function orderRequestCapture_(body) {
       throw new Error('INVALID_ITEMS');
     seen[item.id] = true; items.push({ id: item.id, quantity: item.quantity }); totalQty += item.quantity;
   });
+  items.sort((a,b)=>a.id.localeCompare(b.id));
 
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(10000)) throw new Error('ORDER_REQUEST_BUSY');
@@ -209,6 +203,8 @@ function orderRequestCapture_(body) {
     const itemSheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.itemSheet);
     const eventSheet = spreadsheet.getSheetByName(MK_ORDER_REQUEST.eventSheet);
     if (!requestSheet || !itemSheet || !eventSheet) throw new Error('ORDER_REQUEST_NOT_READY');
+    [[requestSheet,MK_ORDER_REQUEST.requestSheet],[itemSheet,MK_ORDER_REQUEST.itemSheet],[eventSheet,MK_ORDER_REQUEST.eventSheet]]
+      .forEach(([sheet,name])=>orderRequestRequireHeaders_(sheet,MK_ORDER_REQUEST_HEADERS[name]));
 
     const payloadHash = orderRequestDigest_(JSON.stringify([revision, cycleId, deliveryDate, items.map(item => [item.id, item.quantity])]));
     const existing = orderRequestExisting_(requestSheet, requestKey);
@@ -225,17 +221,17 @@ function orderRequestCapture_(body) {
     if (!orderRequestBeforeCutoff_(deliveryDate, now)) throw new Error('MENU_CLOSED');
     const rules = getOrderingRules_();
     const deliveryFeeCents = Math.round(Number(rules.deliveryFee) * 100);
-    if (totalQty < Number(rules.minimumOrderItems))
-      throw new Error('MINIMUM_ORDER_NOT_MET');
     if (state.minimumOrderItems !== Number(rules.minimumOrderItems) || state.deliveryFeeCents !== deliveryFeeCents)
       throw new Error('MENU_STALE');
+    if (totalQty < Number(rules.minimumOrderItems)) throw new Error('MINIMUM_ORDER_NOT_MET');
     const live = orderRequestLiveLines_(spreadsheet, state);
     const matched = items.map(item => {
       const published = state.items[item.id];
       const line = published && live[published.menuLineId];
       if (!published || !line || line.id !== published.menuLineId || line.cycleId !== cycleId || line.deliveryDate !== deliveryDate ||
           line.itemCode !== published.itemCode || line.priceCents !== published.priceCents || line.menuStatus !== 'Available' ||
-          line.availabilityStatus !== 'Available' || line.readiness !== 'READY') throw new Error('MENU_STALE');
+          line.dishName !== published.dishName || line.cookId !== published.cookId || line.kitchenName !== published.kitchenName ||
+          line.dishStatus !== 'Active' || line.availabilityStatus !== 'Available' || line.readiness !== 'READY') throw new Error('MENU_STALE');
       if (line.remainingServings < item.quantity) throw new Error('ITEM_UNAVAILABLE');
       return { ...item, published, line, lineTotalCents: published.priceCents * item.quantity };
     });
@@ -374,7 +370,7 @@ function orderRequestMarkReceived(reference, senderPhone, ownerNote) {
   lock.waitLock(10000);
   try {
     const found = orderRequestOwnerFindRow_(spreadsheet, reference), row = found.row;
-    if (!['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(row[8]))) throw new Error('This request cannot be marked received in its current state.');
+    if (row[14] || !['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(row[8]))) throw new Error('This request cannot be marked received in its current state.');
     if (row[8] === 'RECEIVED' && String(row[21]) === normalized && !note) return { ok: true };
     const now = new Date().toISOString(), previousNote = String(row[20] || '');
     const nextNote = note ? [previousNote, note].filter(Boolean).join('\n') : previousNote;
@@ -419,7 +415,7 @@ function orderRequestReject(reference, reason) {
   lock.waitLock(10000);
   try {
     const found = orderRequestOwnerFindRow_(spreadsheet, reference);
-    if (!['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(found.row[8]))) throw new Error('This request cannot be rejected in its current state.');
+    if (found.row[14] || !['UNASSIGNED', 'RECEIVED', 'UNDER_REVIEW'].includes(String(found.row[8]))) throw new Error('This request cannot be rejected in its current state.');
     const now = new Date().toISOString();
     Sheets.Spreadsheets.batchUpdate({ requests: [orderRequestCellUpdate_(found.sheet, found.rowNumber, 9, 'REJECTED'),
       orderRequestCellUpdate_(found.sheet, found.rowNumber, 17, now), orderRequestCellUpdate_(found.sheet, found.rowNumber, 21, note),

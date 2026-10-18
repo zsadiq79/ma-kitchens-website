@@ -141,6 +141,19 @@ test('Republishing replaces dishes in the saved snapshot', () => {
 test('Withdrawal replaces the snapshot with an unavailable record', () => {
   const f = publisherFixture(); f.ctx.withdrawPublishedOrderingMenu(); assert.equal(f.stored.value.withdrawn, true); assert.equal(f.stored.value.meals, undefined);
 });
+
+test('Withdrawal closes authoritative capture even when GitHub publication fails',()=>{
+  const f=publisherFixture();f.status(503);
+  assert.throws(()=>f.ctx.withdrawPublishedOrderingMenu(),/GITHUB_HTTP_503/);
+  assert.equal(f.writes(),0);assert.equal(f.stateWrites.length,1);
+  assert.equal(f.stateWrites[0].body.requests[1].updateCells.rows[1].values[5].userEnteredValue.stringValue,'WITHDRAWN');
+});
+
+test('A private state failure on identical publication cannot trigger another GitHub commit',()=>{
+  const f=publisherFixture();f.ctx.publishCurrentOrderingMenu();assert.equal(f.writes(),1);
+  f.ctx.Sheets.Spreadsheets.batchUpdate=()=>{throw new Error('State write unavailable')};
+  assert.throws(()=>f.ctx.publishCurrentOrderingMenu(),/State write unavailable/);assert.equal(f.writes(),1);
+});
 test('Missing or expired menus cannot overwrite the published menu', () => {
   for (const patch of [{ status: 'NO_ACTIVE_MENU' }, { deliveryDate: '2020-01-01', menuCycleId: 'MENU-2020-01-01' }]) {
     const f = publisherFixture(); Object.assign(f.menu, patch); assert.throws(() => f.ctx.publishCurrentOrderingMenu(), /NO_ACTIVE_IN_DATE_MENU/); assert.equal(f.calls.length, 0); assert.equal(f.held(), false);

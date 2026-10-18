@@ -13,6 +13,15 @@ function mkCustomerIdsUnchanged_(baseline, customers) {
   return Object.keys(baseline).every(id => current[id] === baseline[id]);
 }
 
+function mkCustomerIntakeSerial_(value) {
+  if (value instanceof Date && Number.isFinite(value.getTime())) return mkSerial_(value);
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0 && value < 1000000) return value;
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    const parsed = new Date(value); if (Number.isFinite(parsed.getTime())) return mkSerial_(parsed);
+  }
+  throw new Error('Customer intake has an invalid timestamp. Reconcile it before adding a submission.');
+}
+
 function ownerOrderSaveCustomer(input, operationId) {
   const book = mkOwnerBook_();
   if (typeof operationId !== 'string' || !/^[a-f0-9-]{36}$/i.test(operationId)) throw new Error('Invalid customer operation identity.');
@@ -28,6 +37,11 @@ function ownerOrderSaveCustomer(input, operationId) {
       customer = matches[0] || null;
       if (customer && !details.customerId && baseline[customer.id]) throw new Error('An existing customer unexpectedly matched the new customer attempt. Reconcile the registry.');
       if (customer && operation.row[5] && String(operation.row[5]) !== customer.id) throw new Error('Customer operation identity changed.');
+      if (!mkCustomerIdsUnchanged_(baseline, customers)) throw new Error('CUSTOMER_ID_REVIEW_REQUIRED: existing IDs shifted. No order has been created.');
+      if (String(operation.row[4]) === 'READY') {
+        if (!customer || customer.id !== String(operation.row[5])) throw new Error('Saved customer operation no longer matches the registry.');
+        return { status: 'READY', customer: customer };
+      }
     } else {
       customer = mkCustomerMatch_(customers, details.phone, details.customerId);
       if (customer && details.name !== customer.name) throw new Error('Existing customer name differs. Reload the saved customer.');
@@ -40,16 +54,15 @@ function ownerOrderSaveCustomer(input, operationId) {
       const now = new Date(), submissionId = 'OWN-CUSTOMER-' + operationId;
       if (intake.rows.some(row => String(row[0]) === submissionId)) throw new Error('Customer operation journal is missing. Reconcile this intake attempt.');
       const previous = customer ? intake.rows.filter(row => String(row[4]) === customer.phone)
-        .sort((a, b) => new Date(b[2]).getTime() - new Date(a[2]).getTime())[0] : null;
+        .sort((a, b) => mkCustomerIntakeSerial_(b[2]) - mkCustomerIntakeSerial_(a[2]))[0] : null;
       if (customer && !previous) throw new Error('Existing customer intake record could not be verified.');
       const values = previous ? previous.slice(0, 19) : Array(19).fill('');
-      const latestTime = intake.rows.reduce((maximum, row) => {
-        const date = row[2] instanceof Date ? row[2].getTime() : NaN;
-        return Number.isFinite(date) ? Math.max(maximum, date) : maximum;
-      }, now.getTime());
-      const submitted = new Date(Math.max(now.getTime(), latestTime + 1000));
-      values[0] = submissionId; values[1] = submissionId; values[2] = mkSerial_(submitted);
-      values[3] = details.name; values[4] = customer ? customer.phone : '+' + details.phone;
+      const latestSerial = intake.rows.reduce((maximum, row) => row[4] === '' || row[4] === undefined ? maximum :
+        Math.max(maximum,mkCustomerIntakeSerial_(row[2])),mkSerial_(now));
+      values[0] = submissionId; values[1] = submissionId; values[2] = latestSerial + 1 / 86400;
+      // QUERY infers the phone column as numeric in the existing registry.
+      // Preserve an existing intake value's type; new AU numbers are safe integers.
+      values[3] = details.name; values[4] = customer ? previous[4] : Number(details.phone);
       if (!customer || details.updateDefault) values[5] = details.postcode;
       values[8] = details.consent === 'KEEP' ? customer.consent === 'Y' : details.consent === 'YES';
       values[9] = 'owner_order_workspace'; values[10] = 'owner_order_workspace';
@@ -57,6 +70,7 @@ function ownerOrderSaveCustomer(input, operationId) {
       const intakeRow = mkEmptyRows_(intake, 1, [1, 2, 3, 4, 5], 2, intake.sheet.getMaxRows())[0];
       const operationNumber = operations.sheet.getLastRow() + 1, nowIso = now.toISOString();
       Sheets.Spreadsheets.batchUpdate({ requests: [orderRequestUpdateCells_(intake.sheet, intakeRow - 1, [values], 19),
+        {updateCells:{start:{sheetId:intake.sheet.getSheetId(),rowIndex:intakeRow-1,columnIndex:2},rows:[{values:[{userEnteredValue:{numberValue:values[2]},userEnteredFormat:{numberFormat:{type:'DATE_TIME',pattern:'yyyy-mm-dd hh:mm:ss'}}}]}],fields:'userEnteredValue,userEnteredFormat.numberFormat'}},
         orderRequestUpdateCells_(operations.sheet, operationNumber - 1, [[operationId, payloadHash, details.phone, mkJson_(baseline),
           'INTAKE_SAVED', customer ? customer.id : '', nowIso]], MK_OWNER_HEADERS[MK_OWNER.customers].length)] }, book.getId());
       operation = { number: operationNumber, row: [operationId, payloadHash, details.phone, mkJson_(baseline), 'INTAKE_SAVED', customer ? customer.id : '', nowIso] };

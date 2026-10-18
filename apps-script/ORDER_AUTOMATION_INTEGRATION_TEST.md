@@ -17,7 +17,7 @@ All original named functions remain available. Integration changes are recorded 
 
 The new workflow uses the original Menu Config parser. Existing complete menu content, including descriptions and portions, is retained and enriched with menu-line/cook identity and authoritative capacity. Active public ordering closes at 22:00 Sydney on the previous day. The legacy explicit-date owner order form keeps its existing date selection behavior.
 
-Existing Order Entry and the new owner workspace share the ScriptLock. New commits check the other interface's COMMITTING record. ID allocation considers operational orders, the new journal and the old planned ID. Legacy commits add contact, postcode, item, price and cook-cost snapshots and validate the quote before accepting the result. Historical formulas retain their existing fallback. The legacy WhatsApp writer remains sequential with its existing rollback behavior; it is not represented as having the new atomic journal protocol.
+Existing Order Entry and the new owner workspace share the ScriptLock. New commits check the other interface's COMMITTING record. ID allocation considers operational orders, the new journal and the old planned ID. Legacy Order Entry customer creation uses the durable owner customer engine. Legacy commits add contact, postcode, item, price and cook-cost snapshots and validate the quote before accepting the result. Historical formulas retain their existing fallback. The legacy WhatsApp writer remains sequential with its existing rollback behavior; it is not represented as having the new atomic journal protocol.
 
 ## Test restrictions
 
@@ -25,7 +25,7 @@ Existing Order Entry and the new owner workspace share the ScriptLock. New commi
 - All UrlFetchApp sends are blocked, including WhatsApp, feedback, Routific and publisher GitHub writes. Backend capture uses no outbound fetch from Apps Script, so signed request capture remains usable.
 - Existing public WhatsApp, menu, feedback and delivery routes remain in the original dispatcher for private owner simulation. The test deployment exposes only signed capture and recovery, plus health metadata. No live consumer is repointed.
 - Production feedback setup/enabling, sending and dispatch entry points stop before action.
-- Existing Drive documents and packing document generation are blocked. Packing data collection and spreadsheet preview remain available. Document rendering requires separately isolated test documents in a later verification step.
+- Existing Drive documents and packing document generation are blocked. The original packing data collector now excludes flagged and empty orders. Packing data collection and spreadsheet preview remain available. Document rendering requires separately isolated test documents in a later verification step.
 - Only owner menu/edit triggers bound to the exact test workbook can be installed. Background sender triggers are blocked.
 - The manifest currently uses the previous minimal test scopes. It is not a production manifest, and does not authorize document generation.
 
@@ -46,8 +46,12 @@ The installation is then guided one step at a time:
 
 ## Evidence and remaining work
 
-84 local Node tests pass, including twelve integration checks: original function inventory/hashes, shared compilation, service boundaries, public dispatcher restriction, menu enrichment, integrated owner acceptance/deduplication, both cross-writer pending barriers, legacy snapshots/rounding original packing data consumption and publisher helper branch/switch restrictions and supplied manifest setting preservation. Existing public capture/recovery and owner engine tests also pass.
+110 local Node tests pass, including the second-pass regressions and the earlier integration checks: original function inventory/hashes, shared compilation, service boundaries, public dispatcher restriction, menu enrichment, integrated owner acceptance/deduplication, both cross-writer pending barriers, legacy snapshots/rounding original packing data consumption and publisher helper branch/switch restrictions and supplied manifest setting preservation. Existing public capture/recovery and owner engine tests also pass.
 
 These are mock/source checks. Google authorization, actual legacy form interaction, full Apps Script runtime and browser end-to-end verification remain pending. Deployed consumer mapping and trigger inventory remain production gates. Integration source preparation does not authorize production deployment.
 
-Regenerate with `node scripts/build-order-integration-test.cjs`. An alternative baseline path can be supplied through `MK_INTEGRATION_BASELINE`. Run `node --test tests/*.test.cjs` afterward. The generated Code.gs is about 15,900 lines and includes 421 functions.
+Regenerate with `node scripts/build-order-integration-test.cjs`. An alternative baseline path can be supplied through `MK_INTEGRATION_BASELINE`. Run `node --test tests/*.test.cjs` afterward. The generated Code.gs is about 16,000 lines and includes 424 functions.
+
+## Second pass
+
+See `docs/ORDER_AUTOMATION_SECOND_PASS.md` for the detailed severity-ranked findings, fixes, evidence and remaining runtime gates. Earlier installer downloads are superseded by the current generated package.

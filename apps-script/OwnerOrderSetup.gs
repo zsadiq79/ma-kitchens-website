@@ -1,5 +1,95 @@
 /* Test-only schema migration. Historical rows retain their original formula fallback. */
+
+const MK_OWNER_OPERATIONAL_LAYOUT = {
+  "Orders": [
+    "Order ID",
+    "Order Date",
+    "Delivery Date",
+    "Customer ID",
+    "Customer Name",
+    "Phone",
+    "Delivery Address",
+    "Postcode",
+    "Order Status",
+    "Payment Status",
+    "Delivery Window",
+    "Order Total",
+    "Delivery Status",
+    "Notes",
+    "Items Subtotal",
+    "Delivery Fee",
+    "Free Delivery Discount (AUTO)",
+    "Cook Payout",
+    "Contribution Before Delivery Cost",
+    "Total Qty",
+    "Discounted Qty (AUTO)",
+    "Order Rules Control",
+    "Capacity Control",
+    "Order Check",
+    "Ready to Confirm?",
+    "Pricing Discount % (SNAPSHOT)",
+    "Pricing Delivery Fee (SNAPSHOT)",
+    "Free Delivery Threshold (SNAPSHOT)",
+    "Free Delivery Basis (SNAPSHOT)",
+    "Minimum Order Items (SNAPSHOT)",
+    "Delivery Address (SNAPSHOT)",
+    "Customer Name (SNAPSHOT)",
+    "Phone (SNAPSHOT)",
+    "Postcode (SNAPSHOT)",
+    "Delivery Instructions (SNAPSHOT)",
+    "Request Reference (SNAPSHOT)",
+    "Owner Operation ID"
+  ],
+  "Order Items": [
+    "Order ID",
+    "Delivery Date",
+    "Order Status",
+    "Dish Name",
+    "Item Code (AUTO, INTERNAL)",
+    "Cook ID",
+    "Qty",
+    "Price Treatment (AUTO)",
+    "List Price",
+    "Customer Unit Price",
+    "Cook Pay / Unit",
+    "Line Total",
+    "Cook Payout",
+    "Fulfilment Status",
+    "Ordered Qty / Cycle",
+    "Available Servings / Cycle",
+    "Capacity Check",
+    "Notes",
+    "Offer Eligible (AUTO)",
+    "Free Promo Qty (LEGACY)",
+    "Discounted Qty (AUTO)",
+    "Full Price Qty (LEGACY)",
+    "Item Code (SNAPSHOT)",
+    "List Price (SNAPSHOT)",
+    "Cook Pay (SNAPSHOT)",
+    "Cook ID (SNAPSHOT)",
+    "Kitchen Name (SNAPSHOT)",
+    "Menu Line ID (SNAPSHOT)",
+    "Customer Unit Price (SNAPSHOT)",
+    "Line Total (SNAPSHOT)"
+  ]
+};
+function mkAssertOperationalLayout_(book) {
+  Object.keys(MK_OWNER_OPERATIONAL_LAYOUT).forEach(name => {
+    const sheet = book.getSheetByName(name), expected = MK_OWNER_OPERATIONAL_LAYOUT[name];
+    if (!sheet || sheet.getMaxColumns() < expected.length) throw new Error('Operational schema needs setup: ' + name);
+    const actual = sheet.getRange(1,1,1,expected.length).getDisplayValues()[0];
+    if (expected.some((header,index) => actual[index] !== header)) throw new Error('Operational columns moved or changed: ' + name);
+  });
+  Object.keys(MK_OWNER_FORMULA_SNAPSHOTS).forEach(key=>{
+    const split=key.lastIndexOf('!'),sheet=book.getSheetByName(key.slice(0,split));
+    if(sheet.getRange(key.slice(split+1)).getFormula()!==MK_OWNER_FORMULA_SNAPSHOTS[key])
+      throw new Error('Operational snapshot formula changed: '+key);
+  });
+}
+
 const MK_OWNER_FORMULA_BASELINE = {
+  "Order Items!E2": "=MAP(B2:B5000,D2:D5000,W2:W5000,LAMBDA(dt,name,code,IF(name=\"\",\"\",IF(dt=\"\",\"\",IF(code<>\"\",code,IFERROR(INDEX(FILTER('Weekly Menu'!D$2:D$1000,'Weekly Menu'!C$2:C$1000=dt,'Weekly Menu'!E$2:E$1000=name,'Weekly Menu'!U$2:U$1000=\"Available\"),1),\"\"))))))",
+  "Orders!G2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AE2:AE2000<>\"\",AE2:AE2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!AD$2:AD$1000,\"\"))))",
   "Orders!E2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!B$2:B$1000,\"\")))",
   "Orders!F2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!C$2:C$1000,\"\")))",
   "Orders!H2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!E$2:E$1000,\"\")))",
@@ -8,6 +98,8 @@ const MK_OWNER_FORMULA_BASELINE = {
   "Order Items!K2": "=ARRAYFORMULA(IF(E2:E5000=\"\",\"\",XLOOKUP(E2:E5000,Dishes!A$2:A$500,Dishes!F$2:F$500,\"\")))"
 };
 const MK_OWNER_FORMULA_SNAPSHOTS = {
+  "Order Items!E2": "=MAP(B2:B5000,D2:D5000,W2:W5000,LAMBDA(dt,name,code,IF(name=\"\",\"\",IF(dt=\"\",\"\",IF(code<>\"\",code,IFERROR(INDEX(FILTER('Weekly Menu'!D$2:D$1000,'Weekly Menu'!C$2:C$1000=dt,'Weekly Menu'!E$2:E$1000=name,'Weekly Menu'!U$2:U$1000=\"Available\"),1),\"\"))))))",
+  "Orders!G2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AE2:AE2000<>\"\",AE2:AE2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!AD$2:AD$1000,\"\"))))",
   "Orders!E2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AF2:AF2000<>\"\",AF2:AF2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!B$2:B$1000,\"\"))))",
   "Orders!F2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AG2:AG2000<>\"\",AG2:AG2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!C$2:C$1000,\"\"))))",
   "Orders!H2": "=ARRAYFORMULA(IF(D2:D2000=\"\",\"\",IF(AH2:AH2000<>\"\",AH2:AH2000,XLOOKUP(D2:D2000,Customers!A$2:A$1000,Customers!E$2:E$1000,\"\"))))",
@@ -87,7 +179,7 @@ function mkOwnerRowFormulaRequests_(orders, orderRow, items, itemRows) {
       throw new Error('Order item formula coverage is missing at row ' + row + '. Extend the formulas first.');
     const unit = items.getRange(row, 10).getFormula(), total = items.getRange(row, 12).getFormula();
     requests.push(mkFormulaCell_(items, row, 10, '=IF(AC' + row + '<>"",AC' + row + ',' + unit.slice(1) + ')'));
-    requests.push(mkFormulaCell_(items, row, 12, '=IF(AD' + row + '<>"",IF(OR(C' + row + '="Cancelled",N' + row + '="Cancelled"),0,AD' + row + '),' + total.slice(1) + ')'));
+    requests.push(mkFormulaCell_(items, row, 12, '=IF(AC' + row + '<>"",IF(OR(C' + row + '="Cancelled",N' + row + '="Cancelled"),0,ROUND(G' + row + '*AC' + row + ',2)),' + total.slice(1) + ')'));
   });
   return requests;
 }

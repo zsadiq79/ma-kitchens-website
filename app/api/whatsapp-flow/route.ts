@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { readOrderBytes, orderBackendEndpoint } from "../../../lib/orderApiBoundary.mjs";
 
 export const runtime = "nodejs";
 
@@ -127,7 +128,7 @@ function decryptRequest(
       Buffer.from(body.encrypted_aes_key, "base64"),
     );
   } catch (error) {
-    console.error("WhatsApp Flow AES key decryption failed:", error);
+    console.error("WhatsApp Flow AES key decryption failed.");
 
     // Meta uses 421 to request a refresh of the business public key.
     throw new FlowEndpointError(
@@ -212,8 +213,8 @@ async function fetchActiveMenu(): Promise<MenuApiResponse> {
     );
   }
 
-  const url = new URL(menuApiUrl);
-  url.searchParams.set("action", "menu");
+  let url: URL;
+  try { url=orderBackendEndpoint(menuApiUrl,"menu"); } catch { throw new FlowEndpointError(503,"Menu service configuration needs review."); }
 
   let response: Response;
 
@@ -227,10 +228,10 @@ async function fetchActiveMenu(): Promise<MenuApiResponse> {
         secret: menuApiSecret,
       }),
       cache: "no-store",
-      redirect: "follow",
+      redirect: "follow", signal: AbortSignal.timeout(12000),
     });
   } catch (error) {
-    console.error("Unable to reach Apps Script menu feed:", error);
+    console.error("Unable to reach Apps Script menu feed.");
     throw new FlowEndpointError(502, "Unable to reach the menu service.");
   }
 
@@ -244,12 +245,12 @@ async function fetchActiveMenu(): Promise<MenuApiResponse> {
   try {
     menu = (await response.json()) as MenuApiResponse;
   } catch (error) {
-    console.error("Apps Script menu feed returned invalid JSON:", error);
+    console.error("Apps Script menu feed returned invalid JSON.");
     throw new FlowEndpointError(502, "Menu service returned invalid data.");
   }
 
   if (!menu.ok) {
-    console.error("Apps Script menu feed error:", menu.error, menu.message);
+    console.error("Apps Script menu feed returned an application error.");
     throw new FlowEndpointError(502, "Menu service could not build the menu.");
   }
 
@@ -290,11 +291,11 @@ async function fetchThumbnailBase64(imageUrl: string) {
 
   try {
     const response = await fetch(thumbnailUrl, {
-      cache: "force-cache",
+      cache: "force-cache", signal: AbortSignal.timeout(8000),
     });
 
     if (!response.ok) {
-      console.warn("Flow thumbnail unavailable:", thumbnailUrl, response.status);
+      console.warn("Flow thumbnail unavailable. HTTP", response.status);
       return undefined;
     }
 
@@ -302,13 +303,13 @@ async function fetchThumbnailBase64(imageUrl: string) {
 
     // Meta's CheckboxGroup image limit is 100 KB. Keep a little safety margin.
     if (bytes.length > 95 * 1024) {
-      console.warn("Flow thumbnail exceeds safe size limit:", thumbnailUrl);
+      console.warn("Flow thumbnail exceeds safe size limit.");
       return undefined;
     }
 
     return bytes.toString("base64");
   } catch (error) {
-    console.warn("Unable to load Flow thumbnail:", thumbnailUrl, error);
+    console.warn("Unable to load Flow thumbnail.");
     return undefined;
   }
 }
@@ -357,7 +358,7 @@ async function getNextScreen(body: FlowRequestBody) {
   }
 
   if (data?.error) {
-    console.warn("WhatsApp Flow client reported an error:", data);
+    console.warn("WhatsApp Flow client reported an error.");
 
     return {
       data: {
@@ -426,7 +427,8 @@ export async function POST(request: Request) {
     return new Response("Endpoint not configured", { status: 503 });
   }
 
-  const rawBody = await request.text();
+  let rawBody: string;
+  try { rawBody=(await readOrderBytes(request,200000)).toString("utf8"); } catch { return new Response("Invalid or oversized request",{status:413}); }
 
   if (
     !isRequestSignatureValid(
@@ -478,7 +480,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error("WhatsApp Flow endpoint error:", error);
+    console.error("WhatsApp Flow endpoint failed.");
 
     if (error instanceof FlowEndpointError) {
       return new Response(error.message, { status: error.statusCode });
@@ -487,3 +489,4 @@ export async function POST(request: Request) {
     return new Response("Internal Server Error", { status: 500 });
   }
 }
+

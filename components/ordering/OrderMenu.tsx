@@ -6,7 +6,7 @@ import {
   foodMoney, MAX_ORDER_QUANTITY, orderSelection, fallbackOrderTarget,
   readPublishedOrderMenu, readOrderDraft, orderDraftSignature,
 } from '../../lib/publishedOrderMenu.mjs';
-import { orderRequestSignature } from '../../lib/orderRequest.mjs';
+import { orderRequestSignature, validOrderRequestKey } from '../../lib/orderRequest.mjs';
 import styles from './OrderMenu.module.css';
 
 type Menu = {
@@ -44,11 +44,23 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   const [saving, setSaving] = useState(false);
   const [savedRequest, setSavedRequest] = useState<SavedRequest | null>(null);
   const saveLock = useRef(false);
+  const pendingRef = useRef<{signature:string;requestKey:string}|null>(null);
+  const [retryKey,setRetryKey] = useState('');
   const minimumOrderItems = menu?.minimumOrderItems ?? 5;
   const deliveryFeeCents = menu?.deliveryFeeCents ?? 1000;
   const selection = menu ? orderSelection(menu, quantities) : null;
   const currentOrderSignature = menu ? orderRequestSignature(menu, quantities) : '';
   const ready = Boolean(selection && selection.totalQuantity >= minimumOrderItems && !selection.invalidIndexes.length && !expired && !stale);
+
+  useEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem('ma-kitchens:pending-order-request:v1');
+      const pending = raw ? JSON.parse(raw) : null;
+      if (pending && typeof pending.signature === 'string' && validOrderRequestKey(pending.requestKey)) {
+        pendingRef.current = pending; setRetryKey(pending.requestKey);
+      }
+    } catch { /* The in-memory identity still supports retries when storage is disabled. */ }
+  }, []);
 
   useEffect(() => {
     if (!menu) return;
@@ -114,12 +126,15 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
     setSaving(true);
     setMessage('');
     try {
-      const pendingRaw = window.sessionStorage.getItem('ma-kitchens:pending-order-request:v1');
-      let pending: { signature?: string; requestKey?: string } | null = null;
-      try { pending = pendingRaw ? JSON.parse(pendingRaw) : null; } catch { pending = null; }
-      const requestKey = pending?.signature === signature && typeof pending.requestKey === 'string'
-        ? pending.requestKey : crypto.randomUUID();
-      window.sessionStorage.setItem('ma-kitchens:pending-order-request:v1', JSON.stringify({ signature, requestKey }));
+      let pending = pendingRef.current;
+      try {
+        const raw = window.sessionStorage.getItem('ma-kitchens:pending-order-request:v1');
+        const stored = raw ? JSON.parse(raw) : null;
+        if (stored?.signature === signature && validOrderRequestKey(stored.requestKey)) pending = stored;
+      } catch { /* Storage is optional. */ }
+      const requestKey = pending?.signature === signature ? pending.requestKey : crypto.randomUUID();
+      pendingRef.current = {signature,requestKey}; setRetryKey(requestKey);
+      try { window.sessionStorage.setItem('ma-kitchens:pending-order-request:v1', JSON.stringify({signature,requestKey})); } catch { /* Keep the identity in memory. */ }
       const response = await fetch('/api/order-requests', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestKey, menuRevision: menu.menuRevision, menuCycleId: menu.menuCycleId,
@@ -138,8 +153,8 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
         return;
       }
       const saved: SavedRequest = { signature, reference: result.reference, capability: result.capability, whatsappUrl: result.whatsappUrl };
-      window.sessionStorage.setItem('ma-kitchens:saved-order-request:v1', JSON.stringify(saved));
       setSavedRequest(saved);
+      try { window.sessionStorage.setItem('ma-kitchens:saved-order-request:v1', JSON.stringify(saved)); } catch { /* Saving and navigation do not depend on storage. */ }
       window.location.assign(saved.whatsappUrl);
     } catch (error) {
       setMessage('We could not confirm the save. Your choices are still here. Try again to check the same request.');
@@ -147,6 +162,22 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
       saveLock.current = false;
       setSaving(false);
     }
+  }
+
+  async function checkPreviousSave() {
+    if (saveLock.current || !retryKey) return;
+    saveLock.current = true; setSaving(true);
+    try {
+      const response = await fetch('/api/order-requests/recovery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({requestKey:retryKey})});
+      const result = await response.json();
+      if (!response.ok || !result?.ok) throw new Error();
+      if (!result.found) { setMessage('No saved request was found for that attempt. You can retry your current choices while the menu is open.'); return; }
+      const saved = {signature:pendingRef.current?.signature||'',reference:result.reference,capability:result.capability,whatsappUrl:result.whatsappUrl};
+      setSavedRequest(saved);
+      try { window.sessionStorage.setItem('ma-kitchens:saved-order-request:v1',JSON.stringify(saved)); } catch { /* Optional convenience cache. */ }
+      setMessage('Your earlier request is saved. You can reopen WhatsApp using its reference.');
+    } catch { setMessage('Request status is temporarily unavailable. Your saved attempt has been kept.'); }
+    finally { saveLock.current=false;setSaving(false); }
   }
 
   const unavailable = !menu || expired || stale;
@@ -206,8 +237,9 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
               <div className={styles.costs} aria-live="polite" aria-atomic="true">
                 <div><span>Food subtotal</span><span>{foodMoney(selection?.subtotalCents || 0)}</span></div>
                 <div><span>Delivery</span><span>{foodMoney(deliveryFeeCents)}</span></div>
-                <div className={styles.total}><span>Total</span><strong>{foodMoney((selection?.subtotalCents || 0) + deliveryFeeCents)}</strong></div>
+                <div className={styles.total}><span>Estimated total</span><strong>{foodMoney((selection?.subtotalCents || 0) + deliveryFeeCents)}</strong></div>
               </div>
+              <p className={styles.sendNote}>We’ll confirm availability, any discounts and your final total.</p>
               {message && <p className={styles.formError} role="alert">{message}</p>}
               <button id="continue-order" className={styles.whatsappButton} type="submit" disabled={!ready || saving}><WhatsAppIcon />{saving ? 'Saving request…' : savedRequest?.signature === currentOrderSignature ? 'Open WhatsApp again' : 'Save request & open WhatsApp'}<span aria-hidden="true">↗</span></button>
               <p className={styles.sendNote}>{savedRequest?.signature === currentOrderSignature ? `Request ${savedRequest.reference} is saved. Press Send in WhatsApp to send it.` : 'We save a tentative request before opening WhatsApp. Review it there, then press Send.'}</p>
@@ -215,6 +247,12 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
             </div>
           </div>
         </form>}
+        {retryKey && <section className={styles.closed} aria-label="Previous request">
+          <h2>Check your earlier save</h2>
+          <button type="button" className={styles.whatsappButton} disabled={saving} onClick={checkPreviousSave}>Check saved request</button>
+          {savedRequest && <p>Saved reference: {savedRequest.reference}. <a href={savedRequest.whatsappUrl}>Open WhatsApp</a> · <a href={`/go/order/request#${savedRequest.capability}`}>View status</a></p>}
+          {unavailable && message && <p role="status">{message}</p>}
+        </section>}
         <section className={styles.explore} aria-label="Explore Ma Kitchens">
           <h2>More from Ma Kitchens</h2>
           <p>Meet the story behind your meals and see what’s cooking.</p>

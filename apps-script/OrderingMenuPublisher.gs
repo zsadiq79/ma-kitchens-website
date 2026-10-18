@@ -180,6 +180,9 @@ function mkOrderSavePublishedState_(snapshot, sourceMenu) {
 }
 
 function mkOrderWriteSnapshot_(snapshot, sourceMenu) {
+  // Close the authoritative capture state before any provider call can fail.
+  // The public deployment may continue serving its prior bundled menu briefly.
+  if (snapshot.withdrawn) mkOrderSavePublishedState_(snapshot,null);
   const props = PropertiesService.getScriptProperties();
   const token = props.getProperty('ORDER_MENU_GITHUB_TOKEN');
   if (!token || /[\r\n]/.test(token)) throw new Error('SET_ORDER_MENU_GITHUB_TOKEN_PRIVATELY');
@@ -193,15 +196,15 @@ function mkOrderWriteSnapshot_(snapshot, sourceMenu) {
   const body = JSON.stringify(snapshot, null, 2) + '\n';
   // Ignore publishedAt when deciding whether an identical menu needs another deployment.
   if (current.encoding === 'base64' && typeof current.content === 'string') {
-    try {
-      const old = JSON.parse(Utilities.newBlob(Utilities.base64Decode(current.content.replace(/\s/g, ''))).getDataAsString());
-      const withoutTime = record => { const copy = Object.assign({}, record); delete copy.publishedAt; return copy; };
-      if (JSON.stringify(withoutTime(old)) === JSON.stringify(withoutTime(snapshot))) {
+    let old = null;
+    try { old = JSON.parse(Utilities.newBlob(Utilities.base64Decode(current.content.replace(/\s/g, ''))).getDataAsString()); }
+    catch (_) { /* A validated snapshot can replace invalid saved JSON. */ }
+    const withoutTime = record => { const copy = Object.assign({}, record); delete copy.publishedAt; return copy; };
+    if (old && JSON.stringify(withoutTime(old)) === JSON.stringify(withoutTime(snapshot))) {
         mkOrderSavePublishedState_(snapshot, sourceMenu);
         const result = { changed: false, menuCycleId: snapshot.menuCycleId || '', branch: branch, note: 'Identical menu already committed. Check website deployment status.' };
         console.log(JSON.stringify(result)); return result;
-      }
-    } catch (_) { /* Replace an invalid old snapshot only with a validated newly built one. */ }
+    }
   }
   const response = mkOrderGithub_('put', api, token, { branch: branch, sha: current.sha,
     message: snapshot.withdrawn ? 'Withdraw published WhatsApp ordering menu' : 'Publish WhatsApp ordering menu ' + snapshot.deliveryDate,

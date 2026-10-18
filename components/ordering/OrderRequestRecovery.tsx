@@ -27,7 +27,7 @@ export function OrderRequestRecovery() {
         const fromLink = window.location.hash.slice(1);
         if (/^[A-Za-z0-9_-]{43}$/.test(fromLink)) {
           capability = fromLink;
-          window.sessionStorage.setItem('ma-kitchens:order-request-recovery:v1', capability);
+          try { window.sessionStorage.setItem('ma-kitchens:order-request-recovery:v1', capability); } catch { /* The fragment capability remains usable without storage. */ }
           window.history.replaceState(null, '', window.location.pathname);
         } else capability = window.sessionStorage.getItem('ma-kitchens:order-request-recovery:v1') || '';
       } catch { capability = ''; }

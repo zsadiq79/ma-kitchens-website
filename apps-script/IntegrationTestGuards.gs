@@ -85,6 +85,7 @@ function mkIntegrationNextOrderId_(orders) {
 }
 
 function mkIntegrationLegacySnapshots_(book, cart, menu, customer, quote, orderRow, itemRows, operation) {
+  mkAssertOperationalLayout_(book);
   const lines = mkMenuLines_(book, menu.deliveryDate), input = {
     deliveryDate: menu.deliveryDate, discountPercent: quote.discountPercent,
     discountReason: 'Existing legacy cart pricing rules',

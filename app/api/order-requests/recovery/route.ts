@@ -1,5 +1,7 @@
 import { createHmac } from 'node:crypto';
 import { NextResponse } from 'next/server';
+import { orderRateLimited, readOrderJson, orderBackendEndpoint } from '../../../../lib/orderApiBoundary.mjs';
+import { ORDERING_WHATSAPP_NUMBER } from '../../../../lib/publishedOrderMenu.mjs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,38 +26,21 @@ function validOrigin(request: Request) {
   catch { return false; }
 }
 
-async function readBody(request: Request) {
-  const length = Number(request.headers.get('content-length') || 0);
-  if (length > MAX_BODY_BYTES || !request.body) throw new Error('INVALID_BODY');
-  const reader = request.body.getReader(), chunks: Uint8Array[] = []; let size = 0;
-  while (true) {
-    const { done, value } = await reader.read(); if (done) break;
-    size += value.byteLength; if (size > MAX_BODY_BYTES) { await reader.cancel(); throw new Error('INVALID_BODY'); }
-    chunks.push(value);
-  }
-  try { return JSON.parse(Buffer.concat(chunks.map(chunk => Buffer.from(chunk))).toString('utf8')); }
-  catch { throw new Error('INVALID_BODY'); }
-}
-
-function endpointFor(value: string) {
-  const endpoint = new URL(value);
-  if (endpoint.protocol !== 'https:' || endpoint.hostname !== 'script.google.com' ||
-      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint.pathname) || endpoint.username || endpoint.password || endpoint.search || endpoint.hash)
-    throw new Error('INVALID_BACKEND_CONFIGURATION');
-  endpoint.searchParams.set('action', ACTION); return endpoint;
-}
-
 export async function POST(request: Request) {
   if (!validOrigin(request)) return NextResponse.json({ ok: false, error: 'ORIGIN_NOT_ALLOWED' }, { status: 403, headers: { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });
+  if (orderRateLimited(request,'recovery',30)) return NextResponse.json({ok:false,error:'RATE_LIMITED'},{status:429,headers:{'Cache-Control':'no-store'}});
   let input: unknown;
-  try { input = await readBody(request); } catch { return NextResponse.json({ ok: false, error: 'INVALID_REQUEST' }, { status: 400, headers: { 'Cache-Control': 'no-store' } }); }
-  const capability = input && typeof input === 'object' && !Array.isArray(input) ? (input as { capability?: unknown }).capability : null;
-  if (typeof capability !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(capability))
-    return NextResponse.json({ ok: false, error: 'INVALID_RECOVERY_CAPABILITY' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
+  try { input = await readOrderJson(request, MAX_BODY_BYTES); } catch { return NextResponse.json({ ok: false, error: 'INVALID_REQUEST' }, { status: 400, headers: { 'Cache-Control': 'no-store' } }); }
   const secret = process.env.ORDER_REQUEST_API_SECRET, rawUrl = process.env.ORDER_REQUEST_API_URL;
   if (!secret || secret.length < 32 || !rawUrl) return NextResponse.json({ ok: false, error: 'ORDER_CAPTURE_UNAVAILABLE' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+  const value = input && typeof input === 'object' && !Array.isArray(input) ? input as {capability?:unknown;requestKey?:unknown} : {};
+  let capability = value.capability;
+  if (capability === undefined && typeof value.requestKey === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value.requestKey))
+    capability = createHmac('sha256',secret).update(`order-request-recovery\n${value.requestKey.toLowerCase()}`).digest('base64url');
+  if (typeof capability !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(capability))
+    return NextResponse.json({ ok: false, error: 'INVALID_RECOVERY_CAPABILITY' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
   let endpoint: URL;
-  try { endpoint = endpointFor(rawUrl); } catch { return NextResponse.json({ ok: false, error: 'ORDER_CAPTURE_UNAVAILABLE' }, { status: 503, headers: { 'Cache-Control': 'no-store' } }); }
+  try { endpoint = orderBackendEndpoint(rawUrl, ACTION); } catch { return NextResponse.json({ ok: false, error: 'ORDER_CAPTURE_UNAVAILABLE' }, { status: 503, headers: { 'Cache-Control': 'no-store' } }); }
   const timestamp = String(Date.now()), body = JSON.stringify({ capability });
   const signature = createHmac('sha256', secret).update(`${timestamp}\n${ACTION}\n${body}`).digest('hex');
   try {
@@ -73,10 +58,13 @@ export async function POST(request: Request) {
         typeof value.deliveryDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value.deliveryDate) ||
         !Number.isSafeInteger(value.publicTotalCents) || Number(value.publicTotalCents) < 0 ||
         typeof value.createdAt !== 'string' || value.createdAt.length > 40) throw new Error();
-    return NextResponse.json({ ok: true, found: true, reference: value.reference, status: value.status,
+    const whatsappUrl = new URL(`https://wa.me/${ORDERING_WHATSAPP_NUMBER}`);
+    whatsappUrl.searchParams.set('text', `Hi Ma Kitchens, please review my saved tentative order request ${value.reference}. Delivery: ${value.deliveryDate}. Please confirm availability and the final total.`);
+    return NextResponse.json({ ok: true, found: true, capability, whatsappUrl:whatsappUrl.toString(), reference: value.reference, status: value.status,
       deliveryDate: value.deliveryDate, publicTotalCents: value.publicTotalCents, createdAt: value.createdAt },
       { headers: { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });
   } catch {
     return NextResponse.json({ ok: false, error: 'RECOVERY_UNAVAILABLE' }, { status: 502, headers: { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });
   }
 }
+

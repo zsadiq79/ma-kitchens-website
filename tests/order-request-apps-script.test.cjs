@@ -19,7 +19,7 @@ function signedEvent(action, body) {
 
 function fixture() {
   const definitions = {
-    'Order Requests': 'Request ID,Request Reference,Retry Key,Payload Hash,Recovery Capability Hash,Menu Revision,Menu Cycle ID,Delivery Date,Status,Customer ID,Public Food Subtotal Cents,Public Delivery Fee Cents,Public Total Cents,Owner Discount Percent,Linked Order ID,Created At,Updated At,Received At,Accepted At,Expires At,Owner Notes',
+    'Order Requests': 'Request ID,Request Reference,Retry Key,Payload Hash,Recovery Capability Hash,Menu Revision,Menu Cycle ID,Delivery Date,Status,Customer ID,Public Food Subtotal Cents,Public Delivery Fee Cents,Public Total Cents,Owner Discount Percent,Linked Order ID,Created At,Updated At,Received At,Accepted At,Expires At,Owner Notes,Sender Phone (OWNER)',
     'Order Request Items': 'Request ID,Public Item ID,Menu Line ID,Item Code,Dish Name (SNAPSHOT),Kitchen Name (SNAPSHOT),Cook ID,Qty,List Price / Unit Cents (SNAPSHOT),Cook Pay / Unit Cents (SNAPSHOT),Public Line Total Cents,Menu Revision',
     'Order Request Events': 'Event ID,Request ID,Request Reference,Event,Actor,Event At,Details JSON,Request Version',
     'Order Menu State': 'Record Type,Menu Revision,Menu Cycle ID,Delivery Date,Published At,Status,Public Item ID,Menu Line ID,Item Code,Cook ID,Kitchen Name,Dish Name,List Price Cents,Cook Pay Cents,Remaining Servings,Image URL,Minimum Order Items,Delivery Fee Cents',
@@ -69,6 +69,8 @@ function fixture() {
         : { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date),
       getUuid: () => crypto.randomUUID(),
     },
+    mkCommitted_: () => ({}),
+    mkMenuLines_: () => data['Weekly Menu'].slice(1).map(row=>({menuLineId:row[0],cycleId:row[1],deliveryDate:'2026-10-22',itemCode:row[3],dishName:row[4],cookId:row[5],kitchenName:row[6],priceCents:Math.round(row[7]*100),capacity:row[8],menuStatus:row[9],availabilityStatus:row[10],readiness:row[11],dishStatus:'Active'})),
     getOrderingRules_: () => ({ minimumOrderItems: 5, deliveryFee: 10 }),
   };
   vm.createContext(ctx);
@@ -132,4 +134,31 @@ test('Invalid signature does not write any rows', () => {
   event.postData.contents = event.postData.contents.replace(/[a-f0-9]{64}/, '0'.repeat(64));
   assert.equal(JSON.parse(f.ctx.handleOrderRequestApi_(event, 'order_request_capture').getContent()).ok, false);
   assert.equal(f.data['Order Requests'].length, 1);
+});
+
+test('Capture checks authoritative committed quantities even while the weekly remaining formula is stale',()=>{
+  const f=fixture();f.ctx.mkCommitted_=()=>({[menuLineId]:48});
+  assert.equal(invoke(f,'order_request_capture',payload()).error,'ITEM_UNAVAILABLE');
+  assert.equal(f.data['Order Requests'].length,1);
+});
+
+test('Changed dish/cook identity and duplicate menu lines cannot be silently overwritten during capture',()=>{
+  const f=fixture(),original=f.ctx.mkMenuLines_;
+  f.ctx.mkMenuLines_=()=>original().map(line=>({...line,cookId:'CHANGED-COOK'}));
+  assert.equal(invoke(f,'order_request_capture',payload()).error,'MENU_STALE');
+  f.ctx.mkMenuLines_=()=>original().concat(original());
+  assert.equal(invoke(f,'order_request_capture',payload()).error,'MENU_STALE');
+  assert.equal(f.data['Order Requests'].length,1);
+});
+
+test('Retry keys use a canonical item order and duplicate durable keys fail closed',()=>{
+  const f=fixture(),otherId='i_bbbbbbbbbbbbbbbbbbbbbbbb';
+  const line=f.data['Order Menu State'][2].slice();line[6]=otherId;line[7]='ML-20261022-M0002';line[8]='M0002';f.data['Order Menu State'].push(line);
+  const weekly=f.data['Weekly Menu'][1].slice();weekly[0]='ML-20261022-M0002';weekly[3]='M0002';f.data['Weekly Menu'].push(weekly);
+  const input=payload({items:[{id:itemId,quantity:3},{id:otherId,quantity:2}]});
+  const first=invoke(f,'order_request_capture',input);
+  assert.equal(first.ok,true);const retry=invoke(f,'order_request_capture',{...input,items:input.items.slice().reverse()});
+  assert.equal(retry.reference,first.reference);assert.equal(f.data['Order Requests'].length,2);
+  f.data['Order Requests'].push(f.data['Order Requests'][1].slice());
+  assert.equal(invoke(f,'order_request_capture',input).error,'REQUEST_CONFLICT');
 });
