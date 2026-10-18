@@ -2,6 +2,8 @@
 
 Review date: 18 October 2026, Australia/Sydney.
 
+Runtime follow-up, 18 October, 16:28 Sydney: configuration succeeded in the TEST editor. Initialization failed at `orderRequestInboxOnOpen_` because `SpreadsheetApp.getUi()` was unavailable in that execution context. Severity: medium, setup incomplete after schema writes. Removed menu creation from owner schema setup and integrated initialization. The installed spreadsheet on-open trigger adds the owner menu on reopening the TEST sheet. Added a regression that executes initialization twice with getUi throwing and checks menu state publication and preservation of existing customer/item data. All 111 local tests and combined-source syntax checks pass. The user must replace Code.gs with the corrected installer and retry initialization. This runtime result does not establish end-to-end order capture.
+
 The review found material defects in the first integrated candidate. They are corrected in the preview source and regenerated test installer. The result is ready for controlled installation and runtime verification in the designated test project. It is not a production rollout or a certification that every retained legacy action has run successfully in Google.
 
 ## Scope and evidence

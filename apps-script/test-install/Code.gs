@@ -1279,7 +1279,7 @@ function setupOwnerOrderWorkspace() {
         if (protection.canDomainEdit()) protection.setDomainEdit(false);
       }
     });
-    orderRequestInboxOnOpen_();
+    // Menus are added by the spreadsheet's on-open trigger, not editor setup.
     return { ok: true, environment: 'TEST', message: 'Owner workspace installed in test copy only.' };
   });
 }

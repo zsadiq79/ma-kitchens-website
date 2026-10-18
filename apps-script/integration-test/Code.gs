@@ -15608,7 +15608,7 @@ function setupOwnerOrderWorkspace() {
         if (protection.canDomainEdit()) protection.setDomainEdit(false);
       }
     });
-    orderRequestInboxOnOpen_();
+    // Menus are added by the spreadsheet's on-open trigger, not editor setup.
     return { ok: true, environment: 'TEST', message: 'Owner workspace installed in test copy only.' };
   });
 }
@@ -15920,8 +15920,8 @@ function initializeOrderAutomationIntegrationTest() {
   setupOwnerOrderWorkspace();
   const menu = buildActiveMenu_(), snapshot = mkOrderSnapshot_(menu, new Date());
   mkOrderSavePublishedState_(snapshot, menu);
-  orderEntryMenu();
-  showPackingSlipsMenu_();
+  // Editor executions have no spreadsheet UI. Reopen the test spreadsheet
+  // after setup so its on-open trigger can add the owner workspace menu.
   return { ok: true, environment: 'TEST', menuRevision: snapshot.menuRevision, dishCount: snapshot.meals.length,
     message: 'Integrated test workspace ready. External actions remain blocked.' };
 }

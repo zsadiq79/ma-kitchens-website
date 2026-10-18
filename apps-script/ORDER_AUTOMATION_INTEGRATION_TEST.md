@@ -1,6 +1,6 @@
 # Integrated order automation test candidate
 
-This supersedes the isolated installer for the user's requested integration approach. It is source prepared for the designated TEST project, not a production replacement. Only the earlier isolated Code.gs has been pasted into that project so far. No other editor files have been deleted or changed by the user.
+This supersedes the isolated installer for the user's requested integration approach. It is source prepared for the designated TEST project, not a production replacement. The user installed the integrated Code.gs, removed all duplicate .gs files, added OwnerOrderWorkspace.html and saved the reviewed manifest. Configuration completed successfully. Initialization stopped at a spreadsheet UI call after schema setup. The corrected installer separates setup from menu creation and must now replace Code.gs before initialization is retried.
 
 ## Targets
 
@@ -39,7 +39,7 @@ The installation is then guided one step at a time:
 
 1. Run `configureOrderAutomationIntegrationTest` as the active owner. It checks the bound workbook and trigger inventory, configures TEST and creates a private request signing secret if needed.
 2. Run `initializeOrderAutomationIntegrationTest`. It initializes schemas, snapshot formulas, private ledgers and the test menu state. Compare its menu revision with the preview website.
-3. Run `integrationTestMenus` after reopening the spreadsheet if menus are missing. Do not re-run old production setup helpers.
+3. Reopen the TEST spreadsheet. Its installed on-open trigger adds the Website Requests menu. Editor initialization deliberately does not call spreadsheet UI APIs. Do not re-run old production setup helpers.
 4. Test both owner interfaces with synthetic records, preserving any existing copied uncertain draft for reconciliation. Test manual order, website request, customer creation, duplicate acceptance, timeout recovery, last capacity, discounts and alternate postcode.
 5. Create a new TEST web app deployment and configure only the preview branch environment. Transfer the signing property directly to Vercel, never through chat or logs.
 6. Complete actual browser-to-test-sheet tests and downstream cook/packing/dispatch-payload checks. Do not send messages or dispatch routes.

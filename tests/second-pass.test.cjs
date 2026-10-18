@@ -4,6 +4,32 @@ const {fixture,date,lineId}=require('./helpers/order-fixture.cjs');
 const root=path.join(__dirname,'..');
 process.env.TZ='Australia/Sydney'; // Match the Apps Script manifest for legacy local-date operations.
 
+test('Integrated initialization finishes and can retry after partial setup without a spreadsheet UI',()=>{
+  const f=fixture({integrated:true});
+  f.ctx.SpreadsheetApp.getUi=()=>{throw new Error('Cannot call SpreadsheetApp.getUi() from this context.');};
+  f.ctx.SpreadsheetApp.ProtectionType={SHEET:'SHEET'};
+  f.ctx.ScriptApp={getProjectTriggers:()=>[{getHandlerFunction:()=> 'orderRequestInboxOnOpen_',getTriggerSourceId:()=>f.book.getId()}]};
+  for(const sheet of Object.values(f.sheets)){
+    sheet.setFrozenRows=()=>{};sheet.getProtections=()=>[{}];
+    const getRange=sheet.getRange;
+    sheet.getRange=(...args)=>{const range=getRange(...args);range.setValues=values=>{
+      const name=Object.keys(f.sheets).find(name=>f.sheets[name]===sheet);
+      values.forEach((row,i)=>row.forEach((value,j)=>{f.tables[name][range.getRow()+i-1][range.getColumn()+j-1]=value;}));
+    };return range;};
+  }
+  f.ctx.buildActiveMenu_=()=>({deliveryDate:date});
+  f.ctx.mkOrderSnapshot_=()=>({menuRevision:'test-revision',meals:[{}]});
+  let published=0;f.ctx.mkOrderSavePublishedState_=()=>{published++;};
+  f.ctx.SpreadsheetApp.flush();
+  const customerBefore=JSON.stringify(f.tables.Customers),itemsBefore=JSON.stringify(f.tables['Order Items']);
+  for(let attempt=0;attempt<2;attempt++){
+    const result=f.ctx.initializeOrderAutomationIntegrationTest();
+    assert.equal(result.ok,true);assert.equal(result.menuRevision,'test-revision');assert.equal(result.dishCount,1);
+  }
+  assert.equal(published,2);assert.equal(JSON.stringify(f.tables.Customers),customerBefore);
+  assert.equal(JSON.stringify(f.tables['Order Items']),itemsBefore);
+});
+
 test('A failed recovery cannot clear the review while leaving its journal COMMITTING',()=>{
   const f=fixture({integrated:true}),r=f.ctx.ownerOrderReview(f.input());
   f.state.throwBefore=true;assert.throws(()=>f.ctx.ownerOrderAccept(r.id,r.hash),/UNCERTAIN/);
