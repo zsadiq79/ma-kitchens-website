@@ -86,6 +86,18 @@
     },
     {
       "file": "Code.gs",
+      "function": "oeMeta_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeCheckLocked_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryRecoverSubmission"
+    },
+    {
+      "file": "Code.gs",
       "function": "oeCustomerForCommit_"
     },
     {
@@ -236,11 +248,11 @@
     "IntegrationDispatcher.gs"
   ],
   "functions": 427,
-  "lines": 16057,
-  "codeSha256": "adeba26eaaf6a34100fd4e2d2ea3af701bc112343f4410171da6bd8f6394e3f0",
+  "lines": 16060,
+  "codeSha256": "4866e04a364ab1e9850920eb944ae113e66b6003480828524a35999624a9c839",
   "limitations": [
     "Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.",
     "Document generation and all network calls are blocked. Packing data and preview remain testable.",
-    "Runtime Google authorization and browser end-to-end tests remain pending."
+    "This manifest describes source contents. See docs/ORDER_AUTOMATION_SECOND_PASS.md for current Google runtime evidence and remaining gates."
   ]
 }

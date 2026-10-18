@@ -1,6 +1,6 @@
 {
   "scope": "Static function inventory and boundary checks. Individual runtime coverage varies; this is not end-to-end certification.",
-  "codeSha256": "adeba26eaaf6a34100fd4e2d2ea3af701bc112343f4410171da6bd8f6394e3f0",
+  "codeSha256": "4866e04a364ab1e9850920eb944ae113e66b6003480828524a35999624a9c839",
   "functionCount": 427,
   "moduleFunctionCounts": {
     "Code.gs": 117,
@@ -29,8 +29,8 @@
     {
       "name": "doGet",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16037,
-      "endLine": 16040,
+      "startLine": 16040,
+      "endLine": 16043,
       "calls": [
         "mkIntegrationRequireTest_",
         "orderRequestJson_"
@@ -39,8 +39,8 @@
     {
       "name": "doPost",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16041,
-      "endLine": 16049,
+      "startLine": 16044,
+      "endLine": 16052,
       "calls": [
         "mkIntegrationRequireTest_",
         "handleOrderRequestApi_",
@@ -854,14 +854,16 @@
       "name": "oeMeta_",
       "module": "Code.gs",
       "startLine": 3937,
-      "endLine": 3937,
-      "calls": []
+      "endLine": 3940,
+      "calls": [
+        "mkOwnerFreshValues_"
+      ]
     },
     {
       "name": "oeStatus_",
       "module": "Code.gs",
-      "startLine": 3938,
-      "endLine": 3938,
+      "startLine": 3941,
+      "endLine": 3941,
       "calls": [
         "oeBatch_",
         "oeCell_"
@@ -870,8 +872,8 @@
     {
       "name": "oeDraft_",
       "module": "Code.gs",
-      "startLine": 3939,
-      "endLine": 3943,
+      "startLine": 3942,
+      "endLine": 3946,
       "calls": [
         "oeDate_"
       ]
@@ -879,36 +881,36 @@
     {
       "name": "oeHash_",
       "module": "Code.gs",
-      "startLine": 3944,
-      "endLine": 3944,
+      "startLine": 3947,
+      "endLine": 3947,
       "calls": []
     },
     {
       "name": "oeSerial_",
       "module": "Code.gs",
-      "startLine": 3945,
-      "endLine": 3948,
+      "startLine": 3948,
+      "endLine": 3951,
       "calls": []
     },
     {
       "name": "oeDeliverySerial_",
       "module": "Code.gs",
-      "startLine": 3949,
-      "endLine": 3949,
+      "startLine": 3952,
+      "endLine": 3952,
       "calls": []
     },
     {
       "name": "oeLabel_",
       "module": "Code.gs",
-      "startLine": 3950,
-      "endLine": 3950,
+      "startLine": 3953,
+      "endLine": 3953,
       "calls": []
     },
     {
       "name": "oeMenuLookup_",
       "module": "Code.gs",
-      "startLine": 3951,
-      "endLine": 3953,
+      "startLine": 3954,
+      "endLine": 3956,
       "calls": [
         "oeLabel_"
       ]
@@ -916,15 +918,15 @@
     {
       "name": "oeAddress_",
       "module": "Code.gs",
-      "startLine": 3954,
-      "endLine": 3958,
+      "startLine": 3957,
+      "endLine": 3961,
       "calls": []
     },
     {
       "name": "oeCart_",
       "module": "Code.gs",
-      "startLine": 3959,
-      "endLine": 3981,
+      "startLine": 3962,
+      "endLine": 3984,
       "calls": [
         "normalisePhoneDigits_",
         "oeLabel_",
@@ -935,8 +937,8 @@
     {
       "name": "oeQuote_",
       "module": "Code.gs",
-      "startLine": 3982,
-      "endLine": 3986,
+      "startLine": 3985,
+      "endLine": 3989,
       "calls": [
         "calculateCartQuote_"
       ]
@@ -944,8 +946,8 @@
     {
       "name": "oeConfirmation_",
       "module": "Code.gs",
-      "startLine": 3987,
-      "endLine": 3992,
+      "startLine": 3990,
+      "endLine": 3995,
       "calls": [
         "formatPhoneForDisplay_",
         "buildCartSummary_",
@@ -955,15 +957,15 @@
     {
       "name": "orderEntryMenu",
       "module": "Code.gs",
-      "startLine": 3993,
-      "endLine": 4002,
+      "startLine": 3996,
+      "endLine": 4005,
       "calls": []
     },
     {
       "name": "orderEntrySetup",
       "module": "Code.gs",
-      "startLine": 4003,
-      "endLine": 4036,
+      "startLine": 4006,
+      "endLine": 4039,
       "calls": [
         "oeBook_",
         "oeSheet_",
@@ -983,8 +985,8 @@
     {
       "name": "oeAddressSetup_",
       "module": "Code.gs",
-      "startLine": 4037,
-      "endLine": 4054,
+      "startLine": 4040,
+      "endLine": 4057,
       "calls": [
         "oeCell_",
         "oeFormula_",
@@ -994,8 +996,8 @@
     {
       "name": "oeCustomers_",
       "module": "Code.gs",
-      "startLine": 4055,
-      "endLine": 4059,
+      "startLine": 4058,
+      "endLine": 4062,
       "calls": [
         "formatPhoneForDisplay_"
       ]
@@ -1003,8 +1005,8 @@
     {
       "name": "oeItemSetup_",
       "module": "Code.gs",
-      "startLine": 4060,
-      "endLine": 4072,
+      "startLine": 4063,
+      "endLine": 4075,
       "calls": [
         "oeCell_",
         "oeFormula_",
@@ -1014,8 +1016,8 @@
     {
       "name": "oeFindCustomer_",
       "module": "Code.gs",
-      "startLine": 4073,
-      "endLine": 4081,
+      "startLine": 4076,
+      "endLine": 4084,
       "calls": [
         "normalisePhoneDigits_"
       ]
@@ -1023,8 +1025,8 @@
     {
       "name": "orderEntryNewDraft",
       "module": "Code.gs",
-      "startLine": 4082,
-      "endLine": 4082,
+      "startLine": 4085,
+      "endLine": 4085,
       "calls": [
         "oeNewDraft_"
       ]
@@ -1032,8 +1034,8 @@
     {
       "name": "oeNewDraft_",
       "module": "Code.gs",
-      "startLine": 4083,
-      "endLine": 4105,
+      "startLine": 4086,
+      "endLine": 4108,
       "calls": [
         "oeBook_",
         "oeSheet_",
@@ -1053,8 +1055,8 @@
     {
       "name": "orderEntryLoadCustomer",
       "module": "Code.gs",
-      "startLine": 4106,
-      "endLine": 4117,
+      "startLine": 4109,
+      "endLine": 4120,
       "calls": [
         "oeBook_",
         "oeSheet_",
@@ -1071,8 +1073,8 @@
     {
       "name": "oePrepare_",
       "module": "Code.gs",
-      "startLine": 4118,
-      "endLine": 4128,
+      "startLine": 4121,
+      "endLine": 4131,
       "calls": [
         "oeDraft_",
         "oeMeta_",
@@ -1087,8 +1089,8 @@
     {
       "name": "orderEntryReview",
       "module": "Code.gs",
-      "startLine": 4129,
-      "endLine": 4137,
+      "startLine": 4132,
+      "endLine": 4140,
       "calls": [
         "oeBook_",
         "oeSheet_",
@@ -1105,22 +1107,22 @@
     {
       "name": "oeCustomerForCommit_",
       "module": "Code.gs",
-      "startLine": 4138,
-      "endLine": 4144,
+      "startLine": 4141,
+      "endLine": 4147,
       "calls": []
     },
     {
       "name": "oeEmptyRows_",
       "module": "Code.gs",
-      "startLine": 4145,
-      "endLine": 4148,
+      "startLine": 4148,
+      "endLine": 4151,
       "calls": []
     },
     {
       "name": "oeCommitRequests_",
       "module": "Code.gs",
-      "startLine": 4149,
-      "endLine": 4159,
+      "startLine": 4152,
+      "endLine": 4162,
       "calls": [
         "oeDeliverySerial_",
         "oeSerial_",
@@ -1131,8 +1133,8 @@
     {
       "name": "orderEntryPlaceOrder",
       "module": "Code.gs",
-      "startLine": 4160,
-      "endLine": 4183,
+      "startLine": 4163,
+      "endLine": 4186,
       "calls": [
         "oeBook_",
         "oeSheet_",
@@ -1141,6 +1143,7 @@
         "oeMeta_",
         "oeCheckLocked_",
         "oePrepare_",
+        "mkOwnerFreshValues_",
         "mkEmptyRows_",
         "mkTable_",
         "oeCustomerForCommit_",
@@ -1156,10 +1159,11 @@
     {
       "name": "oeCheckLocked_",
       "module": "Code.gs",
-      "startLine": 4184,
-      "endLine": 4202,
+      "startLine": 4187,
+      "endLine": 4205,
       "calls": [
         "oeMeta_",
+        "mkOwnerFreshValues_",
         "oeStatus_",
         "oeBatch_",
         "oeCell_"
@@ -1168,8 +1172,8 @@
     {
       "name": "orderEntryCheckOrder",
       "module": "Code.gs",
-      "startLine": 4203,
-      "endLine": 4203,
+      "startLine": 4206,
+      "endLine": 4206,
       "calls": [
         "oeBook_",
         "oeSheet_",
@@ -1180,13 +1184,14 @@
     {
       "name": "orderEntryRecoverSubmission",
       "module": "Code.gs",
-      "startLine": 4204,
-      "endLine": 4217,
+      "startLine": 4207,
+      "endLine": 4220,
       "calls": [
         "oeBook_",
         "oeSheet_",
         "oeLock_",
         "oeMeta_",
+        "mkOwnerFreshValues_",
         "oeCheckLocked_",
         "oeBatch_",
         "oeCell_",
@@ -1196,8 +1201,8 @@
     {
       "name": "oeSendConfirmation_",
       "module": "Code.gs",
-      "startLine": 4218,
-      "endLine": 4239,
+      "startLine": 4221,
+      "endLine": 4242,
       "calls": [
         "mkIntegrationNoExternal_",
         "oeLock_",
@@ -1212,8 +1217,8 @@
     {
       "name": "oeSendText_",
       "module": "Code.gs",
-      "startLine": 4240,
-      "endLine": 4249,
+      "startLine": 4243,
+      "endLine": 4252,
       "calls": [
         "mkIntegrationFetch_"
       ]
@@ -1221,8 +1226,8 @@
     {
       "name": "orderEntryResendConfirmation",
       "module": "Code.gs",
-      "startLine": 4250,
-      "endLine": 4263,
+      "startLine": 4253,
+      "endLine": 4266,
       "calls": [
         "oeBook_",
         "oeSheet_",
@@ -1236,8 +1241,8 @@
     {
       "name": "oeMenuForDate_",
       "module": "Code.gs",
-      "startLine": 4266,
-      "endLine": 4637,
+      "startLine": 4269,
+      "endLine": 4640,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -1245,15 +1250,15 @@
     {
       "name": "oeDate_",
       "module": "Code.gs",
-      "startLine": 4639,
-      "endLine": 4645,
+      "startLine": 4642,
+      "endLine": 4648,
       "calls": []
     },
     {
       "name": "oeControls_",
       "module": "Code.gs",
-      "startLine": 4646,
-      "endLine": 4658,
+      "startLine": 4649,
+      "endLine": 4661,
       "calls": [
         "oeCell_"
       ]
@@ -1261,15 +1266,15 @@
     {
       "name": "oeQuantityRules_",
       "module": "Code.gs",
-      "startLine": 4659,
-      "endLine": 4666,
+      "startLine": 4662,
+      "endLine": 4669,
       "calls": []
     },
     {
       "name": "oeChangeDate_",
       "module": "Code.gs",
-      "startLine": 4667,
-      "endLine": 4682,
+      "startLine": 4670,
+      "endLine": 4685,
       "calls": [
         "oeLock_",
         "oeMeta_",
@@ -1285,8 +1290,8 @@
     {
       "name": "orderEntryEdited",
       "module": "Code.gs",
-      "startLine": 4683,
-      "endLine": 4706,
+      "startLine": 4686,
+      "endLine": 4709,
       "calls": [
         "oeBook_",
         "oeBatch_",
@@ -1301,15 +1306,15 @@
     {
       "name": "oeCustomerAddressFields_",
       "module": "Code.gs",
-      "startLine": 4708,
-      "endLine": 4713,
+      "startLine": 4711,
+      "endLine": 4716,
       "calls": []
     },
     {
       "name": "feedbackDryRunForOrder_",
       "module": "FeedbackDryRun.gs",
-      "startLine": 4720,
-      "endLine": 4732,
+      "startLine": 4723,
+      "endLine": 4735,
       "calls": [
         "fwError_",
         "fwOrderId_",
@@ -1324,8 +1329,8 @@
     {
       "name": "testFeedbackDryRun_ORD000002",
       "module": "FeedbackDryRun.gs",
-      "startLine": 4733,
-      "endLine": 4733,
+      "startLine": 4736,
+      "endLine": 4736,
       "calls": [
         "feedbackDryRunForOrder_"
       ]
@@ -1333,8 +1338,8 @@
     {
       "name": "getNextDay10am_",
       "module": "FeedbackDryRun.gs",
-      "startLine": 4735,
-      "endLine": 4735,
+      "startLine": 4738,
+      "endLine": 4738,
       "calls": [
         "feedbackNextDay10am_"
       ]
@@ -1342,8 +1347,8 @@
     {
       "name": "feedbackReasonDiagnostic_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 4755,
-      "endLine": 4767,
+      "startLine": 4758,
+      "endLine": 4770,
       "calls": [
         "fwProps_",
         "fwTime_"
@@ -1352,8 +1357,8 @@
     {
       "name": "getRecentFeedbackReasonDiagnostics",
       "module": "FeedbackInteraction.gs",
-      "startLine": 4770,
-      "endLine": 4777,
+      "startLine": 4773,
+      "endLine": 4780,
       "calls": [
         "fwProps_",
         "fwTime_"
@@ -1362,15 +1367,15 @@
     {
       "name": "clearFeedbackReasonDiagnostics",
       "module": "FeedbackInteraction.gs",
-      "startLine": 4780,
-      "endLine": 4796,
+      "startLine": 4783,
+      "endLine": 4799,
       "calls": []
     },
     {
       "name": "handleFeedbackTemplateReply_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 4804,
-      "endLine": 4873,
+      "startLine": 4807,
+      "endLine": 4876,
       "calls": [
         "feedbackInteractionVerifyOrderAccess_",
         "sendTextMessage_",
@@ -1383,8 +1388,8 @@
     {
       "name": "handleFeedbackInteractiveReply_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 4876,
-      "endLine": 4920,
+      "startLine": 4879,
+      "endLine": 4923,
       "calls": [
         "feedbackInteractionHandleDishRating_",
         "feedbackInteractionHandleDishReason_",
@@ -1394,8 +1399,8 @@
     {
       "name": "feedbackInteractionSendNextDish_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 4927,
-      "endLine": 5040,
+      "startLine": 4930,
+      "endLine": 5043,
       "calls": [
         "feedbackInteractionVerifyOrderAccess_",
         "feedbackInteractionGetOrderItems_",
@@ -1407,8 +1412,8 @@
     {
       "name": "feedbackInteractionHandleDishRating_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5043,
-      "endLine": 5118,
+      "startLine": 5046,
+      "endLine": 5121,
       "calls": [
         "feedbackInteractionVerifyOrderAccess_",
         "feedbackInteractionGetOrderItems_",
@@ -1420,8 +1425,8 @@
     {
       "name": "feedbackInteractionSendReasonList_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5121,
-      "endLine": 5194,
+      "startLine": 5124,
+      "endLine": 5197,
       "calls": [
         "sendWhatsAppPayload_"
       ]
@@ -1429,8 +1434,8 @@
     {
       "name": "feedbackInteractionHandleDishReason_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5197,
-      "endLine": 5386,
+      "startLine": 5200,
+      "endLine": 5389,
       "calls": [
         "feedbackReasonDiagnostic_",
         "feedbackInteractionVerifyOrderAccess_",
@@ -1444,8 +1449,8 @@
     {
       "name": "feedbackInteractionSendDeliveryRating_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5393,
-      "endLine": 5452,
+      "startLine": 5396,
+      "endLine": 5455,
       "calls": [
         "feedbackInteractionHasFeedbackItem_",
         "feedbackInteractionComplete_",
@@ -1455,8 +1460,8 @@
     {
       "name": "feedbackInteractionHandleDeliveryRating_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5455,
-      "endLine": 5526,
+      "startLine": 5458,
+      "endLine": 5529,
       "calls": [
         "feedbackInteractionVerifyOrderAccess_",
         "feedbackInteractionSaveFeedback_",
@@ -1469,8 +1474,8 @@
     {
       "name": "feedbackInteractionComplete_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5529,
-      "endLine": 5540,
+      "startLine": 5532,
+      "endLine": 5543,
       "calls": [
         "feedbackInteractionSetDeliveryFeedbackStatus_",
         "feedbackInteractionOfferFinalComment_"
@@ -1479,8 +1484,8 @@
     {
       "name": "feedbackInteractionOfferFinalComment_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5543,
-      "endLine": 5558,
+      "startLine": 5546,
+      "endLine": 5561,
       "calls": [
         "feedbackInteractionSetPendingCommentState_",
         "sendTextMessage_"
@@ -1489,8 +1494,8 @@
     {
       "name": "handleFeedbackTextReply_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5573,
-      "endLine": 5683,
+      "startLine": 5576,
+      "endLine": 5686,
       "calls": [
         "feedbackInteractionGetPendingCommentState_",
         "feedbackInteractionClearPendingCommentState_",
@@ -1503,29 +1508,29 @@
     {
       "name": "feedbackInteractionSetPendingCommentState_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5686,
-      "endLine": 5721,
+      "startLine": 5689,
+      "endLine": 5724,
       "calls": []
     },
     {
       "name": "feedbackInteractionGetPendingCommentState_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5724,
-      "endLine": 5770,
+      "startLine": 5727,
+      "endLine": 5773,
       "calls": []
     },
     {
       "name": "feedbackInteractionClearPendingCommentState_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5773,
-      "endLine": 5790,
+      "startLine": 5776,
+      "endLine": 5793,
       "calls": []
     },
     {
       "name": "feedbackInteractionAppendComment_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5793,
-      "endLine": 5793,
+      "startLine": 5796,
+      "endLine": 5796,
       "calls": [
         "fwLegacyComment_"
       ]
@@ -1533,8 +1538,8 @@
     {
       "name": "feedbackInteractionVerifyOrderAccess_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5800,
-      "endLine": 5811,
+      "startLine": 5803,
+      "endLine": 5814,
       "calls": [
         "fwBook_",
         "fwOrder_",
@@ -1549,8 +1554,8 @@
     {
       "name": "feedbackInteractionGetOrderItems_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5814,
-      "endLine": 5814,
+      "startLine": 5817,
+      "endLine": 5817,
       "calls": [
         "fwOrder_",
         "fwBook_",
@@ -1560,23 +1565,14 @@
     {
       "name": "feedbackInteractionSaveFeedback_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5821,
-      "endLine": 5821,
+      "startLine": 5824,
+      "endLine": 5824,
       "calls": [
         "fwLegacySave_"
       ]
     },
     {
       "name": "feedbackInteractionGetCompletedItemCodes_",
-      "module": "FeedbackInteraction.gs",
-      "startLine": 5823,
-      "endLine": 5823,
-      "calls": [
-        "fwLegacyCodes_"
-      ]
-    },
-    {
-      "name": "feedbackInteractionHasFeedbackItem_",
       "module": "FeedbackInteraction.gs",
       "startLine": 5826,
       "endLine": 5826,
@@ -1585,10 +1581,19 @@
       ]
     },
     {
-      "name": "feedbackInteractionSetDeliveryFeedbackStatus_",
+      "name": "feedbackInteractionHasFeedbackItem_",
       "module": "FeedbackInteraction.gs",
       "startLine": 5829,
       "endLine": 5829,
+      "calls": [
+        "fwLegacyCodes_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionSetDeliveryFeedbackStatus_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5832,
+      "endLine": 5832,
       "calls": [
         "fwLegacyStatus_"
       ]
@@ -1596,43 +1601,43 @@
     {
       "name": "feedbackInteractionReadSheet_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5836,
-      "endLine": 5853,
+      "startLine": 5839,
+      "endLine": 5856,
       "calls": []
     },
     {
       "name": "feedbackInteractionRequireHeader_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5856,
-      "endLine": 5864,
+      "startLine": 5859,
+      "endLine": 5867,
       "calls": []
     },
     {
       "name": "feedbackInteractionOptionalHeader_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5867,
-      "endLine": 5875,
+      "startLine": 5870,
+      "endLine": 5878,
       "calls": []
     },
     {
       "name": "feedbackInteractionNormalisePhone_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5878,
-      "endLine": 5890,
+      "startLine": 5881,
+      "endLine": 5893,
       "calls": []
     },
     {
       "name": "feedbackInteractionNextFeedbackId_",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5893,
-      "endLine": 5896,
+      "startLine": 5896,
+      "endLine": 5899,
       "calls": []
     },
     {
       "name": "testFeedbackInteractionConfiguration",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5903,
-      "endLine": 5962,
+      "startLine": 5906,
+      "endLine": 5965,
       "calls": [
         "mkIntegrationOpenBook_",
         "feedbackInteractionReadSheet_"
@@ -1641,8 +1646,8 @@
     {
       "name": "testFeedbackInteractionDryRun_ORD000002",
       "module": "FeedbackInteraction.gs",
-      "startLine": 5970,
-      "endLine": 6136,
+      "startLine": 5973,
+      "endLine": 6139,
       "calls": [
         "mkIntegrationOpenBook_",
         "feedbackInteractionReadSheet_",
@@ -1655,8 +1660,8 @@
     {
       "name": "testFeedbackInteractionFindOwnerOrders",
       "module": "FeedbackInteraction.gs",
-      "startLine": 6146,
-      "endLine": 6359,
+      "startLine": 6149,
+      "endLine": 6362,
       "calls": [
         "feedbackInteractionNormalisePhone_",
         "mkIntegrationOpenBook_",
@@ -1668,8 +1673,8 @@
     {
       "name": "fwLegacyDraft_",
       "module": "FeedbackLegacyBridge.gs",
-      "startLine": 6366,
-      "endLine": 6375,
+      "startLine": 6369,
+      "endLine": 6378,
       "calls": [
         "fwPayload_",
         "fwError_"
@@ -1678,8 +1683,8 @@
     {
       "name": "fwLegacySave_",
       "module": "FeedbackLegacyBridge.gs",
-      "startLine": 6376,
-      "endLine": 6407,
+      "startLine": 6379,
+      "endLine": 6410,
       "calls": [
         "fwEnabled_",
         "fwOrderId_",
@@ -1703,8 +1708,8 @@
     {
       "name": "fwLegacyCodes_",
       "module": "FeedbackLegacyBridge.gs",
-      "startLine": 6408,
-      "endLine": 6414,
+      "startLine": 6411,
+      "endLine": 6417,
       "calls": [
         "fwBook_",
         "fwSchema_",
@@ -1716,8 +1721,8 @@
     {
       "name": "fwLegacyStatus_",
       "module": "FeedbackLegacyBridge.gs",
-      "startLine": 6415,
-      "endLine": 6437,
+      "startLine": 6418,
+      "endLine": 6440,
       "calls": [
         "fwEnabled_",
         "fwOrderId_",
@@ -1739,8 +1744,8 @@
     {
       "name": "fwLegacyComment_",
       "module": "FeedbackLegacyBridge.gs",
-      "startLine": 6438,
-      "endLine": 6463,
+      "startLine": 6441,
+      "endLine": 6466,
       "calls": [
         "fwEnabled_",
         "fwOrderId_",
@@ -1762,8 +1767,8 @@
     {
       "name": "saveFeedbackProductionConfig",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6467,
-      "endLine": 6500,
+      "startLine": 6470,
+      "endLine": 6503,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -1771,8 +1776,8 @@
     {
       "name": "saveProductionFeedbackSigningKey",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6502,
-      "endLine": 6556,
+      "startLine": 6505,
+      "endLine": 6559,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -1780,8 +1785,8 @@
     {
       "name": "checkWhatsAppHandler",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6558,
-      "endLine": 6570,
+      "startLine": 6561,
+      "endLine": 6573,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -1789,8 +1794,8 @@
     {
       "name": "requireVerifiedWhatsAppForwarding",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6572,
-      "endLine": 6593,
+      "startLine": 6575,
+      "endLine": 6596,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -1798,8 +1803,8 @@
     {
       "name": "enableProductionFeedbackBackend",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6595,
-      "endLine": 6620,
+      "startLine": 6598,
+      "endLine": 6623,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -1807,8 +1812,8 @@
     {
       "name": "openProductionFeedback016",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6622,
-      "endLine": 6640,
+      "startLine": 6625,
+      "endLine": 6643,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -1816,8 +1821,8 @@
     {
       "name": "checkFeedback026",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6642,
-      "endLine": 6648,
+      "startLine": 6645,
+      "endLine": 6651,
       "calls": [
         "mkIntegrationNoExternal_",
         "feedbackDryRunForOrder_"
@@ -1826,8 +1831,8 @@
     {
       "name": "prepareWebsiteFeedbackSender",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6650,
-      "endLine": 6674,
+      "startLine": 6653,
+      "endLine": 6677,
       "calls": [
         "mkIntegrationNoExternal_",
         "fwProps_",
@@ -1840,8 +1845,8 @@
     {
       "name": "checkPreparedFeedbackSettings",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6676,
-      "endLine": 6687,
+      "startLine": 6679,
+      "endLine": 6690,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -1849,8 +1854,8 @@
     {
       "name": "sendFeedback026Only",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6689,
-      "endLine": 6819,
+      "startLine": 6692,
+      "endLine": 6822,
       "calls": [
         "mkIntegrationNoExternal_",
         "fwProps_",
@@ -1870,8 +1875,8 @@
     {
       "name": "diagnoseFeedback026Conflict",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6821,
-      "endLine": 6851,
+      "startLine": 6824,
+      "endLine": 6854,
       "calls": [
         "mkIntegrationNoExternal_",
         "fwProps_",
@@ -1886,8 +1891,8 @@
     {
       "name": "checkRecording026",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6852,
-      "endLine": 6894,
+      "startLine": 6855,
+      "endLine": 6897,
       "calls": [
         "mkIntegrationNoExternal_",
         "fwProps_",
@@ -1899,8 +1904,8 @@
     {
       "name": "enableWebsiteFeedbackLive",
       "module": "FeedbackProductionConfig.gs",
-      "startLine": 6896,
-      "endLine": 6916,
+      "startLine": 6899,
+      "endLine": 6919,
       "calls": [
         "mkIntegrationNoExternal_",
         "fwProps_",
@@ -1911,8 +1916,8 @@
     {
       "name": "sendCustomerFeedbackTemplate_",
       "module": "FeedbackSender.gs",
-      "startLine": 6936,
-      "endLine": 7021,
+      "startLine": 6939,
+      "endLine": 7024,
       "calls": [
         "sendWhatsAppPayload_"
       ]
@@ -1920,8 +1925,8 @@
     {
       "name": "previewOwnerFeedbackJourney",
       "module": "FeedbackSender.gs",
-      "startLine": 7031,
-      "endLine": 7111,
+      "startLine": 7034,
+      "endLine": 7114,
       "calls": [
         "sendWhatsAppPayload_",
         "feedbackIsLiveEnabled_"
@@ -1930,8 +1935,8 @@
     {
       "name": "findFeedbackCandidates_",
       "module": "FeedbackSender.gs",
-      "startLine": 7117,
-      "endLine": 7124,
+      "startLine": 7120,
+      "endLine": 7127,
       "calls": [
         "fwWithReads_",
         "fwBook_",
@@ -1942,8 +1947,8 @@
     {
       "name": "resolveFeedbackCandidate_",
       "module": "FeedbackSender.gs",
-      "startLine": 7131,
-      "endLine": 7368,
+      "startLine": 7134,
+      "endLine": 7371,
       "calls": [
         "fwBook_",
         "feedbackHeaderMap_",
@@ -1955,8 +1960,8 @@
     {
       "name": "buildFeedbackQueueSnapshot_",
       "module": "FeedbackSender.gs",
-      "startLine": 7375,
-      "endLine": 7385,
+      "startLine": 7378,
+      "endLine": 7388,
       "calls": [
         "findFeedbackCandidates_",
         "resolveFeedbackCandidate_"
@@ -1965,8 +1970,8 @@
     {
       "name": "runFeedbackSender",
       "module": "FeedbackSender.gs",
-      "startLine": 7392,
-      "endLine": 7644,
+      "startLine": 7395,
+      "endLine": 7647,
       "calls": [
         "mkIntegrationNoExternal_",
         "fwProps_",
@@ -1984,8 +1989,8 @@
     {
       "name": "installFeedbackAutomation",
       "module": "FeedbackSender.gs",
-      "startLine": 7651,
-      "endLine": 7681,
+      "startLine": 7654,
+      "endLine": 7684,
       "calls": [
         "mkIntegrationNoExternal_",
         "removeFeedbackAutomation_",
@@ -1996,8 +2001,8 @@
     {
       "name": "removeFeedbackAutomation",
       "module": "FeedbackSender.gs",
-      "startLine": 7684,
-      "endLine": 7704,
+      "startLine": 7687,
+      "endLine": 7707,
       "calls": [
         "removeFeedbackAutomation_",
         "feedbackIsLiveEnabled_"
@@ -2006,15 +2011,15 @@
     {
       "name": "removeFeedbackAutomation_",
       "module": "FeedbackSender.gs",
-      "startLine": 7707,
-      "endLine": 7727,
+      "startLine": 7710,
+      "endLine": 7730,
       "calls": []
     },
     {
       "name": "enableFeedbackLive",
       "module": "FeedbackSender.gs",
-      "startLine": 7730,
-      "endLine": 7755,
+      "startLine": 7733,
+      "endLine": 7758,
       "calls": [
         "mkIntegrationNoExternal_"
       ]
@@ -2022,15 +2027,15 @@
     {
       "name": "disableFeedbackLive",
       "module": "FeedbackSender.gs",
-      "startLine": 7758,
-      "endLine": 7781,
+      "startLine": 7761,
+      "endLine": 7784,
       "calls": []
     },
     {
       "name": "checkFeedbackAutomationStatus",
       "module": "FeedbackSender.gs",
-      "startLine": 7788,
-      "endLine": 7819,
+      "startLine": 7791,
+      "endLine": 7822,
       "calls": [
         "feedbackIsLiveEnabled_",
         "findFeedbackCandidates_"
@@ -2039,8 +2044,8 @@
     {
       "name": "testFindFeedbackCandidates",
       "module": "FeedbackSender.gs",
-      "startLine": 7822,
-      "endLine": 7835,
+      "startLine": 7825,
+      "endLine": 7838,
       "calls": [
         "findFeedbackCandidates_"
       ]
@@ -2048,8 +2053,8 @@
     {
       "name": "testFeedbackQueueResolution",
       "module": "FeedbackSender.gs",
-      "startLine": 7838,
-      "endLine": 7851,
+      "startLine": 7841,
+      "endLine": 7854,
       "calls": [
         "buildFeedbackQueueSnapshot_"
       ]
@@ -2057,8 +2062,8 @@
     {
       "name": "testFeedbackSenderSafetySwitch",
       "module": "FeedbackSender.gs",
-      "startLine": 7854,
-      "endLine": 7874,
+      "startLine": 7857,
+      "endLine": 7877,
       "calls": [
         "feedbackIsLiveEnabled_"
       ]
@@ -2066,43 +2071,43 @@
     {
       "name": "feedbackIsLiveEnabled_",
       "module": "FeedbackSender.gs",
-      "startLine": 7881,
-      "endLine": 7889,
+      "startLine": 7884,
+      "endLine": 7892,
       "calls": []
     },
     {
       "name": "feedbackHeaderMap_",
       "module": "FeedbackSender.gs",
-      "startLine": 7892,
-      "endLine": 7904,
+      "startLine": 7895,
+      "endLine": 7907,
       "calls": []
     },
     {
       "name": "feedbackRequireColumn_",
       "module": "FeedbackSender.gs",
-      "startLine": 7907,
-      "endLine": 7922,
+      "startLine": 7910,
+      "endLine": 7925,
       "calls": []
     },
     {
       "name": "feedbackNormalisePhoneDigits_",
       "module": "FeedbackSender.gs",
-      "startLine": 7925,
-      "endLine": 7942,
+      "startLine": 7928,
+      "endLine": 7945,
       "calls": []
     },
     {
       "name": "feedbackFirstName_",
       "module": "FeedbackSender.gs",
-      "startLine": 7945,
-      "endLine": 7956,
+      "startLine": 7948,
+      "endLine": 7959,
       "calls": []
     },
     {
       "name": "feedbackNextDay10am_",
       "module": "FeedbackSender.gs",
-      "startLine": 7959,
-      "endLine": 7961,
+      "startLine": 7962,
+      "endLine": 7964,
       "calls": [
         "fwTime_"
       ]
@@ -2110,22 +2115,22 @@
     {
       "name": "fwError_",
       "module": "FeedbackWeb.gs",
-      "startLine": 7977,
-      "endLine": 7977,
+      "startLine": 7980,
+      "endLine": 7980,
       "calls": []
     },
     {
       "name": "fwProps_",
       "module": "FeedbackWeb.gs",
-      "startLine": 7978,
-      "endLine": 7978,
+      "startLine": 7981,
+      "endLine": 7981,
       "calls": []
     },
     {
       "name": "fwConfig_",
       "module": "FeedbackWeb.gs",
-      "startLine": 7979,
-      "endLine": 7979,
+      "startLine": 7982,
+      "endLine": 7982,
       "calls": [
         "fwProps_",
         "fwError_"
@@ -2134,8 +2139,8 @@
     {
       "name": "fwEnabled_",
       "module": "FeedbackWeb.gs",
-      "startLine": 7980,
-      "endLine": 7980,
+      "startLine": 7983,
+      "endLine": 7983,
       "calls": [
         "fwProps_",
         "fwError_"
@@ -2144,22 +2149,22 @@
     {
       "name": "fwTimed_",
       "module": "FeedbackWeb.gs",
-      "startLine": 7983,
-      "endLine": 7995,
+      "startLine": 7986,
+      "endLine": 7998,
       "calls": []
     },
     {
       "name": "fwWithReads_",
       "module": "FeedbackWeb.gs",
-      "startLine": 7999,
-      "endLine": 8003,
+      "startLine": 8002,
+      "endLine": 8006,
       "calls": []
     },
     {
       "name": "fwBook_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8004,
-      "endLine": 8011,
+      "startLine": 8007,
+      "endLine": 8014,
       "calls": [
         "fwConfig_",
         "fwError_",
@@ -2170,8 +2175,8 @@
     {
       "name": "fwTimezone_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8012,
-      "endLine": 8018,
+      "startLine": 8015,
+      "endLine": 8021,
       "calls": [
         "fwBook_",
         "fwTimed_"
@@ -2180,8 +2185,8 @@
     {
       "name": "fwLock_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8019,
-      "endLine": 8024,
+      "startLine": 8022,
+      "endLine": 8027,
       "calls": [
         "fwWithReads_",
         "fwTimed_",
@@ -2191,15 +2196,15 @@
     {
       "name": "fwObject_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8025,
-      "endLine": 8025,
+      "startLine": 8028,
+      "endLine": 8028,
       "calls": []
     },
     {
       "name": "fwKeys_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8026,
-      "endLine": 8028,
+      "startLine": 8029,
+      "endLine": 8031,
       "calls": [
         "fwObject_",
         "fwError_"
@@ -2208,8 +2213,8 @@
     {
       "name": "fwString_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8029,
-      "endLine": 8032,
+      "startLine": 8032,
+      "endLine": 8035,
       "calls": [
         "fwError_"
       ]
@@ -2217,8 +2222,8 @@
     {
       "name": "fwToken_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8033,
-      "endLine": 8033,
+      "startLine": 8036,
+      "endLine": 8036,
       "calls": [
         "fwError_"
       ]
@@ -2226,8 +2231,8 @@
     {
       "name": "fwOrderId_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8034,
-      "endLine": 8034,
+      "startLine": 8037,
+      "endLine": 8037,
       "calls": [
         "fwError_"
       ]
@@ -2235,15 +2240,15 @@
     {
       "name": "fwHash_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8035,
-      "endLine": 8037,
+      "startLine": 8038,
+      "endLine": 8040,
       "calls": []
     },
     {
       "name": "fwNewToken_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8038,
-      "endLine": 8044,
+      "startLine": 8041,
+      "endLine": 8047,
       "calls": [
         "fwConfig_",
         "fwError_"
@@ -2252,15 +2257,15 @@
     {
       "name": "fwTime_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8045,
-      "endLine": 8049,
+      "startLine": 8048,
+      "endLine": 8052,
       "calls": []
     },
     {
       "name": "fwTable_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8050,
-      "endLine": 8063,
+      "startLine": 8053,
+      "endLine": 8066,
       "calls": [
         "fwError_",
         "fwTimed_"
@@ -2269,8 +2274,8 @@
     {
       "name": "fwWebGrid_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8066,
-      "endLine": 8119,
+      "startLine": 8069,
+      "endLine": 8122,
       "calls": [
         "fwTimed_",
         "fwError_"
@@ -2279,8 +2284,8 @@
     {
       "name": "fwPrimeWebReads_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8120,
-      "endLine": 8160,
+      "startLine": 8123,
+      "endLine": 8163,
       "calls": [
         "fwError_",
         "fwHash_",
@@ -2296,8 +2301,8 @@
     {
       "name": "fwFeedback_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8161,
-      "endLine": 8167,
+      "startLine": 8164,
+      "endLine": 8170,
       "calls": [
         "fwError_",
         "fwTable_"
@@ -2306,8 +2311,8 @@
     {
       "name": "fwSchema_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8168,
-      "endLine": 8174,
+      "startLine": 8171,
+      "endLine": 8177,
       "calls": [
         "fwFeedback_",
         "fwError_",
@@ -2317,8 +2322,8 @@
     {
       "name": "fwExtended_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8175,
-      "endLine": 8182,
+      "startLine": 8178,
+      "endLine": 8185,
       "calls": [
         "fwTimezone_"
       ]
@@ -2326,15 +2331,15 @@
     {
       "name": "fwUpdate_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8183,
-      "endLine": 8185,
+      "startLine": 8186,
+      "endLine": 8188,
       "calls": []
     },
     {
       "name": "fwCell_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8186,
-      "endLine": 8188,
+      "startLine": 8189,
+      "endLine": 8191,
       "calls": [
         "fwExtended_"
       ]
@@ -2342,15 +2347,15 @@
     {
       "name": "fwAppend_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8189,
-      "endLine": 8189,
+      "startLine": 8192,
+      "endLine": 8192,
       "calls": []
     },
     {
       "name": "fwBatch_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8190,
-      "endLine": 8196,
+      "startLine": 8193,
+      "endLine": 8199,
       "calls": [
         "fwTimed_",
         "mkIntegrationBatch_"
@@ -2359,15 +2364,15 @@
     {
       "name": "fwCapacity_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8197,
-      "endLine": 8202,
+      "startLine": 8200,
+      "endLine": 8205,
       "calls": []
     },
     {
       "name": "fwState_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8203,
-      "endLine": 8211,
+      "startLine": 8206,
+      "endLine": 8214,
       "calls": [
         "fwError_"
       ]
@@ -2375,8 +2380,8 @@
     {
       "name": "fwCompleted_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8212,
-      "endLine": 8216,
+      "startLine": 8215,
+      "endLine": 8219,
       "calls": [
         "fwError_"
       ]
@@ -2384,8 +2389,8 @@
     {
       "name": "fwOrder_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8217,
-      "endLine": 8248,
+      "startLine": 8220,
+      "endLine": 8251,
       "calls": [
         "fwTable_",
         "fwError_",
@@ -2397,15 +2402,15 @@
     {
       "name": "feedbackV2Eligibility_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8249,
-      "endLine": 8253,
+      "startLine": 8252,
+      "endLine": 8256,
       "calls": []
     },
     {
       "name": "fwContext_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8254,
-      "endLine": 8268,
+      "startLine": 8257,
+      "endLine": 8271,
       "calls": [
         "fwHash_",
         "fwToken_",
@@ -2421,8 +2426,8 @@
     {
       "name": "fwRevision_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8269,
-      "endLine": 8269,
+      "startLine": 8272,
+      "endLine": 8272,
       "calls": [
         "fwError_"
       ]
@@ -2430,8 +2435,8 @@
     {
       "name": "fwPayload_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8270,
-      "endLine": 8282,
+      "startLine": 8273,
+      "endLine": 8285,
       "calls": [
         "fwKeys_",
         "fwError_",
@@ -2441,8 +2446,8 @@
     {
       "name": "fwLimit_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8283,
-      "endLine": 8288,
+      "startLine": 8286,
+      "endLine": 8291,
       "calls": [
         "fwTime_"
       ]
@@ -2450,8 +2455,8 @@
     {
       "name": "fwPublic_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8289,
-      "endLine": 8293,
+      "startLine": 8292,
+      "endLine": 8296,
       "calls": [
         "fwPayload_"
       ]
@@ -2459,8 +2464,8 @@
     {
       "name": "handleFeedbackWebApiRequest_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8294,
-      "endLine": 8333,
+      "startLine": 8297,
+      "endLine": 8336,
       "calls": [
         "fwError_",
         "fwKeys_",
@@ -2475,8 +2480,8 @@
     {
       "name": "fwRequest_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8334,
-      "endLine": 8384,
+      "startLine": 8337,
+      "endLine": 8387,
       "calls": [
         "fwBook_",
         "fwPrimeWebReads_",
@@ -2496,8 +2501,8 @@
     {
       "name": "fwCommit_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8385,
-      "endLine": 8408,
+      "startLine": 8388,
+      "endLine": 8411,
       "calls": [
         "fwError_",
         "fwCompleted_",
@@ -2511,8 +2516,8 @@
     {
       "name": "feedbackV2SubmitLegacy_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8409,
-      "endLine": 8419,
+      "startLine": 8412,
+      "endLine": 8422,
       "calls": [
         "fwEnabled_",
         "fwOrderId_",
@@ -2531,8 +2536,8 @@
     {
       "name": "fwCreateLinkLocked_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8420,
-      "endLine": 8437,
+      "startLine": 8423,
+      "endLine": 8440,
       "calls": [
         "fwOrder_",
         "fwState_",
@@ -2552,8 +2557,8 @@
     {
       "name": "getOrCreateFeedbackWebLink_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8438,
-      "endLine": 8442,
+      "startLine": 8441,
+      "endLine": 8445,
       "calls": [
         "fwEnabled_",
         "fwOrderId_",
@@ -2566,8 +2571,8 @@
     {
       "name": "createFeedbackWebLinkForOrder",
       "module": "FeedbackWeb.gs",
-      "startLine": 8443,
-      "endLine": 8443,
+      "startLine": 8446,
+      "endLine": 8446,
       "calls": [
         "getOrCreateFeedbackWebLink_"
       ]
@@ -2575,8 +2580,8 @@
     {
       "name": "feedbackV2RevokeOrderLinks",
       "module": "FeedbackWeb.gs",
-      "startLine": 8444,
-      "endLine": 8452,
+      "startLine": 8447,
+      "endLine": 8455,
       "calls": [
         "fwOrderId_",
         "fwLock_",
@@ -2590,8 +2595,8 @@
     {
       "name": "feedbackV2Setup",
       "module": "FeedbackWeb.gs",
-      "startLine": 8453,
-      "endLine": 8473,
+      "startLine": 8456,
+      "endLine": 8476,
       "calls": [
         "fwLock_",
         "fwBook_",
@@ -2607,8 +2612,8 @@
     {
       "name": "feedbackV2ExpandRatingRanges",
       "module": "FeedbackWeb.gs",
-      "startLine": 8474,
-      "endLine": 8493,
+      "startLine": 8477,
+      "endLine": 8496,
       "calls": [
         "fwObject_",
         "fwError_",
@@ -2621,8 +2626,8 @@
     {
       "name": "fwSourceSchema_",
       "module": "FeedbackWeb.gs",
-      "startLine": 8495,
-      "endLine": 8503,
+      "startLine": 8498,
+      "endLine": 8506,
       "calls": [
         "fwTable_",
         "fwError_"
@@ -2631,8 +2636,8 @@
     {
       "name": "feedbackV2RatingFormulaAudit",
       "module": "FeedbackWeb.gs",
-      "startLine": 8504,
-      "endLine": 8512,
+      "startLine": 8507,
+      "endLine": 8515,
       "calls": [
         "fwBook_",
         "fwTable_"
@@ -2641,8 +2646,8 @@
     {
       "name": "feedbackSenderDecision_",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8519,
-      "endLine": 8541,
+      "startLine": 8522,
+      "endLine": 8544,
       "calls": [
         "fwBook_",
         "fwTable_",
@@ -2655,8 +2660,8 @@
     {
       "name": "fwWebTemplateContract_",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8542,
-      "endLine": 8550,
+      "startLine": 8545,
+      "endLine": 8553,
       "calls": [
         "fwProps_",
         "fwConfig_",
@@ -2666,8 +2671,8 @@
     {
       "name": "fwPrepareWebMessage_",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8551,
-      "endLine": 8570,
+      "startLine": 8554,
+      "endLine": 8573,
       "calls": [
         "fwEnabled_",
         "fwProps_",
@@ -2686,8 +2691,8 @@
     {
       "name": "fwSendWebMessage_",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8571,
-      "endLine": 8582,
+      "startLine": 8574,
+      "endLine": 8585,
       "calls": [
         "fwProps_",
         "fwConfig_",
@@ -2699,8 +2704,8 @@
     {
       "name": "fwFreshSenderState_",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8583,
-      "endLine": 8595,
+      "startLine": 8586,
+      "endLine": 8598,
       "calls": [
         "fwError_"
       ]
@@ -2708,8 +2713,8 @@
     {
       "name": "fwAcceptWebMessage_",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8596,
-      "endLine": 8625,
+      "startLine": 8599,
+      "endLine": 8628,
       "calls": [
         "fwString_",
         "fwError_",
@@ -2731,8 +2736,8 @@
     {
       "name": "runFeedbackWebSender_",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8626,
-      "endLine": 8640,
+      "startLine": 8629,
+      "endLine": 8643,
       "calls": [
         "mkIntegrationNoExternal_",
         "feedbackIsLiveEnabled_",
@@ -2747,8 +2752,8 @@
     {
       "name": "feedbackV2ReconcileAcceptedMessage",
       "module": "FeedbackWebSender.gs",
-      "startLine": 8641,
-      "endLine": 8649,
+      "startLine": 8644,
+      "endLine": 8652,
       "calls": [
         "fwEnabled_",
         "fwOrderId_",
@@ -2761,8 +2766,8 @@
     {
       "name": "setupPackingSlips",
       "module": "PackingSlips.gs",
-      "startLine": 8710,
-      "endLine": 8744,
+      "startLine": 8713,
+      "endLine": 8747,
       "calls": [
         "mkIntegrationNoExternal_",
         "getPackingSlipsSpreadsheet_",
@@ -2775,15 +2780,15 @@
     {
       "name": "showPackingSlipsMenu_",
       "module": "PackingSlips.gs",
-      "startLine": 8752,
-      "endLine": 8760,
+      "startLine": 8755,
+      "endLine": 8763,
       "calls": []
     },
     {
       "name": "refreshPackingSlipsPreview",
       "module": "PackingSlips.gs",
-      "startLine": 8766,
-      "endLine": 8822,
+      "startLine": 8769,
+      "endLine": 8825,
       "calls": [
         "getPackingSlipsSpreadsheet_",
         "collectPackingSlipData_"
@@ -2792,8 +2797,8 @@
     {
       "name": "generatePackingSlips",
       "module": "PackingSlips.gs",
-      "startLine": 8831,
-      "endLine": 8940,
+      "startLine": 8834,
+      "endLine": 8943,
       "calls": [
         "mkIntegrationNoExternal_",
         "getPackingSlipsSpreadsheet_",
@@ -2811,8 +2816,8 @@
     {
       "name": "rebuildPackingSlipsTemplate",
       "module": "PackingSlips.gs",
-      "startLine": 8948,
-      "endLine": 8956,
+      "startLine": 8951,
+      "endLine": 8959,
       "calls": [
         "mkIntegrationNoExternal_",
         "buildPackingSlipTemplate_"
@@ -2821,8 +2826,8 @@
     {
       "name": "collectPackingSlipData_",
       "module": "PackingSlips.gs",
-      "startLine": 8964,
-      "endLine": 9129,
+      "startLine": 8967,
+      "endLine": 9132,
       "calls": [
         "getPackingSlipsSpreadsheet_",
         "getSelectedPackingSlipDate_",
@@ -2838,8 +2843,8 @@
     {
       "name": "getSelectedPackingSlipDate_",
       "module": "PackingSlips.gs",
-      "startLine": 9132,
-      "endLine": 9151,
+      "startLine": 9135,
+      "endLine": 9154,
       "calls": [
         "getPackingSlipsSpreadsheet_",
         "parseFlexibleDate_"
@@ -2848,29 +2853,29 @@
     {
       "name": "deriveSuburb_",
       "module": "PackingSlips.gs",
-      "startLine": 9171,
-      "endLine": 9238,
+      "startLine": 9174,
+      "endLine": 9241,
       "calls": []
     },
     {
       "name": "firstName_",
       "module": "PackingSlips.gs",
-      "startLine": 9241,
-      "endLine": 9250,
+      "startLine": 9244,
+      "endLine": 9253,
       "calls": []
     },
     {
       "name": "cleanDeliveryNote_",
       "module": "PackingSlips.gs",
-      "startLine": 9253,
-      "endLine": 9269,
+      "startLine": 9256,
+      "endLine": 9272,
       "calls": []
     },
     {
       "name": "ensurePackingSlipTemplate_",
       "module": "PackingSlips.gs",
-      "startLine": 9281,
-      "endLine": 9316,
+      "startLine": 9284,
+      "endLine": 9319,
       "calls": [
         "mkIntegrationDocumentOpen_",
         "mkIntegrationDocumentCreate_",
@@ -2881,8 +2886,8 @@
     {
       "name": "buildPackingSlipTemplate_",
       "module": "PackingSlips.gs",
-      "startLine": 9322,
-      "endLine": 9391,
+      "startLine": 9325,
+      "endLine": 9394,
       "calls": [
         "mkIntegrationDocumentOpen_",
         "mkIntegrationDocumentCreate_",
@@ -2894,8 +2899,8 @@
     {
       "name": "configureTemplateCell_",
       "module": "PackingSlips.gs",
-      "startLine": 9394,
-      "endLine": 9501,
+      "startLine": 9397,
+      "endLine": 9504,
       "calls": [
         "appendSlipParagraph_"
       ]
@@ -2903,15 +2908,15 @@
     {
       "name": "appendSlipParagraph_",
       "module": "PackingSlips.gs",
-      "startLine": 9504,
-      "endLine": 9524,
+      "startLine": 9507,
+      "endLine": 9527,
       "calls": []
     },
     {
       "name": "fillSlipCell_",
       "module": "PackingSlips.gs",
-      "startLine": 9527,
-      "endLine": 9595,
+      "startLine": 9530,
+      "endLine": 9598,
       "calls": [
         "replaceCellToken_",
         "formatQty_",
@@ -2921,15 +2926,15 @@
     {
       "name": "clearSlipCell_",
       "module": "PackingSlips.gs",
-      "startLine": 9598,
-      "endLine": 9601,
+      "startLine": 9601,
+      "endLine": 9604,
       "calls": []
     },
     {
       "name": "replaceCellToken_",
       "module": "PackingSlips.gs",
-      "startLine": 9604,
-      "endLine": 9616,
+      "startLine": 9607,
+      "endLine": 9619,
       "calls": [
         "safeReplacement_"
       ]
@@ -2937,15 +2942,15 @@
     {
       "name": "setExactTokenParagraph_",
       "module": "PackingSlips.gs",
-      "startLine": 9619,
-      "endLine": 9668,
+      "startLine": 9622,
+      "endLine": 9671,
       "calls": []
     },
     {
       "name": "getFirstTable_",
       "module": "PackingSlips.gs",
-      "startLine": 9671,
-      "endLine": 9681,
+      "startLine": 9674,
+      "endLine": 9684,
       "calls": [
         "getFirstTableOrNull_"
       ]
@@ -2953,15 +2958,15 @@
     {
       "name": "getFirstTableOrNull_",
       "module": "PackingSlips.gs",
-      "startLine": 9684,
-      "endLine": 9701,
+      "startLine": 9687,
+      "endLine": 9704,
       "calls": []
     },
     {
       "name": "getOrCreateOutputDocument_",
       "module": "PackingSlips.gs",
-      "startLine": 9709,
-      "endLine": 9745,
+      "startLine": 9712,
+      "endLine": 9748,
       "calls": [
         "mkIntegrationDocumentOpen_",
         "mkIntegrationDriveFile_",
@@ -2971,15 +2976,15 @@
     {
       "name": "setupPackingSlipsStatusArea_",
       "module": "PackingSlips.gs",
-      "startLine": 9753,
-      "endLine": 9768,
+      "startLine": 9756,
+      "endLine": 9771,
       "calls": []
     },
     {
       "name": "installPackingSlipOpenTrigger_",
       "module": "PackingSlips.gs",
-      "startLine": 9771,
-      "endLine": 9789,
+      "startLine": 9774,
+      "endLine": 9792,
       "calls": [
         "getPackingSlipsSpreadsheet_",
         "mkIntegrationNewTrigger_"
@@ -2988,8 +2993,8 @@
     {
       "name": "getPackingSlipsSpreadsheet_",
       "module": "PackingSlips.gs",
-      "startLine": 9797,
-      "endLine": 9801,
+      "startLine": 9800,
+      "endLine": 9804,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -2997,57 +3002,57 @@
     {
       "name": "applyA4PageSettings_",
       "module": "PackingSlips.gs",
-      "startLine": 9804,
-      "endLine": 9814,
+      "startLine": 9807,
+      "endLine": 9817,
       "calls": []
     },
     {
       "name": "headerIndex_",
       "module": "PackingSlips.gs",
-      "startLine": 9817,
-      "endLine": 9829,
+      "startLine": 9820,
+      "endLine": 9832,
       "calls": []
     },
     {
       "name": "optionalHeaderIndex_",
       "module": "PackingSlips.gs",
-      "startLine": 9832,
-      "endLine": 9837,
+      "startLine": 9835,
+      "endLine": 9840,
       "calls": []
     },
     {
       "name": "parseFlexibleDate_",
       "module": "PackingSlips.gs",
-      "startLine": 9840,
-      "endLine": 9900,
+      "startLine": 9843,
+      "endLine": 9903,
       "calls": []
     },
     {
       "name": "dateKey_",
       "module": "PackingSlips.gs",
-      "startLine": 9903,
-      "endLine": 9909,
+      "startLine": 9906,
+      "endLine": 9912,
       "calls": []
     },
     {
       "name": "formatQty_",
       "module": "PackingSlips.gs",
-      "startLine": 9912,
-      "endLine": 9918,
+      "startLine": 9915,
+      "endLine": 9921,
       "calls": []
     },
     {
       "name": "safeReplacement_",
       "module": "PackingSlips.gs",
-      "startLine": 9921,
-      "endLine": 9926,
+      "startLine": 9924,
+      "endLine": 9929,
       "calls": []
     },
     {
       "name": "registerWhatsAppOutbound_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 9982,
-      "endLine": 9996,
+      "startLine": 9985,
+      "endLine": 9999,
       "calls": [
         "fwString_",
         "fwOrderId_",
@@ -3064,8 +3069,8 @@
     {
       "name": "updateWhatsAppLogFromStatus_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10004,
-      "endLine": 10035,
+      "startLine": 10007,
+      "endLine": 10038,
       "calls": [
         "fwObject_",
         "whatsappLogStatusDate_",
@@ -3088,8 +3093,8 @@
     {
       "name": "getWhatsAppLogForOrder",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10042,
-      "endLine": 10103,
+      "startLine": 10045,
+      "endLine": 10106,
       "calls": [
         "whatsappLogGetSheet_"
       ]
@@ -3097,8 +3102,8 @@
     {
       "name": "checkWhatsAppLogSetup",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10106,
-      "endLine": 10142,
+      "startLine": 10109,
+      "endLine": 10145,
       "calls": [
         "whatsappLogGetSheet_"
       ]
@@ -3106,8 +3111,8 @@
     {
       "name": "whatsappLogGetSheet_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10149,
-      "endLine": 10187,
+      "startLine": 10152,
+      "endLine": 10190,
       "calls": [
         "fwBook_"
       ]
@@ -3115,50 +3120,50 @@
     {
       "name": "whatsappLogFindRowByMessageId_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10190,
-      "endLine": 10225,
+      "startLine": 10193,
+      "endLine": 10228,
       "calls": []
     },
     {
       "name": "whatsappLogStatusDate_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10228,
-      "endLine": 10234,
+      "startLine": 10231,
+      "endLine": 10237,
       "calls": []
     },
     {
       "name": "whatsappLogDisplayStatus_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10237,
-      "endLine": 10252,
+      "startLine": 10240,
+      "endLine": 10255,
       "calls": []
     },
     {
       "name": "whatsappLogStatusRank_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10255,
-      "endLine": 10276,
+      "startLine": 10258,
+      "endLine": 10279,
       "calls": []
     },
     {
       "name": "whatsappLogNormalisePhone_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10279,
-      "endLine": 10289,
+      "startLine": 10282,
+      "endLine": 10292,
       "calls": []
     },
     {
       "name": "whatsappLogErrorDetails_",
       "module": "PermanentWhatsAppLog.gs",
-      "startLine": 10292,
-      "endLine": 10329,
+      "startLine": 10295,
+      "endLine": 10332,
       "calls": []
     },
     {
       "name": "testRoutificConnection",
       "module": "Routific.gs",
-      "startLine": 10360,
-      "endLine": 10418,
+      "startLine": 10363,
+      "endLine": 10421,
       "calls": [
         "mkIntegrationFetch_"
       ]
@@ -3166,8 +3171,8 @@
     {
       "name": "sendConfirmedOrdersToRoutific",
       "module": "Routific.gs",
-      "startLine": 10444,
-      "endLine": 11439,
+      "startLine": 10447,
+      "endLine": 11442,
       "calls": [
         "mkIntegrationNoExternal_",
         "mkIntegrationActiveBook_",
@@ -3180,22 +3185,22 @@
     {
       "name": "findNextAvailableDeliveryRow_",
       "module": "Routific.gs",
-      "startLine": 11453,
-      "endLine": 11491,
+      "startLine": 11456,
+      "endLine": 11494,
       "calls": []
     },
     {
       "name": "shortenRoutificError_",
       "module": "Routific.gs",
-      "startLine": 11502,
-      "endLine": 11519,
+      "startLine": 11505,
+      "endLine": 11522,
       "calls": []
     },
     {
       "name": "parseMaKitchensDeliveryWindow_",
       "module": "Routific.gs",
-      "startLine": 11526,
-      "endLine": 11615,
+      "startLine": 11529,
+      "endLine": 11618,
       "calls": [
         "convert12HourTo24Hour_"
       ]
@@ -3203,15 +3208,15 @@
     {
       "name": "convert12HourTo24Hour_",
       "module": "Routific.gs",
-      "startLine": 11618,
-      "endLine": 11689,
+      "startLine": 11621,
+      "endLine": 11692,
       "calls": []
     },
     {
       "name": "handleRoutificWebhook_",
       "module": "RoutificWebhook.gs",
-      "startLine": 11714,
-      "endLine": 12258,
+      "startLine": 11717,
+      "endLine": 12261,
       "calls": [
         "routificWebhookResponse_",
         "handleRoutePublishedDeliveryPlanned_",
@@ -3223,8 +3228,8 @@
     {
       "name": "handleRoutePublishedDeliveryPlanned_",
       "module": "RoutificWebhook.gs",
-      "startLine": 12265,
-      "endLine": 12801,
+      "startLine": 12268,
+      "endLine": 12804,
       "calls": [
         "mkIntegrationOpenBook_",
         "routePublishedHeaderMap_",
@@ -3240,8 +3245,8 @@
     {
       "name": "sendDeliveryPlannedTemplate_",
       "module": "RoutificWebhook.gs",
-      "startLine": 12808,
-      "endLine": 12894,
+      "startLine": 12811,
+      "endLine": 12897,
       "calls": [
         "sendWhatsAppPayload_"
       ]
@@ -3249,8 +3254,8 @@
     {
       "name": "deliveryPlannedAlreadyLogged_",
       "module": "RoutificWebhook.gs",
-      "startLine": 12901,
-      "endLine": 12963,
+      "startLine": 12904,
+      "endLine": 12966,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -3258,43 +3263,43 @@
     {
       "name": "routePublishedHeaderMap_",
       "module": "RoutificWebhook.gs",
-      "startLine": 12970,
-      "endLine": 12985,
+      "startLine": 12973,
+      "endLine": 12988,
       "calls": []
     },
     {
       "name": "routePublishedRequireColumn_",
       "module": "RoutificWebhook.gs",
-      "startLine": 12988,
-      "endLine": 13006,
+      "startLine": 12991,
+      "endLine": 13009,
       "calls": []
     },
     {
       "name": "routePublishedNormalisePhone_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13009,
-      "endLine": 13040,
+      "startLine": 13012,
+      "endLine": 13043,
       "calls": []
     },
     {
       "name": "routePublishedFirstName_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13043,
-      "endLine": 13057,
+      "startLine": 13046,
+      "endLine": 13060,
       "calls": []
     },
     {
       "name": "routePublishedFormatWindow_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13060,
-      "endLine": 13144,
+      "startLine": 13063,
+      "endLine": 13147,
       "calls": []
     },
     {
       "name": "handleRouteEtaUpdatedDeliveryUpdate_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13152,
-      "endLine": 13703,
+      "startLine": 13155,
+      "endLine": 13706,
       "calls": [
         "mkIntegrationOpenBook_",
         "routePublishedHeaderMap_",
@@ -3311,8 +3316,8 @@
     {
       "name": "fetchRoutificTracking_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13710,
-      "endLine": 13813,
+      "startLine": 13713,
+      "endLine": 13816,
       "calls": [
         "mkIntegrationFetch_"
       ]
@@ -3320,8 +3325,8 @@
     {
       "name": "sendDeliveryUpdateTemplate_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13822,
-      "endLine": 13920,
+      "startLine": 13825,
+      "endLine": 13923,
       "calls": [
         "sendWhatsAppPayload_"
       ]
@@ -3329,8 +3334,8 @@
     {
       "name": "deliveryUpdateAlreadyLogged_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13927,
-      "endLine": 13989,
+      "startLine": 13930,
+      "endLine": 13992,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -3338,8 +3343,8 @@
     {
       "name": "sendDeliveryConfirmationForOrder_",
       "module": "RoutificWebhook.gs",
-      "startLine": 13998,
-      "endLine": 14252,
+      "startLine": 14001,
+      "endLine": 14255,
       "calls": [
         "deliveryConfirmationAlreadyLogged_",
         "mkIntegrationOpenBook_",
@@ -3354,8 +3359,8 @@
     {
       "name": "sendDeliveryConfirmationTemplate_",
       "module": "RoutificWebhook.gs",
-      "startLine": 14255,
-      "endLine": 14326,
+      "startLine": 14258,
+      "endLine": 14329,
       "calls": [
         "sendWhatsAppPayload_"
       ]
@@ -3363,8 +3368,8 @@
     {
       "name": "deliveryConfirmationAlreadyLogged_",
       "module": "RoutificWebhook.gs",
-      "startLine": 14329,
-      "endLine": 14392,
+      "startLine": 14332,
+      "endLine": 14395,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -3372,36 +3377,36 @@
     {
       "name": "routificWebhookResponse_",
       "module": "RoutificWebhook.gs",
-      "startLine": 14396,
-      "endLine": 14411,
+      "startLine": 14399,
+      "endLine": 14414,
       "calls": []
     },
     {
       "name": "mkPhone_",
       "module": "OrderEngine.gs",
-      "startLine": 14416,
-      "endLine": 14422,
+      "startLine": 14419,
+      "endLine": 14425,
       "calls": []
     },
     {
       "name": "mkText_",
       "module": "OrderEngine.gs",
-      "startLine": 14424,
-      "endLine": 14429,
+      "startLine": 14427,
+      "endLine": 14432,
       "calls": []
     },
     {
       "name": "mkMoneyCents_",
       "module": "OrderEngine.gs",
-      "startLine": 14431,
-      "endLine": 14435,
+      "startLine": 14434,
+      "endLine": 14438,
       "calls": []
     },
     {
       "name": "mkCustomerMatch_",
       "module": "OrderEngine.gs",
-      "startLine": 14437,
-      "endLine": 14447,
+      "startLine": 14440,
+      "endLine": 14450,
       "calls": [
         "mkPhone_"
       ]
@@ -3409,8 +3414,8 @@
     {
       "name": "mkOwnerDetails_",
       "module": "OrderEngine.gs",
-      "startLine": 14449,
-      "endLine": 14470,
+      "startLine": 14452,
+      "endLine": 14473,
       "calls": [
         "mkPhone_",
         "mkText_"
@@ -3419,8 +3424,8 @@
     {
       "name": "mkQuote_",
       "module": "OrderEngine.gs",
-      "startLine": 14472,
-      "endLine": 14519,
+      "startLine": 14475,
+      "endLine": 14522,
       "calls": [
         "mkMoneyCents_"
       ]
@@ -3428,43 +3433,43 @@
     {
       "name": "mkConfirmation_",
       "module": "OrderEngine.gs",
-      "startLine": 14521,
-      "endLine": 14530,
+      "startLine": 14524,
+      "endLine": 14533,
       "calls": []
     },
     {
       "name": "orderRequestJson_",
       "module": "OrderRequests.gs",
-      "startLine": 14558,
-      "endLine": 14560,
+      "startLine": 14561,
+      "endLine": 14563,
       "calls": []
     },
     {
       "name": "orderRequestDigest_",
       "module": "OrderRequests.gs",
-      "startLine": 14562,
-      "endLine": 14565,
+      "startLine": 14565,
+      "endLine": 14568,
       "calls": []
     },
     {
       "name": "orderRequestHmacHex_",
       "module": "OrderRequests.gs",
-      "startLine": 14567,
-      "endLine": 14570,
+      "startLine": 14570,
+      "endLine": 14573,
       "calls": []
     },
     {
       "name": "orderRequestSafeEqual_",
       "module": "OrderRequests.gs",
-      "startLine": 14572,
-      "endLine": 14578,
+      "startLine": 14575,
+      "endLine": 14581,
       "calls": []
     },
     {
       "name": "orderRequestVerifyEnvelope_",
       "module": "OrderRequests.gs",
-      "startLine": 14580,
-      "endLine": 14599,
+      "startLine": 14583,
+      "endLine": 14602,
       "calls": [
         "orderRequestHmacHex_",
         "orderRequestSafeEqual_"
@@ -3473,8 +3478,8 @@
     {
       "name": "orderRequestOwner_",
       "module": "OrderRequests.gs",
-      "startLine": 14601,
-      "endLine": 14604,
+      "startLine": 14604,
+      "endLine": 14607,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -3482,8 +3487,8 @@
     {
       "name": "setupOrderRequestWorkspace",
       "module": "OrderRequests.gs",
-      "startLine": 14606,
-      "endLine": 14623,
+      "startLine": 14609,
+      "endLine": 14626,
       "calls": [
         "mkOwnerBook_",
         "mkIntegrationOpenBook_",
@@ -3493,22 +3498,22 @@
     {
       "name": "orderRequestHeaderMap_",
       "module": "OrderRequests.gs",
-      "startLine": 14625,
-      "endLine": 14629,
+      "startLine": 14628,
+      "endLine": 14632,
       "calls": []
     },
     {
       "name": "orderRequestRequireHeaders_",
       "module": "OrderRequests.gs",
-      "startLine": 14631,
-      "endLine": 14635,
+      "startLine": 14634,
+      "endLine": 14638,
       "calls": []
     },
     {
       "name": "orderRequestReadMenuState_",
       "module": "OrderRequests.gs",
-      "startLine": 14637,
-      "endLine": 14665,
+      "startLine": 14640,
+      "endLine": 14668,
       "calls": [
         "orderRequestRequireHeaders_",
         "orderRequestHeaderMap_"
@@ -3517,15 +3522,15 @@
     {
       "name": "orderRequestBeforeCutoff_",
       "module": "OrderRequests.gs",
-      "startLine": 14667,
-      "endLine": 14673,
+      "startLine": 14670,
+      "endLine": 14676,
       "calls": []
     },
     {
       "name": "orderRequestLiveLines_",
       "module": "OrderRequests.gs",
-      "startLine": 14675,
-      "endLine": 14684,
+      "startLine": 14678,
+      "endLine": 14687,
       "calls": [
         "mkCommitted_",
         "mkMenuLines_"
@@ -3534,15 +3539,15 @@
     {
       "name": "orderRequestCell_",
       "module": "OrderRequests.gs",
-      "startLine": 14686,
-      "endLine": 14691,
+      "startLine": 14689,
+      "endLine": 14694,
       "calls": []
     },
     {
       "name": "orderRequestUpdateCells_",
       "module": "OrderRequests.gs",
-      "startLine": 14693,
-      "endLine": 14700,
+      "startLine": 14696,
+      "endLine": 14703,
       "calls": [
         "orderRequestCell_"
       ]
@@ -3550,29 +3555,29 @@
     {
       "name": "orderRequestExisting_",
       "module": "OrderRequests.gs",
-      "startLine": 14702,
-      "endLine": 14708,
+      "startLine": 14705,
+      "endLine": 14711,
       "calls": []
     },
     {
       "name": "orderRequestValidReference_",
       "module": "OrderRequests.gs",
-      "startLine": 14710,
-      "endLine": 14712,
+      "startLine": 14713,
+      "endLine": 14715,
       "calls": []
     },
     {
       "name": "orderRequestAllocateReference_",
       "module": "OrderRequests.gs",
-      "startLine": 14716,
-      "endLine": 14730,
+      "startLine": 14719,
+      "endLine": 14733,
       "calls": []
     },
     {
       "name": "orderRequestCapture_",
       "module": "OrderRequests.gs",
-      "startLine": 14732,
-      "endLine": 14814,
+      "startLine": 14735,
+      "endLine": 14817,
       "calls": [
         "mkIntegrationOpenBook_",
         "orderRequestRequireHeaders_",
@@ -3590,8 +3595,8 @@
     {
       "name": "orderRequestRecover_",
       "module": "OrderRequests.gs",
-      "startLine": 14816,
-      "endLine": 14828,
+      "startLine": 14819,
+      "endLine": 14831,
       "calls": [
         "mkIntegrationOpenBook_",
         "orderRequestDigest_"
@@ -3600,8 +3605,8 @@
     {
       "name": "handleOrderRequestApi_",
       "module": "OrderRequests.gs",
-      "startLine": 14830,
-      "endLine": 14843,
+      "startLine": 14833,
+      "endLine": 14846,
       "calls": [
         "orderRequestVerifyEnvelope_",
         "orderRequestJson_",
@@ -3612,8 +3617,8 @@
     {
       "name": "orderRequestInboxOwnerBook_",
       "module": "OrderRequests.gs",
-      "startLine": 14847,
-      "endLine": 14853,
+      "startLine": 14850,
+      "endLine": 14856,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -3621,8 +3626,8 @@
     {
       "name": "orderRequestInboxOnOpen_",
       "module": "OrderRequests.gs",
-      "startLine": 14855,
-      "endLine": 14860,
+      "startLine": 14858,
+      "endLine": 14863,
       "calls": [
         "mkOwnerBook_"
       ]
@@ -3630,8 +3635,8 @@
     {
       "name": "orderRequestOpenInbox",
       "module": "OrderRequests.gs",
-      "startLine": 14862,
-      "endLine": 14866,
+      "startLine": 14865,
+      "endLine": 14869,
       "calls": [
         "mkOwnerBook_"
       ]
@@ -3639,8 +3644,8 @@
     {
       "name": "orderRequestInboxList",
       "module": "OrderRequests.gs",
-      "startLine": 14868,
-      "endLine": 14886,
+      "startLine": 14871,
+      "endLine": 14889,
       "calls": [
         "mkOwnerBook_"
       ]
@@ -3648,8 +3653,8 @@
     {
       "name": "orderRequestOwnerEventRequest_",
       "module": "OrderRequests.gs",
-      "startLine": 14888,
-      "endLine": 14900,
+      "startLine": 14891,
+      "endLine": 14903,
       "calls": [
         "orderRequestUpdateCells_"
       ]
@@ -3657,8 +3662,8 @@
     {
       "name": "orderRequestOwnerFindRow_",
       "module": "OrderRequests.gs",
-      "startLine": 14902,
-      "endLine": 14910,
+      "startLine": 14905,
+      "endLine": 14913,
       "calls": [
         "orderRequestValidReference_"
       ]
@@ -3666,8 +3671,8 @@
     {
       "name": "orderRequestMarkReceived",
       "module": "OrderRequests.gs",
-      "startLine": 14912,
-      "endLine": 14937,
+      "startLine": 14915,
+      "endLine": 14940,
       "calls": [
         "mkOwnerBook_",
         "mkPhone_",
@@ -3680,8 +3685,8 @@
     {
       "name": "orderRequestCellUpdate_",
       "module": "OrderRequests.gs",
-      "startLine": 14939,
-      "endLine": 14943,
+      "startLine": 14942,
+      "endLine": 14946,
       "calls": [
         "orderRequestCell_"
       ]
@@ -3689,8 +3694,8 @@
     {
       "name": "orderRequestFindCustomersBySender",
       "module": "OrderRequests.gs",
-      "startLine": 14945,
-      "endLine": 14953,
+      "startLine": 14948,
+      "endLine": 14956,
       "calls": [
         "mkOwnerBook_",
         "mkPhone_",
@@ -3700,8 +3705,8 @@
     {
       "name": "orderRequestSafeCustomer_",
       "module": "OrderRequests.gs",
-      "startLine": 14955,
-      "endLine": 14958,
+      "startLine": 14958,
+      "endLine": 14961,
       "calls": [
         "mkPhone_"
       ]
@@ -3709,8 +3714,8 @@
     {
       "name": "orderRequestReject",
       "module": "OrderRequests.gs",
-      "startLine": 14960,
-      "endLine": 14974,
+      "startLine": 14963,
+      "endLine": 14977,
       "calls": [
         "mkOwnerBook_",
         "orderRequestOwnerFindRow_",
@@ -3722,8 +3727,8 @@
     {
       "name": "mkOwnerBook_",
       "module": "OwnerOrders.gs",
-      "startLine": 14989,
-      "endLine": 14995,
+      "startLine": 14992,
+      "endLine": 14998,
       "calls": [
         "orderRequestInboxOwnerBook_"
       ]
@@ -3731,22 +3736,22 @@
     {
       "name": "mkLocked_",
       "module": "OwnerOrders.gs",
-      "startLine": 14997,
-      "endLine": 15002,
+      "startLine": 15000,
+      "endLine": 15005,
       "calls": []
     },
     {
       "name": "mkOwnerFreshValues_",
       "module": "OwnerOrders.gs",
-      "startLine": 15004,
-      "endLine": 15015,
+      "startLine": 15007,
+      "endLine": 15018,
       "calls": []
     },
     {
       "name": "mkTable_",
       "module": "OwnerOrders.gs",
-      "startLine": 15017,
-      "endLine": 15028,
+      "startLine": 15020,
+      "endLine": 15031,
       "calls": [
         "mkOwnerFreshValues_",
         "orderRequestRequireHeaders_",
@@ -3756,22 +3761,22 @@
     {
       "name": "mkRequire_",
       "module": "OwnerOrders.gs",
-      "startLine": 15030,
-      "endLine": 15032,
+      "startLine": 15033,
+      "endLine": 15035,
       "calls": []
     },
     {
       "name": "mkRows_",
       "module": "OwnerOrders.gs",
-      "startLine": 15034,
-      "endLine": 15036,
+      "startLine": 15037,
+      "endLine": 15039,
       "calls": []
     },
     {
       "name": "mkUnique_",
       "module": "OwnerOrders.gs",
-      "startLine": 15038,
-      "endLine": 15042,
+      "startLine": 15041,
+      "endLine": 15045,
       "calls": [
         "mkRows_"
       ]
@@ -3779,22 +3784,22 @@
     {
       "name": "mkJson_",
       "module": "OwnerOrders.gs",
-      "startLine": 15044,
-      "endLine": 15048,
+      "startLine": 15047,
+      "endLine": 15051,
       "calls": []
     },
     {
       "name": "mkDate_",
       "module": "OwnerOrders.gs",
-      "startLine": 15050,
-      "endLine": 15052,
+      "startLine": 15053,
+      "endLine": 15055,
       "calls": []
     },
     {
       "name": "mkCustomers_",
       "module": "OwnerOrders.gs",
-      "startLine": 15054,
-      "endLine": 15062,
+      "startLine": 15057,
+      "endLine": 15065,
       "calls": [
         "mkTable_",
         "mkRequire_"
@@ -3803,8 +3808,8 @@
     {
       "name": "mkMenuLines_",
       "module": "OwnerOrders.gs",
-      "startLine": 15064,
-      "endLine": 15081,
+      "startLine": 15067,
+      "endLine": 15084,
       "calls": [
         "mkTable_",
         "mkRequire_",
@@ -3815,8 +3820,8 @@
     {
       "name": "mkCommitted_",
       "module": "OwnerOrders.gs",
-      "startLine": 15083,
-      "endLine": 15109,
+      "startLine": 15086,
+      "endLine": 15112,
       "calls": [
         "mkTable_",
         "mkRequire_",
@@ -3826,8 +3831,8 @@
     {
       "name": "ownerOrderBootstrap",
       "module": "OwnerOrders.gs",
-      "startLine": 15111,
-      "endLine": 15118,
+      "startLine": 15114,
+      "endLine": 15121,
       "calls": [
         "mkOwnerBook_",
         "getOrderingRules_",
@@ -3838,8 +3843,8 @@
     {
       "name": "ownerOrderLookupCustomer",
       "module": "OwnerOrders.gs",
-      "startLine": 15120,
-      "endLine": 15124,
+      "startLine": 15123,
+      "endLine": 15127,
       "calls": [
         "mkCustomers_",
         "mkOwnerBook_",
@@ -3849,8 +3854,8 @@
     {
       "name": "mkOwnerRequest_",
       "module": "OwnerOrders.gs",
-      "startLine": 15126,
-      "endLine": 15140,
+      "startLine": 15129,
+      "endLine": 15143,
       "calls": [
         "mkTable_",
         "mkUnique_",
@@ -3862,8 +3867,8 @@
     {
       "name": "ownerOrderOpenRequest",
       "module": "OwnerOrders.gs",
-      "startLine": 15142,
-      "endLine": 15146,
+      "startLine": 15145,
+      "endLine": 15149,
       "calls": [
         "mkOwnerBook_",
         "mkOwnerRequest_"
@@ -3872,8 +3877,8 @@
     {
       "name": "mkOwnerPrepare_",
       "module": "OwnerOrders.gs",
-      "startLine": 15148,
-      "endLine": 15172,
+      "startLine": 15151,
+      "endLine": 15175,
       "calls": [
         "mkOwnerDetails_",
         "mkCustomers_",
@@ -3891,8 +3896,8 @@
     {
       "name": "ownerOrderReview",
       "module": "OwnerOrders.gs",
-      "startLine": 15174,
-      "endLine": 15196,
+      "startLine": 15177,
+      "endLine": 15199,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -3910,29 +3915,29 @@
     {
       "name": "mkSerial_",
       "module": "OwnerOrders.gs",
-      "startLine": 15198,
-      "endLine": 15201,
+      "startLine": 15201,
+      "endLine": 15204,
       "calls": []
     },
     {
       "name": "mkDeliverySerial_",
       "module": "OwnerOrders.gs",
-      "startLine": 15203,
-      "endLine": 15203,
+      "startLine": 15206,
+      "endLine": 15206,
       "calls": []
     },
     {
       "name": "mkEmptyRows_",
       "module": "OwnerOrders.gs",
-      "startLine": 15205,
-      "endLine": 15213,
+      "startLine": 15208,
+      "endLine": 15216,
       "calls": []
     },
     {
       "name": "mkSetColumns_",
       "module": "OwnerOrders.gs",
-      "startLine": 15215,
-      "endLine": 15217,
+      "startLine": 15218,
+      "endLine": 15220,
       "calls": [
         "orderRequestCellUpdate_"
       ]
@@ -3940,15 +3945,15 @@
     {
       "name": "mkNextOrderId_",
       "module": "OwnerOrders.gs",
-      "startLine": 15219,
-      "endLine": 15224,
+      "startLine": 15222,
+      "endLine": 15227,
       "calls": []
     },
     {
       "name": "mkOwnerFindReview_",
       "module": "OwnerOrders.gs",
-      "startLine": 15226,
-      "endLine": 15231,
+      "startLine": 15229,
+      "endLine": 15234,
       "calls": [
         "mkTable_",
         "mkUnique_"
@@ -3957,8 +3962,8 @@
     {
       "name": "ownerOrderAccept",
       "module": "OwnerOrders.gs",
-      "startLine": 15233,
-      "endLine": 15287,
+      "startLine": 15236,
+      "endLine": 15290,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -3987,8 +3992,8 @@
     {
       "name": "mkOwnerReconcile_",
       "module": "OwnerOrders.gs",
-      "startLine": 15289,
-      "endLine": 15329,
+      "startLine": 15292,
+      "endLine": 15332,
       "calls": [
         "mkTable_",
         "mkUnique_",
@@ -4001,8 +4006,8 @@
     {
       "name": "ownerOrderCheck",
       "module": "OwnerOrders.gs",
-      "startLine": 15331,
-      "endLine": 15331,
+      "startLine": 15334,
+      "endLine": 15334,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -4013,8 +4018,8 @@
     {
       "name": "ownerOrderRecover",
       "module": "OwnerOrders.gs",
-      "startLine": 15333,
-      "endLine": 15349,
+      "startLine": 15336,
+      "endLine": 15352,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -4029,8 +4034,8 @@
     {
       "name": "ownerOrderMarkManualSend",
       "module": "OwnerOrders.gs",
-      "startLine": 15351,
-      "endLine": 15367,
+      "startLine": 15354,
+      "endLine": 15370,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -4045,8 +4050,8 @@
     {
       "name": "ownerOrderLoadReview",
       "module": "OwnerOrders.gs",
-      "startLine": 15369,
-      "endLine": 15373,
+      "startLine": 15372,
+      "endLine": 15376,
       "calls": [
         "mkOwnerFindReview_",
         "mkOwnerBook_"
@@ -4055,8 +4060,8 @@
     {
       "name": "ownerOrderExpire",
       "module": "OwnerOrders.gs",
-      "startLine": 15375,
-      "endLine": 15385,
+      "startLine": 15378,
+      "endLine": 15388,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -4068,15 +4073,15 @@
     {
       "name": "mkCustomerBaseline_",
       "module": "OwnerCustomers.gs",
-      "startLine": 15390,
-      "endLine": 15397,
+      "startLine": 15393,
+      "endLine": 15400,
       "calls": []
     },
     {
       "name": "mkCustomerIdsUnchanged_",
       "module": "OwnerCustomers.gs",
-      "startLine": 15399,
-      "endLine": 15402,
+      "startLine": 15402,
+      "endLine": 15405,
       "calls": [
         "mkCustomerBaseline_"
       ]
@@ -4084,8 +4089,8 @@
     {
       "name": "mkCustomerIntakeSerial_",
       "module": "OwnerCustomers.gs",
-      "startLine": 15404,
-      "endLine": 15411,
+      "startLine": 15407,
+      "endLine": 15414,
       "calls": [
         "mkSerial_"
       ]
@@ -4093,8 +4098,8 @@
     {
       "name": "ownerOrderSaveCustomer",
       "module": "OwnerCustomers.gs",
-      "startLine": 15413,
-      "endLine": 15487,
+      "startLine": 15416,
+      "endLine": 15490,
       "calls": [
         "mkOwnerBook_",
         "mkOwnerDetails_",
@@ -4120,15 +4125,15 @@
     {
       "name": "mkAssertOperationalLayout_",
       "module": "OwnerOrderSetup.gs",
-      "startLine": 15566,
-      "endLine": 15578,
+      "startLine": 15569,
+      "endLine": 15581,
       "calls": []
     },
     {
       "name": "setupOwnerOrderWorkspace",
       "module": "OwnerOrderSetup.gs",
-      "startLine": 15603,
-      "endLine": 15655,
+      "startLine": 15606,
+      "endLine": 15658,
       "calls": [
         "mkOwnerBook_",
         "mkLocked_",
@@ -4140,8 +4145,8 @@
     {
       "name": "mkFormulaCell_",
       "module": "OwnerOrderSetup.gs",
-      "startLine": 15657,
-      "endLine": 15661,
+      "startLine": 15660,
+      "endLine": 15664,
       "calls": [
         "orderRequestCellUpdate_"
       ]
@@ -4149,8 +4154,8 @@
     {
       "name": "mkOwnerRowFormulaRequests_",
       "module": "OwnerOrderSetup.gs",
-      "startLine": 15663,
-      "endLine": 15675,
+      "startLine": 15666,
+      "endLine": 15678,
       "calls": [
         "mkFormulaCell_"
       ]
@@ -4158,8 +4163,8 @@
     {
       "name": "mkOrderPublishOwner_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15689,
-      "endLine": 15692,
+      "startLine": 15692,
+      "endLine": 15695,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -4167,8 +4172,8 @@
     {
       "name": "configureOrderingPublisherPreview",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15695,
-      "endLine": 15699,
+      "startLine": 15698,
+      "endLine": 15702,
       "calls": [
         "mkOrderPublishOwner_"
       ]
@@ -4176,8 +4181,8 @@
     {
       "name": "saveOrderingPublisherSettings",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15701,
-      "endLine": 15713,
+      "startLine": 15704,
+      "endLine": 15716,
       "calls": [
         "mkIntegrationNoExternal_",
         "mkOrderPublishOwner_"
@@ -4186,36 +4191,36 @@
     {
       "name": "configureOrderingPublisherProduction",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15715,
-      "endLine": 15717,
+      "startLine": 15718,
+      "endLine": 15720,
       "calls": []
     },
     {
       "name": "mkOrderImagePath_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15719,
-      "endLine": 15722,
+      "startLine": 15722,
+      "endLine": 15725,
       "calls": []
     },
     {
       "name": "mkOrderBeforeCutoff_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15724,
-      "endLine": 15728,
+      "startLine": 15727,
+      "endLine": 15731,
       "calls": []
     },
     {
       "name": "mkOrderHexDigest_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15730,
-      "endLine": 15733,
+      "startLine": 15733,
+      "endLine": 15736,
       "calls": []
     },
     {
       "name": "mkOrderPublicItemId_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15735,
-      "endLine": 15737,
+      "startLine": 15738,
+      "endLine": 15740,
       "calls": [
         "mkOrderHexDigest_"
       ]
@@ -4223,8 +4228,8 @@
     {
       "name": "mkOrderSnapshot_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15739,
-      "endLine": 15774,
+      "startLine": 15742,
+      "endLine": 15777,
       "calls": [
         "mkOrderBeforeCutoff_",
         "mkOrderPublicItemId_",
@@ -4236,8 +4241,8 @@
     {
       "name": "previewCurrentOrderingMenu",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15776,
-      "endLine": 15783,
+      "startLine": 15779,
+      "endLine": 15786,
       "calls": [
         "mkOrderPublishOwner_",
         "mkOrderSnapshot_",
@@ -4247,8 +4252,8 @@
     {
       "name": "mkOrderGithub_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15785,
-      "endLine": 15795,
+      "startLine": 15788,
+      "endLine": 15798,
       "calls": [
         "mkIntegrationFetch_"
       ]
@@ -4256,8 +4261,8 @@
     {
       "name": "publishCurrentOrderingMenu",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15797,
-      "endLine": 15808,
+      "startLine": 15800,
+      "endLine": 15811,
       "calls": [
         "mkOrderPublishOwner_",
         "buildActiveMenu_",
@@ -4269,8 +4274,8 @@
     {
       "name": "withdrawPublishedOrderingMenu",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15810,
-      "endLine": 15816,
+      "startLine": 15813,
+      "endLine": 15819,
       "calls": [
         "mkOrderPublishOwner_",
         "mkOrderRequireMenuStateSheet_",
@@ -4280,8 +4285,8 @@
     {
       "name": "mkOrderRequireMenuStateSheet_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15818,
-      "endLine": 15826,
+      "startLine": 15821,
+      "endLine": 15829,
       "calls": [
         "mkIntegrationOpenBook_"
       ]
@@ -4289,8 +4294,8 @@
     {
       "name": "mkOrderSavePublishedState_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15828,
-      "endLine": 15860,
+      "startLine": 15831,
+      "endLine": 15863,
       "calls": [
         "mkOrderRequireMenuStateSheet_",
         "mkOrderPublicItemId_",
@@ -4300,8 +4305,8 @@
     {
       "name": "mkOrderWriteSnapshot_",
       "module": "OrderingMenuPublisher.gs",
-      "startLine": 15862,
-      "endLine": 15898,
+      "startLine": 15865,
+      "endLine": 15901,
       "calls": [
         "mkOrderSavePublishedState_",
         "mkOrderGithub_"
@@ -4310,15 +4315,15 @@
     {
       "name": "mkIntegrationRequireTest_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15906,
-      "endLine": 15910,
+      "startLine": 15909,
+      "endLine": 15913,
       "calls": []
     },
     {
       "name": "mkIntegrationOpenBook_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15911,
-      "endLine": 15915,
+      "startLine": 15914,
+      "endLine": 15918,
       "calls": [
         "mkIntegrationRequireTest_"
       ]
@@ -4326,8 +4331,8 @@
     {
       "name": "mkIntegrationActiveBook_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15916,
-      "endLine": 15921,
+      "startLine": 15919,
+      "endLine": 15924,
       "calls": [
         "mkIntegrationRequireTest_"
       ]
@@ -4335,8 +4340,8 @@
     {
       "name": "mkIntegrationBatch_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15922,
-      "endLine": 15926,
+      "startLine": 15925,
+      "endLine": 15929,
       "calls": [
         "mkIntegrationRequireTest_"
       ]
@@ -4344,39 +4349,12 @@
     {
       "name": "mkIntegrationNoExternal_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15927,
-      "endLine": 15929,
+      "startLine": 15930,
+      "endLine": 15932,
       "calls": []
     },
     {
       "name": "mkIntegrationFetch_",
-      "module": "IntegrationTestGuards.gs",
-      "startLine": 15930,
-      "endLine": 15930,
-      "calls": [
-        "mkIntegrationNoExternal_"
-      ]
-    },
-    {
-      "name": "mkIntegrationDocumentOpen_",
-      "module": "IntegrationTestGuards.gs",
-      "startLine": 15931,
-      "endLine": 15931,
-      "calls": [
-        "mkIntegrationNoExternal_"
-      ]
-    },
-    {
-      "name": "mkIntegrationDocumentCreate_",
-      "module": "IntegrationTestGuards.gs",
-      "startLine": 15932,
-      "endLine": 15932,
-      "calls": [
-        "mkIntegrationNoExternal_"
-      ]
-    },
-    {
-      "name": "mkIntegrationDriveFile_",
       "module": "IntegrationTestGuards.gs",
       "startLine": 15933,
       "endLine": 15933,
@@ -4385,10 +4363,37 @@
       ]
     },
     {
-      "name": "mkIntegrationNewTrigger_",
+      "name": "mkIntegrationDocumentOpen_",
       "module": "IntegrationTestGuards.gs",
       "startLine": 15934,
-      "endLine": 15939,
+      "endLine": 15934,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationDocumentCreate_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15935,
+      "endLine": 15935,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationDriveFile_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15936,
+      "endLine": 15936,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationNewTrigger_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15937,
+      "endLine": 15942,
       "calls": [
         "mkIntegrationActiveBook_"
       ]
@@ -4396,15 +4401,15 @@
     {
       "name": "configureOrderAutomationIntegrationTest",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15940,
-      "endLine": 15957,
+      "startLine": 15943,
+      "endLine": 15960,
       "calls": []
     },
     {
       "name": "initializeOrderAutomationIntegrationTest",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15958,
-      "endLine": 15968,
+      "startLine": 15961,
+      "endLine": 15971,
       "calls": [
         "mkOwnerBook_",
         "buildActiveMenu_",
@@ -4415,22 +4420,22 @@
     {
       "name": "mkIntegrationAssertNoPending_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15971,
-      "endLine": 15978,
+      "startLine": 15974,
+      "endLine": 15981,
       "calls": []
     },
     {
       "name": "mkIntegrationNextOrderId_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15979,
-      "endLine": 15987,
+      "startLine": 15982,
+      "endLine": 15990,
       "calls": []
     },
     {
       "name": "mkIntegrationLegacySnapshots_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 15989,
-      "endLine": 16013,
+      "startLine": 15992,
+      "endLine": 16016,
       "calls": [
         "mkAssertOperationalLayout_",
         "mkMenuLines_",
@@ -4443,8 +4448,8 @@
     {
       "name": "mkIntegrationEnrichMenu_",
       "module": "IntegrationTestGuards.gs",
-      "startLine": 16016,
-      "endLine": 16031,
+      "startLine": 16019,
+      "endLine": 16034,
       "calls": [
         "orderRequestBeforeCutoff_",
         "mkIntegrationOpenBook_",
@@ -4455,8 +4460,8 @@
     {
       "name": "buildActiveMenu_",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16036,
-      "endLine": 16036,
+      "startLine": 16039,
+      "endLine": 16039,
       "calls": [
         "mkIntegrationEnrichMenu_",
         "mkIntegrationOriginalMenu_"
@@ -4465,8 +4470,8 @@
     {
       "name": "doGet",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16037,
-      "endLine": 16040,
+      "startLine": 16040,
+      "endLine": 16043,
       "calls": [
         "mkIntegrationRequireTest_",
         "orderRequestJson_"
@@ -4475,8 +4480,8 @@
     {
       "name": "doPost",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16041,
-      "endLine": 16049,
+      "startLine": 16044,
+      "endLine": 16052,
       "calls": [
         "mkIntegrationRequireTest_",
         "handleOrderRequestApi_",
@@ -4486,8 +4491,8 @@
     {
       "name": "simulateLegacyPostInTest",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16050,
-      "endLine": 16053,
+      "startLine": 16053,
+      "endLine": 16056,
       "calls": [
         "mkOwnerBook_",
         "mkIntegrationLegacyDoPost_"
@@ -4496,8 +4501,8 @@
     {
       "name": "integrationTestMenus",
       "module": "IntegrationDispatcher.gs",
-      "startLine": 16054,
-      "endLine": 16056,
+      "startLine": 16057,
+      "endLine": 16059,
       "calls": [
         "mkOwnerBook_",
         "orderRequestInboxOnOpen_",

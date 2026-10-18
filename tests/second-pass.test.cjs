@@ -30,8 +30,9 @@ test('Integrated initialization finishes and can retry after partial setup witho
   assert.equal(JSON.stringify(f.tables['Order Items']),itemsBefore);
 });
 
-function freezeSpreadsheetReads(f){
+function freezeSpreadsheetReads(f,names=Object.keys(f.sheets)){
   for(const [name,sheet] of Object.entries(f.sheets)){
+    if(!names.includes(name))continue;
     const snapshot=JSON.parse(JSON.stringify(f.tables[name])),getRange=sheet.getRange;
     sheet.getDataRange=()=>({getValues:()=>JSON.parse(JSON.stringify(snapshot)),getDisplayValues:()=>JSON.parse(JSON.stringify(snapshot))});
     sheet.getRange=(row,col,height=1,width=1)=>{
@@ -42,6 +43,93 @@ function freezeSpreadsheetReads(f){
     };
   }
 }
+
+function legacyCheckFixture(){
+  const f=fixture({integrated:true}),name='Order Entry';
+  f.tables[name]=Array.from({length:47},()=>Array(18).fill(''));
+  f.sheets[name]={getSheetId:()=>99,getName:()=>name,getParent:()=>f.book,getMaxRows:()=>1001,getMaxColumns:()=>18,
+    getRange:(a,col,height=1,width=1)=>{
+      let row=a;
+      if(typeof a==='string'){
+        const m=a.match(/^([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$/);
+        const n=s=>[...s].reduce((v,c)=>v*26+c.charCodeAt(0)-64,0);
+        row=Number(m[2]);col=n(m[1]);height=m[4]?Number(m[4])-row+1:1;width=m[3]?n(m[3])-col+1:1;
+      }
+      const values=()=>Array.from({length:height},(_,i)=>Array.from({length:width},(_,j)=>f.tables[name][row+i-1]?.[col+j-1]??''));
+      return {getRow:()=>row,getColumn:()=>col,getValues:values,getDisplayValues:()=>values().map(r=>r.map(String)),getDisplayValue:()=>String(values()[0][0])};
+    }};
+  f.book.toast=message=>{f.state.lastToast=message;};
+  const draftId=crypto.randomUUID();
+  f.tables[name][0][10]='OE_V1';f.tables[name][1][10]=draftId;f.tables[name][2][10]='DRAFT';
+  return {...f,draftId,legacy:f.sheets[name],setMeta:(row,value)=>{f.tables[name][row-1][10]=value;}};
+}
+
+test('Legacy recorded-order verification sees an API commit even when SpreadsheetApp retains the empty operational snapshot',()=>{
+  const f=legacyCheckFixture(),review=f.ctx.ownerOrderReview(f.input());
+  freezeSpreadsheetReads(f,['Orders']);
+  const saved=f.ctx.ownerOrderAccept(review.id,review.hash);
+  f.tables.Orders[1][13]='Order Entry draft '+f.draftId;
+  f.setMeta(3,'CREATED');f.setMeta(6,saved.orderId);f.setMeta(7,'Saved confirmation');f.setMeta(8,'NOT_SENT');
+  f.setMeta(11,JSON.stringify({draft:{name:'Test Person'},total:70,totalQty:5}));
+  assert.equal(f.ctx.oeCheckLocked_(f.book,f.legacy),true);
+  assert.equal(f.tables.Orders.length,2);assert.match(f.state.lastToast,/recorded successfully/);
+});
+
+test('Legacy metadata reads observe the COMMITTING marker immediately after an API write',()=>{
+  const f=legacyCheckFixture();
+  const original=f.legacy.getRange;
+  const stale=f.legacy.getRange('K1:K18').getDisplayValues();
+  f.legacy.getRange=(...args)=>{const r=original(...args);if(args[0]==='K1:K18')r.getDisplayValues=()=>stale;return r;};
+  f.ctx.oeBatch_(f.book,[f.ctx.oeCell_(f.legacy,3,11,'COMMITTING'),f.ctx.oeCell_(f.legacy,6,11,'ORD-000001')]);
+  const metadata=f.ctx.oeMeta_(f.legacy);
+  assert.equal(metadata[2],'COMMITTING');assert.equal(metadata[5],'ORD-000001');
+});
+
+test('Legacy recovery finds an existing order through fresh reads and never restores the committed draft for submission',()=>{
+  const f=legacyCheckFixture(),review=f.ctx.ownerOrderReview(f.input());
+  freezeSpreadsheetReads(f,['Orders']);
+  const saved=f.ctx.ownerOrderAccept(review.id,review.hash);
+  f.tables.Orders[1][13]='Order Entry draft '+f.draftId;
+  f.setMeta(3,'COMMITTING');f.setMeta(6,saved.orderId);f.setMeta(7,'Saved confirmation');f.setMeta(8,'NOT_SENT');
+  f.setMeta(11,JSON.stringify({draft:{name:'Test Person'},total:70,totalQty:5}));
+  f.setMeta(12,new Date(f.state.now-421000).toISOString());
+  f.ctx.orderEntryRecoverSubmission();
+  assert.equal(f.ctx.oeMeta_(f.legacy)[2],'CREATED');assert.equal(f.ctx.oeMeta_(f.legacy)[5],saved.orderId);
+  assert.equal(f.tables.Orders.length,2);
+});
+
+test('Legacy reconciliation read failure retains the planned order and can retry without another order',()=>{
+  const f=legacyCheckFixture(),review=f.ctx.ownerOrderReview(f.input()),saved=f.ctx.ownerOrderAccept(review.id,review.hash);
+  f.tables.Orders[1][13]='Order Entry draft '+f.draftId;
+  f.setMeta(3,'COMMITTING');f.setMeta(6,saved.orderId);f.setMeta(7,'Saved confirmation');f.setMeta(8,'NOT_SENT');
+  f.setMeta(11,JSON.stringify({draft:{name:'Test Person'},total:70,totalQty:5}));
+  const get=f.ctx.Sheets.Spreadsheets.Values.get;
+  f.ctx.Sheets.Spreadsheets.Values.get=(id,range,...rest)=>{if(range.startsWith("'Orders'"))throw new Error('Fresh read unavailable');return get(id,range,...rest);};
+  assert.throws(()=>f.ctx.oeCheckLocked_(f.book,f.legacy),/Fresh read unavailable/);
+  assert.equal(f.ctx.oeMeta_(f.legacy)[2],'COMMITTING');assert.equal(f.ctx.oeMeta_(f.legacy)[5],saved.orderId);
+  f.ctx.Sheets.Spreadsheets.Values.get=get;
+  assert.equal(f.ctx.oeCheckLocked_(f.book,f.legacy),true);assert.equal(f.tables.Orders.length,2);
+});
+
+test('Legacy recovery retains an uncertain identity when fresh item rows exist without their parent order',()=>{
+  const f=legacyCheckFixture();
+  freezeSpreadsheetReads(f,['Orders','Order Items']);
+  f.setMeta(3,'COMMITTING');f.setMeta(6,'ORD-000001');f.setMeta(12,new Date(f.state.now-421000).toISOString());
+  const row=Array(30).fill('');row[0]='ORD-000001';row[17]='Order Entry draft '+f.draftId;f.add('Order Items',row);
+  assert.throws(()=>f.ctx.orderEntryRecoverSubmission(),/Order items exist/);
+  assert.equal(f.ctx.oeMeta_(f.legacy)[2],'COMMITTING');assert.equal(f.ctx.oeMeta_(f.legacy)[5],'ORD-000001');
+});
+
+test('Legacy repeated placement reconciles the committed order when cached metadata still says DRAFT',()=>{
+  const f=legacyCheckFixture(),review=f.ctx.ownerOrderReview(f.input());
+  const original=f.legacy.getRange,stale=f.legacy.getRange('K1:K18').getDisplayValues();
+  f.legacy.getRange=(...args)=>{const r=original(...args);if(args[0]==='K1:K18')r.getDisplayValues=()=>stale;return r;};
+  const saved=f.ctx.ownerOrderAccept(review.id,review.hash);f.tables.Orders[1][13]='Order Entry draft '+f.draftId;
+  f.setMeta(3,'CREATED');f.setMeta(6,saved.orderId);f.setMeta(7,'Saved confirmation');f.setMeta(8,'NOT_SENT');
+  f.setMeta(11,JSON.stringify({draft:{name:'Test Person'},total:70,totalQty:5}));
+  f.ctx.oePrepare_=()=>{throw new Error('Attempted another creation');};
+  f.ctx.orderEntryPlaceOrder();assert.equal(f.tables.Orders.length,2);assert.match(f.state.lastToast,/recorded successfully/);
+});
 
 test('Unchanged request selections survive RPC reordering of the quantity and menuLineId object fields',()=>{
   const f=fixture({integrated:true});f.request();

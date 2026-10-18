@@ -1,5 +1,5 @@
 /* INTEGRATED TEST ONLY. Includes all 12 supplied original modules and new order modules.
- * Installer revision: 2026-10-18 numeric order references.
+ * Installer revision: 2026-10-18 legacy verification reads.
  * Replace all .gs files in the TEST project with this single Code.gs only.
  * No production deployment. Network and document operations are blocked.
  */
@@ -3934,7 +3934,10 @@ function oeCell_(s,row,col,value) {
 }
 function oeFormula_(s,row,col,value) {const r=oeCell_(s,row,col,'');r.updateCells.rows[0].values[0].userEnteredValue={formulaValue:value};return r;}
 function oeBatch_(b,requests) {if(requests.length)mkIntegrationBatch_({requests:requests},b.getId());}
-function oeMeta_(s) {return s.getRange('K1:K18').getDisplayValues().map(r=>r[0]);}
+function oeMeta_(s) {
+  const values=mkOwnerFreshValues_(s.getParent(),s,1,18,11);
+  return Array.from({length:18},(_,index)=>String((values[index]||[])[10]??''));
+}
 function oeStatus_(b,s,text) {oeBatch_(b,[oeCell_(s,42,1,text)]);b.toast(text,'Order Entry',8);}
 function oeDraft_(s) {
   const a=s.getRange('C7:C16').getDisplayValues().map(r=>String(r[0]||'').trim());
@@ -4167,7 +4170,7 @@ function orderEntryPlaceOrder() {
     if(!m[4]||m[4]!==p.hash)throw new Error('The draft, pricing or menu changed. Use Review order again before placing.');
     const orders=b.getSheetByName(ORDERS_SHEET),items=b.getSheetByName(ORDER_ITEMS_SHEET);
     if(orders.getRange(1,31).getDisplayValue()!==OE.addressHeader||items.getRange(1,23).getDisplayValue()!==OE.itemHeader)throw new Error('Run setup to install order address and item snapshots.');
-    const ov=orders.getRange(2,1,orders.getMaxRows()-1,14).getDisplayValues();
+    const ov=mkOwnerFreshValues_(b,orders,2,orders.getMaxRows()-1,14).map(row=>row.map(value=>String(value??'')));
     if(ov.some(r=>String(r[13]).indexOf('Order Entry draft '+p.draftId)>=0))throw new Error('This draft already appears in Orders. Check recorded order; do not submit again.');
     const orderRow=mkEmptyRows_(mkTable_(b,ORDERS_SHEET),1,[1,2,3,4,9,10,11,14,26,27,28,29,30,31,32,33,34,35,36,37],2,2000)[0];
     const itemRows=mkEmptyRows_(mkTable_(b,ORDER_ITEMS_SHEET),Object.keys(p.cart.items).length,[1,4,7,14,18,23,24,25,26,27,28,29,30],3,5000);
@@ -4183,12 +4186,12 @@ function orderEntryPlaceOrder() {
 }
 function oeCheckLocked_(b,s) {
   const m=oeMeta_(s);if(!m[5])throw new Error('There is no recorded order for this draft.');
-  const orders=b.getSheetByName(ORDERS_SHEET),rows=orders.getRange(2,1,orders.getMaxRows()-1,14).getDisplayValues();
+  const orders=b.getSheetByName(ORDERS_SHEET),rows=mkOwnerFreshValues_(b,orders,2,orders.getMaxRows()-1,14).map(row=>row.map(value=>String(value??'')));
   const matches=rows.map((r,i)=>({r:r,row:i+2})).filter(x=>x.r[0]===m[5]&&x.r[13].indexOf('Order Entry draft '+m[1])>=0);
   if(matches.length!==1){oeStatus_(b,s,'No complete matching order found. Submission needs reconciliation; no new order was created.');return false;}
   let check='',v;
   for(let i=0;i<12;i++){
-    SpreadsheetApp.flush();v=orders.getRange(matches[0].row,12,1,19).getValues()[0];check=String(v[12]||'');
+    SpreadsheetApp.flush();v=(mkOwnerFreshValues_(b,orders,matches[0].row,1,30)[0]||[]).slice(11,30);check=String(v[12]||'');
     if(check==='OK'&&Number(v[8])>0)break;
     Utilities.sleep(250);
   }
@@ -4207,9 +4210,9 @@ function orderEntryRecoverSubmission() {
     const m=oeMeta_(s);if(m[2]!=='COMMITTING')throw new Error('Use Check recorded order. This action only recovers an uncertain submission.');
     const age=Date.now()-Date.parse(m[11]);if(!Number.isFinite(age)||age<420000)throw new Error('Wait seven minutes after the attempt so the previous execution has ended, then check again.');
     const orders=b.getSheetByName(ORDERS_SHEET),items=b.getSheetByName(ORDER_ITEMS_SHEET);
-    const rows=orders.getRange(2,1,orders.getMaxRows()-1,14).getDisplayValues();
+    const rows=mkOwnerFreshValues_(b,orders,2,orders.getMaxRows()-1,14).map(row=>row.map(value=>String(value??'')));
     if(rows.some(r=>r[0]===m[5]||String(r[13]).indexOf('Order Entry draft '+m[1])>=0)){oeCheckLocked_(b,s);return;}
-    const itemRows=items.getRange(3,1,items.getMaxRows()-2,18).getDisplayValues();
+    const itemRows=mkOwnerFreshValues_(b,items,3,items.getMaxRows()-2,18).map(row=>row.map(value=>String(value??'')));
     if(itemRows.some(r=>r[0]===m[5]||String(r[17]).indexOf('Order Entry draft '+m[1])>=0))throw new Error('Order items exist. Reconcile them before retrying.');
     oeBatch_(b,[oeCell_(s,3,11,'DRAFT'),oeCell_(s,5,11,''),oeCell_(s,6,11,''),oeCell_(s,16,10,'Draft')]);
     oeStatus_(b,s,'No order or items were recorded. Draft restored. Review again before placing.');

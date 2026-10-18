@@ -32,6 +32,18 @@ changeFunction('Code.gs', 'oeBook_', old => old.replace(liveId, testId).replace(
 changeFunction('Code.gs', 'buildActiveMenu_', old => old.replace('function buildActiveMenu_(', 'function mkIntegrationOriginalMenu_(')
   .replace('    eligibleRows.push({', "    if(!orderRequestBeforeCutoff_(Utilities.formatDate(deliveryDate,timeZone,'yyyy-MM-dd'),new Date()))continue;\n    eligibleRows.push({"));
 changeFunction('Code.gs', 'nextOrderId_', () => 'function nextOrderId_(ordersSheet) { return mkIntegrationNextOrderId_(ordersSheet); }');
+// Legacy form state and reconciliation must observe Sheets API writes immediately.
+changeFunction('Code.gs', 'oeMeta_', () => `function oeMeta_(s) {
+  const values=mkOwnerFreshValues_(s.getParent(),s,1,18,11);
+  return Array.from({length:18},(_,index)=>String((values[index]||[])[10]??''));
+}`);
+const legacyFreshOrders = "mkOwnerFreshValues_(b,orders,2,orders.getMaxRows()-1,14).map(row=>row.map(value=>String(value??'')))";
+changeFunction('Code.gs', 'oeCheckLocked_', old => old
+  .replace('orders.getRange(2,1,orders.getMaxRows()-1,14).getDisplayValues()',legacyFreshOrders)
+  .replace('orders.getRange(matches[0].row,12,1,19).getValues()[0]',"(mkOwnerFreshValues_(b,orders,matches[0].row,1,30)[0]||[]).slice(11,30)"));
+changeFunction('Code.gs', 'orderEntryRecoverSubmission', old => old
+  .replace('orders.getRange(2,1,orders.getMaxRows()-1,14).getDisplayValues()',legacyFreshOrders)
+  .replace('items.getRange(3,1,items.getMaxRows()-2,18).getDisplayValues()',"mkOwnerFreshValues_(b,items,3,items.getMaxRows()-2,18).map(row=>row.map(value=>String(value??'')))"));
 changeFunction('Code.gs','oeCustomerForCommit_',()=>`function oeCustomerForCommit_(b,s,p) {
   const result=ownerOrderSaveCustomer({senderPhone:p.cart.orderCustomerPhone,customerId:p.customer?p.customer.id:'',name:p.draft.name,
     address:p.cart.deliveryAddress,postcode:p.draft.postcode,instructions:p.draft.instructions,
@@ -57,6 +69,7 @@ changeFunction('Code.gs', 'oeCommitRequests_', old => old.replace('  return requ
   "  requests.push(...mkIntegrationLegacySnapshots_(b,p.cart,p.menu,c,p.quote,orderRow,itemRows,'OE-'+p.draftId));\n  return requests;"));
 changeFunction('Code.gs', 'orderEntryPlaceOrder', old => old
   .replace('    let m=oeMeta_(s);', "    mkIntegrationAssertNoPending_(b,'legacy');\n    let m=oeMeta_(s);")
+  .replace('orders.getRange(2,1,orders.getMaxRows()-1,14).getDisplayValues()',legacyFreshOrders)
   .replace('const orderRow=oeEmptyRows_(ov,1,2,[0,1,2,3,8,9,10,13])[0];', 'const orderRow=mkEmptyRows_(mkTable_(b,ORDERS_SHEET),1,[1,2,3,4,9,10,11,14,26,27,28,29,30,31,32,33,34,35,36,37],2,2000)[0];')
   .replace('const itemRows=oeEmptyRows_(items.getRange(3,1,items.getMaxRows()-2,18).getDisplayValues(),Object.keys(p.cart.items).length,3,[0,3,6,13,17]);', 'const itemRows=mkEmptyRows_(mkTable_(b,ORDER_ITEMS_SHEET),Object.keys(p.cart.items).length,[1,4,7,14,18,23,24,25,26,27,28,29,30],3,5000);')
   .replace('if(created)oeSendConfirmation_(b,s,false);', "if(created)oeStatus_(b,s,'Order saved in TEST. Copy the confirmation from the sheet. External sending is blocked.');"));
@@ -138,7 +151,7 @@ function integrationTestMenus() {
 `;
 modules.set('IntegrationDispatcher.gs', dispatcher);
 const output = '/* INTEGRATED TEST ONLY. Includes all 12 supplied original modules and new order modules.\n' +
-  ' * Installer revision: 2026-10-18 numeric order references.\n' +
+  ' * Installer revision: 2026-10-18 legacy verification reads.\n' +
   ' * Replace all .gs files in the TEST project with this single Code.gs only.\n * No production deployment. Network and document operations are blocked.\n */\n' +
   [...modules].map(([name, text]) => '\n// ==================== SOURCE: ' + name + ' ====================\n' + text).join('\n');
 const names = [...output.matchAll(/^function\s+(\w+)\s*\(/gm)].map(match => match[1]);
@@ -153,5 +166,5 @@ fs.writeFileSync(path.join(target,'appsscript.json'),JSON.stringify({...editorMa
 fs.writeFileSync(path.join(target,'source-manifest.json'),JSON.stringify({environment:'TEST',testSpreadsheet:testId,originalModules:originalEvidence,
   originalFunctionChanges:changes,addedModules:[...added,'IntegrationTestGuards.gs','IntegrationDispatcher.gs'],functions:names.length,
   lines:output.split('\n').length,codeSha256:crypto.createHash('sha256').update(output).digest('hex'),
-  limitations:['Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.','Document generation and all network calls are blocked. Packing data and preview remain testable.','Runtime Google authorization and browser end-to-end tests remain pending.']},null,2));
+  limitations:['Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.','Document generation and all network calls are blocked. Packing data and preview remain testable.','This manifest describes source contents. See docs/ORDER_AUTOMATION_SECOND_PASS.md for current Google runtime evidence and remaining gates.']},null,2));
 console.log(JSON.stringify({originalModules:originals.length,totalFunctions:names.length,lines:output.split('\n').length,bytes:Buffer.byteLength(output)}));
