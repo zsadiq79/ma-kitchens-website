@@ -201,8 +201,95 @@
     "itemCount": 185,
     "originalOrderCount": 52,
     "originalItemCount": 184,
-    "repeatedSavedOrderChecksCompleted": false,
+    "repeatedSavedOrderChecksCompleted": true,
     "providerActionsIssued": false,
     "productionWritesIssued": false
+  },
+  "repeatedSavedOrderCheck": {
+    "orderId": "ORD-000053",
+    "reviewState": "VERIFIED",
+    "orderMatches": 1,
+    "itemMatches": 1,
+    "orderCount": 53,
+    "itemCount": 185,
+    "reviewUpdatedAt": "2026-10-19T07:02:01.330Z",
+    "ownerFollowedRepeatedCheckInstruction": true,
+    "verifiedAt": "2026-10-19T07:04:19.661Z",
+    "ownerReportedResult": "ORD-000053 · VERIFIED",
+    "verificationBasis": "Owner reported the same verified result after the requested repeated check. Independent native reads show one matching order, one matching item, one review and one journal operation; the review has a fresh check timestamp."
+  },
+  "confirmedOrderDownstream": {
+    "verifiedAt": "2026-10-19T07:04:19.661Z",
+    "orderId": "ORD-000053",
+    "status": "Confirmed",
+    "payment": "Payment Requested",
+    "financials": {
+      "total": 66,
+      "food": 56,
+      "fee": 10,
+      "payout": 50,
+      "contribution": 16
+    },
+    "cook": {
+      "controlDate": 46317,
+      "displayedDate": "Thu 22 Oct 2026",
+      "totalServings": 5,
+      "ordersPlaced": 1,
+      "dishRows": [
+        {
+          "row": 7,
+          "kitchen": "FOODIE CLUB",
+          "dish": "Crazy Haleem",
+          "quantity": 5,
+          "capacity": 50,
+          "remaining": 45
+        }
+      ],
+      "kitchens": [
+        {
+          "row": 5,
+          "kitchen": "FOODIE CLUB",
+          "quantity": 5,
+          "messageContainsExpectedDish": true,
+          "messageContainsCorrectDate": true
+        }
+      ]
+    },
+    "delivery": {
+      "controlDate": 46317,
+      "displayedDate": "22/10/2026",
+      "rows": [
+        {
+          "row": 11,
+          "orderId": "ORD-000053",
+          "customerMatches": true,
+          "addressMatches": true,
+          "window": "4–10 PM",
+          "notesMatch": true
+        }
+      ],
+      "formulaAnchorPreserved": true
+    },
+    "packing": {
+      "controlDate": 46317,
+      "displayedDate": "22-Oct-2026",
+      "previewRefreshPending": true
+    },
+    "errors": [],
+    "productionWritesIssued": false,
+    "providerActionsIssued": false,
+    "checks": {
+      "statusConfirmed": true,
+      "paymentUnchanged": true,
+      "orderTotalUnchanged": true,
+      "cookPayoutUnchanged": true,
+      "cookTotal": true,
+      "cookOrderCount": true,
+      "cookDish": true,
+      "cookKitchen": true,
+      "delivery": true,
+      "dates": true,
+      "noFormulaErrors": true
+    }
   }
 }
