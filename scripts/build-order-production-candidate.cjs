@@ -107,9 +107,15 @@ for (const profile of profiles) {
     .replace("String(line[22]) === item.itemCode && String(line[25]) === item.cookId && Number(line[6]) === item.quantity", "String(line[22]) === item.itemCode && String(line[25]) === item.cookId && String(line[26]) === item.kitchenName && String(line[3]) === item.dishName && Number(line[6]) === item.quantity")
     .replace("const okay = snapshotsOK && String(current[8])", "const okay = snapshotsOK && String(current[3]) === review.details.customerId && mkReleaseDeliveryDate_(current[2]) === review.deliveryDate && mkReleasePricingMatches_(current,review.quote) && String(current[8])"));
   change('OwnerOrderSetup.gs','setupOwnerOrderWorkspace',()=> 'function setupOwnerOrderWorkspace() { return migrateOrderAutomationWorkspace(); }');
+  change('OwnerOrderSetup.gs','mkOwnerRowFormulaRequests_',fn => fn.replace('  const requests = [];',`  const requests = [];
+  for (const column of [16,17]) {
+    const current = orders.getRange(orderRow,column).getFormula();
+    requests.push(mkFormulaCell_(orders,orderRow,column,mkReleaseZeroCancelledCharge_(current,orderRow)));
+  }`));
   change('OrderRequests.gs','setupOrderRequestWorkspace',()=> 'function setupOrderRequestWorkspace() { return migrateOrderAutomationWorkspace(); }');
   change('OrderRequests.gs','orderRequestOwner_',()=> 'function orderRequestOwner_() { mkReleaseOwnerBook_(false); }');
-  change('OrderRequests.gs','orderRequestInboxOnOpen_',old => insert(old,"  if(!['ACTIVE','PAUSED'].includes(mkReleasePhase_())) return;"));
+  change('OrderRequests.gs','orderRequestInboxOnOpen_',old => insert(old,"  if(!['ACTIVE','PAUSED'].includes(mkReleasePhase_())) return;")
+    .replace('    .addToUi();','    .addToUi();\n  showPackingSlipsMenu_();'));
   change('OrderRequests.gs','orderRequestCapture_',old => insert(old,"  mkReleaseCaptureGate_('order_request_capture');"));
   change('OrderRequests.gs','orderRequestRecover_',old => insert(old,"  mkReleaseCaptureGate_('order_request_recover');"));
   change('OrderingMenuPublisher.gs','mkOrderPublishOwner_',()=> 'function mkOrderPublishOwner_() { mkReleaseOwnerBook_(false); }');
@@ -158,7 +164,11 @@ for (const profile of profiles) {
   new vm.Script(output,{filename:profile.folder+'/Code.gs'}).runInNewContext({});
   const target = path.join(source,profile.folder); fs.mkdirSync(target,{recursive:true});
   fs.writeFileSync(path.join(target,'Code.gs'),output);
-  fs.writeFileSync(path.join(target,'OwnerOrderWorkspace.html'),fs.readFileSync(path.join(source,'OwnerOrderWorkspace.html'),'utf8').replace('TEST COPY',profile.environment==='REHEARSAL'?'PRODUCTION REHEARSAL':'MA KITCHENS'));
+  if (profile.environment === 'REHEARSAL') fs.writeFileSync(path.join(target,'Code-gs.txt'),output);
+  const workspaceHtml = fs.readFileSync(path.join(source,'OwnerOrderWorkspace.html'),'utf8')
+    .replace('TEST COPY',profile.environment==='REHEARSAL'?'PRODUCTION REHEARSAL':'MA KITCHENS');
+  fs.writeFileSync(path.join(target,'OwnerOrderWorkspace.html'),profile.environment==='PRODUCTION'
+    ? workspaceHtml.replace('Test workspace ready. No messages are sent by these actions.','Owner workspace ready.') : workspaceHtml);
   const manifest = JSON.parse(fs.readFileSync(path.join(source,'integration-reference','appsscript.editor.json'),'utf8'));
   if(profile.environment==='REHEARSAL') manifest.oauthScopes=JSON.parse(fs.readFileSync(path.join(source,'appsscript.test.json'),'utf8')).oauthScopes.filter(scope=>!scope.endsWith('/script.external_request'));
   fs.writeFileSync(path.join(target,'appsscript.json'),JSON.stringify(manifest,null,2)+'\n');

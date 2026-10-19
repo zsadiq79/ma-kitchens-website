@@ -291,5 +291,141 @@
       "dates": true,
       "noFormulaErrors": true
     }
+  },
+  "packingCancellationRestoration": {
+    "verifiedAt": "2026-10-19T07:18:08.316Z",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "orderId": "ORD-000053",
+    "packingPreviewVerified": true,
+    "packing": {
+      "bag": "Bag 1",
+      "packs": 5,
+      "status": "Confirmed",
+      "suburb": "Greenacre",
+      "privateAddressOrPhoneDisplayed": false
+    },
+    "issue": {
+      "severity": "Medium",
+      "totalAlreadyZero": true,
+      "cancelledDeliveryFeeBeforeFix": 10
+    },
+    "chargeFormulaCount": 3998,
+    "fixAppliedThrough": "Native Sheets connector in rehearsal. Updated source repair helper and all future writers are prepared; new Apps Script source installation is pending.",
+    "standardDelivery": {
+      "status": "Confirmed",
+      "total": 66,
+      "deliveryFee": 10,
+      "freeDeliveryDiscount": 0,
+      "cookPayout": 50,
+      "threshold": 0,
+      "oldCancelledFees": [
+        0,
+        0
+      ],
+      "remaining": 45
+    },
+    "qualifyingFreeDelivery": {
+      "status": "Confirmed",
+      "total": 56,
+      "foodSubtotal": 56,
+      "deliveryFee": 10,
+      "freeDeliveryDiscount": 10,
+      "cookPayout": 50,
+      "contribution": 6,
+      "threshold": 50,
+      "remaining": 45
+    },
+    "cancelledAfterFix": {
+      "status": "Cancelled",
+      "total": 0,
+      "foodSubtotal": 0,
+      "deliveryFee": 0,
+      "freeDeliveryDiscount": 0,
+      "cookPayout": 0,
+      "contribution": 0,
+      "threshold": 50,
+      "remaining": 50,
+      "itemSubtotal": 0,
+      "itemCookPayout": 0,
+      "cookTotalServings": 0,
+      "cookOrderCount": 0,
+      "deliveryPreviewMessage": "No eligible confirmed orders for selected date"
+    },
+    "restored": {
+      "row": 54,
+      "id": "ORD-000053",
+      "status": "Confirmed",
+      "payment": "Payment Requested",
+      "total": 66,
+      "foodSubtotal": 56,
+      "deliveryFee": 10,
+      "freeDeliveryDiscount": 0,
+      "cookPayout": 50,
+      "contribution": 16,
+      "quantity": 5
+    },
+    "checks": {
+      "syntheticConfirmed": true,
+      "syntheticPaymentUnchanged": true,
+      "syntheticFinancialsRestored": true,
+      "thresholdRestored": true,
+      "stockRestored": true,
+      "allChargeFormulasVerified": true,
+      "validationPreserved": true,
+      "orderSnapshotsPreserved": true,
+      "itemSnapshotsPreserved": true,
+      "originalItemsPreserved": true,
+      "expectedHistoricalDisplayCorrectionOnly": true,
+      "cookRestored": true,
+      "deliveryRestored": true,
+      "packingPreviewStillCorrect": true,
+      "noDuplicateOrder": true
+    },
+    "expectedHistoricalDisplayCorrections": [
+      {
+        "orderId": "ORD-000041",
+        "row": 42,
+        "keys": [
+          "deliveryFee"
+        ],
+        "before": {
+          "deliveryFee": 10
+        },
+        "after": {
+          "deliveryFee": 0
+        }
+      },
+      {
+        "orderId": "ORD-000042",
+        "row": 43,
+        "keys": [
+          "deliveryFee"
+        ],
+        "before": {
+          "deliveryFee": 10
+        },
+        "after": {
+          "deliveryFee": 0
+        }
+      }
+    ],
+    "unexpectedHistoricalItemChanges": [],
+    "orderCount": 53,
+    "itemCount": 185,
+    "newCodeInstallationConfirmed": false,
+    "providerActionsIssued": false,
+    "productionWritesIssued": false
+  },
+  "rehearsalCodeReplacement": {
+    "prepared": true,
+    "installationConfirmed": false,
+    "previousInstalledBuildSha256": "454c7a06c1a002a1555cc166a348af7a8229fc27a145dd809aef4933659989d4",
+    "preparedBuildSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
+    "requiredSteps": [
+      "Replace rehearsal Code.gs with the complete updated file.",
+      "Run repairOrderDeliveryChargeDisplay. Expected zero formula changes because the equivalent repair was already applied through native Sheets.",
+      "Reopen the workbook and verify the Packing Slips menu.",
+      "Recheck ORD-000053 in the owner workspace."
+    ]
   }
 }

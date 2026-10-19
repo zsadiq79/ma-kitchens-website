@@ -1,7 +1,7 @@
 {
   "dateSydney": "2026-10-19",
-  "tests": 172,
-  "passed": 172,
+  "tests": 177,
+  "passed": 177,
   "failed": 0,
   "originalTestBuildChanged": false,
   "profiles": [
@@ -12,10 +12,11 @@
         "spreadsheetId": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
         "scriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5"
       },
-      "functions": 468,
-      "codeSha256": "454c7a06c1a002a1555cc166a348af7a8229fc27a145dd809aef4933659989d4",
-      "lines": 16602,
-      "nativeMigrationVerified": true
+      "functions": 470,
+      "codeSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
+      "lines": 16632,
+      "nativeMigrationVerified": true,
+      "replacementInstallationConfirmed": false
     },
     {
       "profile": {
@@ -24,18 +25,20 @@
         "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
         "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
       },
-      "functions": 468,
-      "codeSha256": "27a83ed3c17ff56831dbd1cf9d0f8da9d710c95a0c87ca1aacda919c30e93d72",
-      "lines": 16602,
-      "nativeMigrationVerified": false
+      "functions": 470,
+      "codeSha256": "bd0ac5f07fa41d3dfb183fad2f24e0b98ad4c73bc0950c9fa6d287080900481e",
+      "lines": 16632,
+      "nativeMigrationVerified": false,
+      "replacementInstallationConfirmed": false
     }
   ],
   "productionRolloutApproved": false,
   "googleInstallationCompleted": true,
   "externalSideEffectsIssued": false,
-  "scope": "Offline Apps Script simulations and static inventory, plus native rehearsal configuration, schema migration and rerun, private menu preparation, owner activation, synthetic customer save, verified manual order and repeated checks, and cook and delivery formula previews. Packing refresh, website requests, cancellation/restoration and other downstream checks remain pending. External provider behavior and production installation are unverified.",
+  "scope": "177 offline checks and static inventory, plus native rehearsal migration/rerun, owner activation, customer save, manual order verification/repeated checks, cook and delivery previews, packing preview, and cancellation/restoration with standard and free-delivery calculations. All 3,998 delivery-charge formulas were repaired and independently read back in the rehearsal workbook. The prepared source replacement and packing menu require native installation/confirmation. Website capture/recovery and external provider behavior remain unverified; production remains untouched.",
   "installationEnvironment": "REHEARSAL",
   "nativeRehearsalSchemaMigrationVerified": true,
   "productionInstallationCompleted": false,
-  "nativeEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json"
+  "nativeEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json",
+  "preparedCodeReplacementInstalled": false
 }

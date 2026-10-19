@@ -166,6 +166,31 @@ function mkReleaseReadRanges_(ranges, render) {
   if (!result.valueRanges || result.valueRanges.length !== ranges.length) throw new Error('Migration read is incomplete. No schema changes were requested.');
   return result.valueRanges.map(range => range.values || []);
 }
+function mkReleaseZeroCancelledCharge_(formula, row) {
+  if (typeof formula !== 'string' || formula.charAt(0) !== '=' || !Number.isSafeInteger(row) || row < 2 || row > 2000)
+    throw new Error('Delivery-charge formula needs review before repair.');
+  const prefix = '=IF(I' + row + '="Cancelled",0,';
+  return formula.indexOf(prefix) === 0 ? formula : prefix + formula.slice(1) + ')';
+}
+function repairOrderDeliveryChargeDisplay() {
+  const book = mkReleaseOwnerBook_(false);
+  return mkLocked_(() => {
+    if (!mkReleaseSchemaReady_()) throw new Error('Complete migration before repairing delivery-charge formulas.');
+    const state = mkReleaseMigrationState_();
+    mkReleaseValidateState_(state,true); mkReleasePendingCheck_(state);
+    const orders = book.getSheetByName(ORDERS_SHEET), last = Math.min(2000,orders.getMaxRows());
+    const rows = mkReleaseReadRanges_(["'Orders'!P2:Q" + last])[0], requests = [];
+    for (let row = 2; row <= last; row++) for (let offset = 0; offset < 2; offset++) {
+      const formula = (rows[row - 2] || [])[offset];
+      if (formula === undefined || formula === '') continue;
+      const expected = mkReleaseZeroCancelledCharge_(formula,row);
+      if (formula !== expected) requests.push(mkFormulaCell_(orders,row,16 + offset,expected));
+    }
+    if (requests.length) mkReleaseBatch_({requests:requests},book.getId());
+    const result = {ok:true,environment:MK_RELEASE.environment,changedFormulaCount:requests.length,recordsPreserved:true};
+    console.log(JSON.stringify(result)); return result;
+  });
+}
 function mkReleaseMigrationState_() {
   const meta = mkReleaseGrid_(MK_RELEASE.spreadsheetId, { fields: 'spreadsheetId,sheets(properties,protectedRanges)' });
   const byName = {};

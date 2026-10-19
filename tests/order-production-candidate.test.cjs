@@ -112,6 +112,34 @@ test('Saving candidate source preserves the original production feedback delegat
   assert.deepEqual(menus,['Order Entry','Packing Slips']);assert.equal(f.state.writes.length,0);assert.equal(f.state.triggers.length,4);
   assert.throws(()=>f.ctx.ownerOrderBootstrap(),/activate the owner workspace/);
 });
+test('The active owner opening handler also supplies the packing menu without an extra trigger',()=>{
+  const f=migrationFixture();f.configure();f.ctx.migrateOrderAutomationWorkspace();f.ctx.activateOwnerOrderWorkspace();
+  const menus=[],menu={addItem(){return this},addSeparator(){return this},addToUi(){return this}};
+  f.ctx.mkOwnerBook_=()=>f.book;f.ctx.SpreadsheetApp.getUi=()=>({createMenu:name=>{menus.push(name);return menu}});
+  const count=f.state.triggers.length;f.ctx.orderRequestInboxOnOpen_();
+  assert.deepEqual(menus,['Website Requests','Packing Slips']);assert.equal(f.state.triggers.length,count);
+  f.state.props.ORDER_AUTOMATION_PHASE='LEGACY';menus.length=0;f.ctx.orderRequestInboxOnOpen_();assert.deepEqual(menus,[]);
+});
+test('Delivery-charge repair preserves the existing calculations and all other data, then reruns without a write',()=>{
+  const f=migrationFixture();f.configure();assert.throws(()=>f.ctx.repairOrderDeliveryChargeDisplay(),/Complete migration/);
+  f.ctx.migrateOrderAutomationWorkspace();
+  const fee='=IF(A42="","",IF(Z42<>"",AA42,10))',discount='=IF(A42="","",IF(AB42<=0,0,IF(O42>=AB42,AA42,0)))';
+  f.grid.Orders.values[41][15]=fee;f.grid.Orders.values[41][16]=discount;
+  const before=f.copy(f.grid),writes=f.state.writes.length,result=f.ctx.repairOrderDeliveryChargeDisplay();
+  assert.equal(result.changedFormulaCount,2);assert.equal(f.state.writes.length,writes+1);
+  const updated=f.copy(f.grid);updated.Orders.values[41][15]=fee;updated.Orders.values[41][16]=discount;assert.deepEqual(updated,before);
+  for(const column of [15,16])assert.match(f.grid.Orders.values[41][column],/^=IF\(I42="Cancelled",0,/);
+  assert.ok(f.grid.Orders.values[41][15].includes(fee.slice(1)));assert.ok(f.grid.Orders.values[41][16].includes(discount.slice(1)));
+  const after=f.copy(f.grid);assert.equal(f.ctx.repairOrderDeliveryChargeDisplay().changedFormulaCount,0);
+  assert.equal(f.state.writes.length,writes+1);assert.deepEqual(f.grid,after);
+});
+test('An occupied charge cell stops the complete repair before any formula is rewritten',()=>{
+  const f=migrationFixture();f.configure();f.ctx.migrateOrderAutomationWorkspace();
+  f.grid.Orders.values[1][15]='=10';f.grid.Orders.values[2][16]=10;
+  const before=f.copy(f.grid),writes=f.state.writes.length;
+  assert.throws(()=>f.ctx.repairOrderDeliveryChargeDisplay(),/formula needs review/);
+  assert.equal(f.state.writes.length,writes);assert.deepEqual(f.copy(f.grid),before);
+});
 test('Production legacy dispatcher preserves menu, feedback, verified WhatsApp, Routific and challenge contracts',()=>{
   const f=migrationFixture('PRODUCTION'),calls=[];f.state.props.FLOW_MENU_API_SECRET='private-forward';f.state.props.CONTROL_TOWER_WEBHOOK_SECRET='private-route';
   f.state.props.WHATSAPP_VERIFY_TOKEN='verify-test';
@@ -145,6 +173,20 @@ test('The staged production publisher preserves the schema-1 contract before mig
 });
 
 for(const release of ['production-rehearsal','production-candidate']){
+  test(release+': owner and cart commits retain cancellation guards on both delivery-charge columns',()=>{
+    const owner=fixture({release}),review=owner.ctx.ownerOrderReview(owner.input());owner.ctx.ownerOrderAccept(review.id,review.hash);
+    const cart=fixture({release});cart.state.lock=true;
+    const menu={status:'ACTIVE',deliveryDate:date,meals:[{itemCode:'M0001',dishName:'Test Dish',price:15}]};
+    const draft={items:{M0001:5},customerName:'Test Person',orderCustomerPhone:'61400000001',deliveryAddress:'1 Test Street, Greenacre 2190',postcode:'2190'};
+    cart.ctx.createControlTowerOrder_('61400000001',draft,menu,{customerId:'CUST-000001'},cart.ctx.calculateCartQuote_(draft,menu));
+    for(const f of [owner,cart])for(const column of [16,17]){
+      const formula=f.formulas.Orders['2:'+column];assert.match(formula,/^=IF\(I2="Cancelled",0,/);
+      const request=f.ctx.mkOwnerRowFormulaRequests_(f.sheets.Orders,2,f.sheets['Order Items'],[3])
+        .find(r=>r.updateCells.range?.startColumnIndex===column-1||r.updateCells.start?.columnIndex===column-1);
+      assert.ok(request,'charge formula included in every writer commit');
+      assert.equal(f.ctx.mkReleaseZeroCancelledCharge_(formula,2),formula);
+    }
+  });
   test(release+': an owner order verifies, retries without duplication, and preserves the saved customer identity',()=>{
     const f=fixture({release});f.ctx.SpreadsheetApp.flush();const before=JSON.stringify(f.tables.Customers),review=f.ctx.ownerOrderReview(f.input());
     const result=f.ctx.ownerOrderAccept(review.id,review.hash);assert.equal(result.state,'VERIFIED');assert.equal(result.orderId,'ORD-000001');

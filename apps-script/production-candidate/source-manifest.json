@@ -5,9 +5,9 @@
     "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
     "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
   },
-  "codeSha256": "27a83ed3c17ff56831dbd1cf9d0f8da9d710c95a0c87ca1aacda919c30e93d72",
-  "functions": 468,
-  "lines": 16602,
+  "codeSha256": "bd0ac5f07fa41d3dfb183fad2f24e0b98ad4c73bc0950c9fa6d287080900481e",
+  "functions": 470,
+  "lines": 16632,
   "originalModules": [
     {
       "name": "Code.gs",
@@ -85,7 +85,7 @@
     },
     {
       "name": "OrderReleaseSupport.gs",
-      "sha256": "d073daed2363f4f72842ebec78f4b06e7894d7511d8eb0e2b68dfcfdcc0ea713"
+      "sha256": "d25f217ac02bbc46506d6c15fa376db938dda371e4ba2c4d9fb8de01ef73791d"
     },
     {
       "name": "OrderReleaseCommerce.gs",
@@ -349,6 +349,10 @@
     {
       "file": "OwnerOrderSetup.gs",
       "function": "setupOwnerOrderWorkspace"
+    },
+    {
+      "file": "OwnerOrderSetup.gs",
+      "function": "mkOwnerRowFormulaRequests_"
     },
     {
       "file": "OrderRequests.gs",
