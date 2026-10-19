@@ -120,7 +120,7 @@ test('Legacy recovery retains an uncertain identity when fresh item rows exist w
   assert.equal(f.ctx.oeMeta_(f.legacy)[2],'COMMITTING');assert.equal(f.ctx.oeMeta_(f.legacy)[5],'ORD-000001');
 });
 
-test('Legacy repeated placement reconciles the committed order when cached metadata still says DRAFT',()=>{
+test('The retired legacy placement entry cannot create another order even when cached metadata still says DRAFT',()=>{
   const f=legacyCheckFixture(),review=f.ctx.ownerOrderReview(f.input());
   const original=f.legacy.getRange,stale=f.legacy.getRange('K1:K18').getDisplayValues();
   f.legacy.getRange=(...args)=>{const r=original(...args);if(args[0]==='K1:K18')r.getDisplayValues=()=>stale;return r;};
@@ -128,7 +128,7 @@ test('Legacy repeated placement reconciles the committed order when cached metad
   f.setMeta(3,'CREATED');f.setMeta(6,saved.orderId);f.setMeta(7,'Saved confirmation');f.setMeta(8,'NOT_SENT');
   f.setMeta(11,JSON.stringify({draft:{name:'Test Person'},total:70,totalQty:5}));
   f.ctx.oePrepare_=()=>{throw new Error('Attempted another creation');};
-  f.ctx.orderEntryPlaceOrder();assert.equal(f.tables.Orders.length,2);assert.match(f.state.lastToast,/recorded successfully/);
+  assert.throws(()=>f.ctx.orderEntryPlaceOrder(),/old Order Entry form is retired/);assert.equal(f.tables.Orders.length,2);
 });
 
 test('Unchanged request selections survive RPC reordering of the quantity and menuLineId object fields',()=>{

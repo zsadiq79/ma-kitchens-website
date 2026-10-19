@@ -1,5 +1,5 @@
 /* INTEGRATED TEST ONLY. Includes all 12 supplied original modules and new order modules.
- * Installer revision: 2026-10-18 downstream cancellation verification.
+ * Installer revision: 2026-10-19 single owner entry and reviewed downstream checks.
  * Replace all .gs files in the TEST project with this single Code.gs only.
  * No production deployment. Network and document operations are blocked.
  */
@@ -3993,17 +3993,10 @@ function oeConfirmation_(cart,menu,q,id) {
     '\n\nPayment to be made through PayID as per the information below:\nPayID: '+PAYMENT_PAYID+'\nReference: '+id+
     '\n\nWhen you make the payment, please send us payment confirmation via WhatsApp on 0420 246 023 (a screenshot or your banking app confirmation message) so we can match it to your order.';
 }
-function orderEntryMenu() {
-  SpreadsheetApp.getUi().createMenu('Order Entry')
-    .addItem('New draft / refresh menu','orderEntryNewDraft')
-    .addItem('Load selected customer','orderEntryLoadCustomer')
-    .addItem('Review order','orderEntryReview')
-    .addItem('Place order','orderEntryPlaceOrder')
-    .addSeparator().addItem('Check recorded order','orderEntryCheckOrder')
-    .addItem('Recover an uncertain submission','orderEntryRecoverSubmission')
-    .addItem('Resend confirmation to me','orderEntryResendConfirmation').addToUi();
-}
+function orderEntryMenu() { return orderRequestInboxOnOpen_(); }
 function orderEntrySetup() {
+  throw new Error('The old Order Entry form is retired in TEST. Use Website Requests > Open owner order workspace for manual and website orders.');
+
   const b=oeBook_(),s=oeSheet_(b);
   oeLock_(()=>{
     const m=oeMeta_(s);if(m[0]&&m[0]!==OE.version)throw new Error('Order Entry metadata is occupied. Setup stopped.');
@@ -4082,7 +4075,9 @@ function oeFindCustomer_(customers,d) {
   if(!c&&d.consent==='Keep existing')throw new Error('Choose Yes or No for a new customer’s feedback consent.');
   return c;
 }
-function orderEntryNewDraft() { return oeNewDraft_(false); }
+function orderEntryNewDraft() {
+  throw new Error('The old Order Entry form is retired in TEST. Use Website Requests > Open owner order workspace for manual and website orders.');
+ return oeNewDraft_(false); }
 function oeNewDraft_(fromControl) {
   const b=oeBook_(),s=oeSheet_(b);
   const old=oeMeta_(s);
@@ -4107,6 +4102,8 @@ function oeNewDraft_(fromControl) {
   });
 }
 function orderEntryLoadCustomer() {
+  throw new Error('The old Order Entry form is retired in TEST. Use Website Requests > Open owner order workspace for manual and website orders.');
+
   const b=oeBook_(),s=oeSheet_(b);
   oeLock_(()=>{
     const m=oeMeta_(s);if(m[2]!=='DRAFT')throw new Error('Start a new draft before changing the customer.');
@@ -4130,6 +4127,8 @@ function oePrepare_(b,s) {
   return {draft:d,cart:cart,menu:menu,quote:q,customer:customer,hash:oeHash_({draft:d,cycle:menu.menuCycleId,date:menu.deliveryDate,priced:priced,quote:q}),draftId:m[1]};
 }
 function orderEntryReview() {
+  throw new Error('The old Order Entry form is retired in TEST. Use Website Requests > Open owner order workspace for manual and website orders.');
+
   const b=oeBook_(),s=oeSheet_(b);
   oeLock_(()=>{
     const p=oePrepare_(b,s),q=p.quote;
@@ -4161,6 +4160,8 @@ function oeCommitRequests_(b,s,p,c,orderId,orderRow,itemRows) {
   return requests;
 }
 function orderEntryPlaceOrder() {
+  throw new Error('The old Order Entry form is retired in TEST. Use Website Requests > Open owner order workspace for manual and website orders.');
+
   const b=oeBook_(),s=oeSheet_(b);let created=false;
   oeLock_(()=>{
     mkIntegrationAssertNoPending_(b,'legacy');
@@ -4251,6 +4252,8 @@ function oeSendText_(text) {
   return {id:'',code:data.error&&Number(data.error.code)||code};
 }
 function orderEntryResendConfirmation() {
+  throw new Error('The old Order Entry form is retired in TEST. Use Website Requests > Open owner order workspace for manual and website orders.');
+
   const b=oeBook_(),s=oeSheet_(b),ui=SpreadsheetApp.getUi(),m=oeMeta_(s);
   if(!m[5])throw new Error('There is no recorded order.');
   if(ui.alert('Resend confirmation','Send the saved confirmation for '+m[5]+' to YOUR WhatsApp number? Check whether it already arrived first. This does not create an order.',ui.ButtonSet.YES_NO)!==ui.Button.YES)return;
@@ -4683,30 +4686,7 @@ function oeChangeDate_(b,s) {
     oeStatus_(b,s,'Menu loaded for '+menu.deliveryDateDisplay+'. '+(removed?removed+' dish rows from another menu were cleared.':'Customer details and matching dishes preserved.'));
   });
 }
-function orderEntryEdited(e) {
-  if(!e||!e.range||!e.source||e.source.getId()!==CONTROL_TOWER_SPREADSHEET_ID||e.range.getSheet().getName()!==OE.sheet)return;
-  const row=e.range.getRow(),col=e.range.getColumn();
-  const input=(row>=7&&row<=16&&col>=3&&col<=6)||(row>=21&&row<=40&&col>=2&&col<=4);
-  const control=e.range.getNumRows()===1&&e.range.getNumColumns()===1&&((row===43&&[1,4,8].includes(col))||(row===45&&col===1));
-  if(!input&&!control)return;
-  const b=e.source,s=e.range.getSheet();
-  try{
-    const owner=b.getOwner(),editor=e.user&&e.user.getEmail();
-    if(!owner||!editor||editor!==owner.getEmail())throw new Error('Editor identity could not be verified as the owner. Use the Order Entry menu while signed in as the owner.');
-    oeBook_();
-    if(control){
-      if(e.value!=='TRUE'||e.range.getValue()!==true)return;
-      oeBatch_(b,[oeCell_(s,row,col,false)]);
-      if(row===45)return oeNewDraft_(true);
-      if(col===1)return orderEntryReview();
-      if(col===4)return orderEntryPlaceOrder();
-      return orderEntryCheckOrder();
-    }
-    if(row===7&&col===3&&e.range.getNumRows()===1)return orderEntryLoadCustomer();
-    if(row===16&&col===3&&e.range.getNumRows()===1)return oeChangeDate_(b,s);
-    oeLock_(()=>{if(oeMeta_(s)[2]==='DRAFT'){const requests=[oeCell_(s,5,11,''),oeCell_(s,16,10,'Draft')];if(row>=21&&row<=40&&col===2)requests.push(...oeQuantityRules_(s));oeBatch_(b,requests);}});
-  }catch(err){if(control)oeBatch_(b,[oeCell_(s,row,col,false)]);oeStatus_(b,s,String(err.message||'Order Entry action failed. Check the draft before retrying.'));}
-}
+function orderEntryEdited(e) { mkIntegrationRequireTest_(); return; }
 
 function oeCustomerAddressFields_(c) {
   let street=String(c.address||'').trim();const suburb=String(c.suburb||'').trim(),postcode=String(c.postcode||'').trim();
@@ -15972,6 +15952,30 @@ function initializeOrderAutomationIntegrationTest() {
     message: 'Integrated test workspace ready. External actions remain blocked.' };
 }
 
+// Reversible TEST-only retirement. Keep the copied draft, historical records,
+// planned IDs and reconciliation helpers. No messages or document calls.
+function retireLegacyOrderEntryInTest() {
+  mkIntegrationRequireTest_();
+  const book = mkOwnerBook_();
+  if (book.getId() !== MK_INTEGRATION_TEST_ID) throw new Error('INTEGRATION_NON_TEST_SPREADSHEET_BLOCKED');
+  return mkLocked_(() => {
+    const legacy = book.getSheetByName('Order Entry');
+    if (legacy && oeMeta_(legacy)[2] === 'COMMITTING')
+      throw new Error('Reconcile the copied legacy submission before retiring its entry controls.');
+    const triggers = ScriptApp.getProjectTriggers().filter(trigger =>
+      ['orderEntryMenu','orderEntryEdited'].includes(trigger.getHandlerFunction()) &&
+      trigger.getTriggerSourceId() === MK_INTEGRATION_TEST_ID);
+    if (legacy) mkIntegrationBatch_({ requests: [{ updateSheetProperties: {
+      properties: { sheetId: legacy.getSheetId(), hidden: true }, fields: 'hidden'
+    } }] }, book.getId());
+    triggers.forEach(trigger => ScriptApp.deleteTrigger(trigger));
+    const result = { retired: true, oldTriggersRemoved: triggers.length, recordsPreserved: true,
+      message: 'Reopen the TEST spreadsheet. Use Website Requests for manual orders and website requests.' };
+    console.log(JSON.stringify(result));
+    return result;
+  });
+}
+
 /* Called under the shared ScriptLock before any new operational commit. */
 function mkIntegrationAssertNoPending_(book, channel) {
   const journal = book.getSheetByName('Order Operation Journal');
@@ -16057,5 +16061,5 @@ function simulateLegacyPostInTest(event) {
   return mkIntegrationLegacyDoPost_(event);
 }
 function integrationTestMenus() {
-  mkOwnerBook_(); orderRequestInboxOnOpen_(); orderEntryMenu(); showPackingSlipsMenu_();
+  mkOwnerBook_(); orderRequestInboxOnOpen_(); showPackingSlipsMenu_();
 }

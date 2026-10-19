@@ -24,6 +24,11 @@ function changeFunction(name, fn, transform) {
   changes.push({file: name, function: fn});
 }
 function insert(fn, text) { return fn.replace(/\{/, '{\n' + text + '\n'); }
+const retiredEntry = "  throw new Error('The old Order Entry form is retired in TEST. Use Website Requests > Open owner order workspace for manual and website orders.');";
+for (const fn of ['orderEntrySetup','orderEntryNewDraft','orderEntryLoadCustomer','orderEntryReview','orderEntryResendConfirmation'])
+  changeFunction('Code.gs',fn,old=>insert(old,retiredEntry));
+changeFunction('Code.gs','orderEntryMenu',()=> 'function orderEntryMenu() { return orderRequestInboxOnOpen_(); }');
+changeFunction('Code.gs','orderEntryEdited',()=> 'function orderEntryEdited(e) { mkIntegrationRequireTest_(); return; }');
 
 // Keep the original dispatcher and routes behind a test-only public boundary.
 changeFunction('Code.gs', 'doGet', old => old.replace('function doGet(', 'function mkIntegrationLegacyDoGet_('));
@@ -67,7 +72,7 @@ changeFunction('FeedbackWeb.gs','fwPrimeWebReads_',old=>old.replace("'Order Item
   "'Order Items': ['Order ID', 'Order Status', 'Fulfilment Status', 'Item Code (AUTO, INTERNAL)', 'Qty', 'Dish Name', 'Cook ID (SNAPSHOT)', 'Kitchen Name (SNAPSHOT)']"));
 changeFunction('Code.gs', 'oeCommitRequests_', old => old.replace('  return requests;',
   "  requests.push(...mkIntegrationLegacySnapshots_(b,p.cart,p.menu,c,p.quote,orderRow,itemRows,'OE-'+p.draftId));\n  return requests;"));
-changeFunction('Code.gs', 'orderEntryPlaceOrder', old => old
+changeFunction('Code.gs', 'orderEntryPlaceOrder', old => insert(old,retiredEntry)
   .replace('    let m=oeMeta_(s);', "    mkIntegrationAssertNoPending_(b,'legacy');\n    let m=oeMeta_(s);")
   .replace('orders.getRange(2,1,orders.getMaxRows()-1,14).getDisplayValues()',legacyFreshOrders)
   .replace('const orderRow=oeEmptyRows_(ov,1,2,[0,1,2,3,8,9,10,13])[0];', 'const orderRow=mkEmptyRows_(mkTable_(b,ORDERS_SHEET),1,[1,2,3,4,9,10,11,14,26,27,28,29,30,31,32,33,34,35,36,37],2,2000)[0];')
@@ -146,12 +151,12 @@ function simulateLegacyPostInTest(event) {
   return mkIntegrationLegacyDoPost_(event);
 }
 function integrationTestMenus() {
-  mkOwnerBook_(); orderRequestInboxOnOpen_(); orderEntryMenu(); showPackingSlipsMenu_();
+  mkOwnerBook_(); orderRequestInboxOnOpen_(); showPackingSlipsMenu_();
 }
 `;
 modules.set('IntegrationDispatcher.gs', dispatcher);
 const output = '/* INTEGRATED TEST ONLY. Includes all 12 supplied original modules and new order modules.\n' +
-  ' * Installer revision: 2026-10-18 downstream cancellation verification.\n' +
+  ' * Installer revision: 2026-10-19 single owner entry and reviewed downstream checks.\n' +
   ' * Replace all .gs files in the TEST project with this single Code.gs only.\n * No production deployment. Network and document operations are blocked.\n */\n' +
   [...modules].map(([name, text]) => '\n// ==================== SOURCE: ' + name + ' ====================\n' + text).join('\n');
 const names = [...output.matchAll(/^function\s+(\w+)\s*\(/gm)].map(match => match[1]);

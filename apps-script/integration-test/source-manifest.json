@@ -66,6 +66,34 @@
   "originalFunctionChanges": [
     {
       "file": "Code.gs",
+      "function": "orderEntrySetup"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryNewDraft"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryLoadCustomer"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryReview"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryResendConfirmation"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryMenu"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryEdited"
+    },
+    {
+      "file": "Code.gs",
       "function": "doGet"
     },
     {
@@ -247,9 +275,9 @@
     "IntegrationTestGuards.gs",
     "IntegrationDispatcher.gs"
   ],
-  "functions": 427,
-  "lines": 16062,
-  "codeSha256": "24886753982e64ee8c9e0c00dd1c825cebd3660aa4ab1f17267ba2e85c3cd78c",
+  "functions": 428,
+  "lines": 16066,
+  "codeSha256": "b08d7db7b2a42e5e9d917500c0e0dc7ffc0c9a47d7d18b1da352c9d7267ce29d",
   "limitations": [
     "Current editor publisher, three setup helpers and manifest reviewed from user-supplied source on 18 October 2026. Test manifest retains editor settings and specifies test scopes.",
     "Document generation and all network calls are blocked. Packing data and preview remain testable.",

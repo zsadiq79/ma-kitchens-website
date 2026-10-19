@@ -58,6 +58,48 @@ test('Public deployment exposes signed request routes only; legacy handler remai
   assert.equal(routed.length,2);assert.equal(typeof ctx.mkIntegrationLegacyDoPost_,'function');
 });
 
+test('Retired legacy form writers stop before accessing sheets, customers or providers',()=>{
+  const {ctx,calls}=context();
+  for(const name of ['orderEntrySetup','orderEntryNewDraft','orderEntryLoadCustomer','orderEntryReview','orderEntryPlaceOrder','orderEntryResendConfirmation'])
+    assert.throws(()=>ctx[name](),/old Order Entry form is retired/,name);
+  assert.equal(calls.length,0);
+  let menus=0;ctx.orderRequestInboxOnOpen_=()=>{menus++;};
+  ctx.orderEntryMenu();ctx.orderEntryEdited({range:'copied-checkbox'});
+  assert.equal(menus,1);assert.equal(calls.length,0);
+});
+
+function retirementFixture(state='CREATED'){
+  const f=context(),metadata=Array(18).fill('');metadata[2]=state;metadata[5]='ORD-000052';metadata[7]='UNCERTAIN';
+  const legacy={getSheetId:()=>50003},book={getId:()=>id,getSheetByName:()=>legacy},removed=[],batches=[];
+  const trigger=(name,source=id)=>({getHandlerFunction:()=>name,getTriggerSourceId:()=>source});
+  const triggers=[trigger('orderEntryMenu'),trigger('orderEntryEdited'),trigger('orderRequestInboxOnOpen_'),trigger('showPackingSlipsMenu_'),trigger('orderEntryEdited','another-book')];
+  f.ctx.mkOwnerBook_=()=>book;f.ctx.mkLocked_=fn=>fn();f.ctx.oeMeta_=()=>metadata.slice();
+  f.ctx.ScriptApp={getProjectTriggers:()=>triggers,deleteTrigger:t=>removed.push(t)};
+  f.ctx.Sheets.Spreadsheets.batchUpdate=(request,bookId)=>{assert.equal(bookId,id);batches.push(request);};
+  return {...f,book,legacy,metadata,removed,batches};
+}
+
+test('Retirement hides only the TEST legacy screen, removes its own entry triggers and preserves uncertain historical metadata',()=>{
+  const f=retirementFixture(),before=JSON.stringify(f.metadata),result=f.ctx.retireLegacyOrderEntryInTest();
+  assert.equal(result.retired,true);assert.equal(result.oldTriggersRemoved,2);assert.equal(result.recordsPreserved,true);
+  assert.equal(JSON.stringify(f.metadata),before);
+  assert.equal(f.batches.length,1);assert.deepEqual(JSON.parse(JSON.stringify(f.batches[0].requests)),[{updateSheetProperties:{properties:{sheetId:50003,hidden:true},fields:'hidden'}}]);
+  assert.deepEqual(f.removed.map(t=>t.getHandlerFunction()),['orderEntryMenu','orderEntryEdited']);
+});
+
+test('Retirement leaves controls and records intact when a copied legacy submission is still COMMITTING',()=>{
+  const f=retirementFixture('COMMITTING');
+  assert.throws(()=>f.ctx.retireLegacyOrderEntryInTest(),/Reconcile the copied legacy submission/);
+  assert.equal(f.batches.length,0);assert.equal(f.removed.length,0);assert.equal(f.metadata[2],'COMMITTING');
+});
+
+test('Retirement rejects a wrong workbook or environment before any changes',()=>{
+  const f=retirementFixture();f.book.getId=()=> 'live-or-another-book';
+  assert.throws(()=>f.ctx.retireLegacyOrderEntryInTest(),/NON_TEST/);
+  assert.equal(f.batches.length,0);assert.equal(f.removed.length,0);
+  assert.throws(()=>context('').ctx.retireLegacyOrderEntryInTest(),/CONFIGURATION/);
+});
+
 test('Editor publisher helpers target the current preview branch and prevent production switching or token collection in test',()=>{
   const {ctx}=context(), saved={};
   ctx.mkOrderPublishOwner_=()=>{};

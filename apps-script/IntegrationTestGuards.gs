@@ -65,6 +65,30 @@ function initializeOrderAutomationIntegrationTest() {
     message: 'Integrated test workspace ready. External actions remain blocked.' };
 }
 
+// Reversible TEST-only retirement. Keep the copied draft, historical records,
+// planned IDs and reconciliation helpers. No messages or document calls.
+function retireLegacyOrderEntryInTest() {
+  mkIntegrationRequireTest_();
+  const book = mkOwnerBook_();
+  if (book.getId() !== MK_INTEGRATION_TEST_ID) throw new Error('INTEGRATION_NON_TEST_SPREADSHEET_BLOCKED');
+  return mkLocked_(() => {
+    const legacy = book.getSheetByName('Order Entry');
+    if (legacy && oeMeta_(legacy)[2] === 'COMMITTING')
+      throw new Error('Reconcile the copied legacy submission before retiring its entry controls.');
+    const triggers = ScriptApp.getProjectTriggers().filter(trigger =>
+      ['orderEntryMenu','orderEntryEdited'].includes(trigger.getHandlerFunction()) &&
+      trigger.getTriggerSourceId() === MK_INTEGRATION_TEST_ID);
+    if (legacy) mkIntegrationBatch_({ requests: [{ updateSheetProperties: {
+      properties: { sheetId: legacy.getSheetId(), hidden: true }, fields: 'hidden'
+    } }] }, book.getId());
+    triggers.forEach(trigger => ScriptApp.deleteTrigger(trigger));
+    const result = { retired: true, oldTriggersRemoved: triggers.length, recordsPreserved: true,
+      message: 'Reopen the TEST spreadsheet. Use Website Requests for manual orders and website requests.' };
+    console.log(JSON.stringify(result));
+    return result;
+  });
+}
+
 /* Called under the shared ScriptLock before any new operational commit. */
 function mkIntegrationAssertNoPending_(book, channel) {
   const journal = book.getSheetByName('Order Operation Journal');
