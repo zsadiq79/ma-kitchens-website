@@ -43,6 +43,16 @@ Native reads confirm that the rehearsal retains all 26 Weekly Menu columns in th
 
 Obtain the current generator project/source and verify it before declaring this workflow preserved. Keep its existing shortcut/project and any template/output resources intact; there is no established need to merge a separate generator into the Control Tower. Track this as an unverified dependency, not an additional fixed defect. Evidence: order-automation-menu-generator-dependency-20261020.json.
 
+## LIVE failed-execution sample, 20 October 2026
+
+The owner supplied an orderEntryPlaceOrder Head/Menu failure from 19 October at 20:07 Sydney: "Customer or consent has not recalculated yet. No order created. Retry Place order." Its stack matches the supplied original customer helper. That throw occurs before allocating an order ID, marking COMMITTING, committing order/items or sending confirmation. Customer Intake can already have been written, so the failed execution does not mean nothing was saved.
+
+Native reads found two text-phone Order Entry intake rows at 20:05:11 and 20:34:44. The registry's numeric-phone QUERY excludes minority text values. Both phones were subsequently saved as numbers by WhatsApp intake and map to CUST-000046 / ORD-000053 and CUST-000047 / ORD-000055. Neither failed draft appears in Orders. Current LIVE remains DRAFT with no planned order or confirmation state. It contains 58 unique order IDs, 216 item rows, no item referencing a missing order and no order without items within the inspected complete populated ranges.
+
+This evidence accounts for the sample and supports the already fixed High finding 01. The release writes new intake phones numerically, uses fresh readback, records durable customer operations and retires the old entry writer after owner workspace activation. No additional code change or production cleanup was made. Do not convert or delete the historical intake rows as a routine repair because formula-generated customer IDs and consent history require preservation. Different errors/functions still require separate review; this sample does not certify every failed execution. Evidence: order-automation-legacy-entry-failure-20261020.json.
+
+Seven existing regressions covering numeric phones, fresh customer reads, stable IDs, pending retries and old-entry retirement passed again for this investigation. The production source hash is unchanged.
+
 ## Every finding and its fix
 
 | ID | Severity | Finding | Fix and verification |

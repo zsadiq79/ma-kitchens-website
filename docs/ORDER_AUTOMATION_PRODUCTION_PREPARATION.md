@@ -205,3 +205,7 @@ The owner disclosed an existing shortcut to a separate running Apps Script tool,
 
 Current LIVE versus migrated rehearsal: all 26 Weekly Menu headers, 16 inspected Dishes headers and their respective 18/five row-2 formula anchors match. The migration preserves those tabs/columns. Complete current-source and export checks remain a gate before production approval. Retain the existing generator project, shortcut and resources. See order-automation-menu-generator-dependency-20261020.json and the updated release/rollout reviews. No production change or generator invocation was made.
 
+# LIVE failed Order Entry sample reviewed, 20 October 2026
+
+The owner's 19 October 20:07 Sydney orderEntryPlaceOrder failure is the pre-order customer recalculation guard. Two failed draft intakes used text phones and were later followed by numeric WhatsApp intake and operational orders ORD-000053 / ORD-000055. Neither failed draft has an order. Current LIVE: DRAFT, no planned ID or confirmation state; 58 unique orders, 216 linked item rows, 50 customers, no orphan items or itemless orders in the populated ranges inspected. The customer phone-type issue is already High finding 01 and addressed in prepared source. Keep failed intake records intact. Other error types/functions remain to be reviewed; do not mark the whole failed-execution gate complete from one sample. No production mutation. See order-automation-legacy-entry-failure-20261020.json.
+
