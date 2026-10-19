@@ -173,3 +173,9 @@ Created Ma Kitchens LIVE PREPARATION BACKUP 20 Oct 2026 0710 Sydney. Verified UR
 This is a preparation checkpoint. Take a fresh private backup and inventory again at the approved cutover, preserve all newer real orders in the same LIVE workbook, and do not import the rehearsal orders or counters.
 
 Latest rehearsal source installation and native label repair now passed. All 4998 formulas are corrected, and the original financial comparison has no unexpected differences. The latest installation pending notes above are superseded by this checkpoint.
+
+## Backup bound-script project identified by owner, 20 October at 07:20 Sydney
+
+The owner opened Apps Script from Ma Kitchens LIVE PREPARATION BACKUP 20 Oct 2026 0710 Sydney and supplied project 1dm5nrH-MmcbUmfh_e-SiBCBYT_1CDu08voldBNbK5bXwVSXPlA3pLmbh. It differs from LIVE and rehearsal. The owner sees the original separate .gs files; those must remain intact in this archive. The backup has not been initialized with the rehearsal owner menus or its consolidated source. Missing rehearsal menus are not evidence of a failed workbook backup. No backup function has been run or source changed.
+
+A direct cloud-browser read of the supplied editor URL redirected to the public Apps Script overview instead of opening the private editor. No file contents or inventory were retrieved through that session. Exact inventory/source comparison remains pending an owner-visible file list or source evidence. The archive remains a preparation snapshot, and all existing LIVE settings, credentials and deployment versions remain in place.

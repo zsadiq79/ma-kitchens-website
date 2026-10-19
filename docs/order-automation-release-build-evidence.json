@@ -181,8 +181,35 @@
     "legacyState": "DRAFT",
     "legacyOrderId": "",
     "legacyConfirmationState": "",
-    "boundScriptCopyVerificationPending": true,
+    "boundScriptCopyVerificationPending": false,
     "finalCutoverBackupStillRequired": true,
-    "notForProductionDataReplacement": true
+    "notForProductionDataReplacement": true,
+    "boundScriptCopyOwnerConfirmed": true,
+    "backupScriptId": "1dm5nrH-MmcbUmfh_e-SiBCBYT_1CDu08voldBNbK5bXwVSXPlA3pLmbh",
+    "backupScriptUrl": "https://script.google.com/u/0/home/projects/1dm5nrH-MmcbUmfh_e-SiBCBYT_1CDu08voldBNbK5bXwVSXPlA3pLmbh/edit",
+    "ownerReportedAtSydney": "2026-10-20 07:20:20",
+    "boundScriptConfirmationBasis": "Owner opened Apps Script from the named preparation backup, supplied this distinct editor URL, and reported the original separate .gs files. No backup source was modified or executed.",
+    "sourceInventoryComparisonPending": true,
+    "sourceHashComparisonPending": true,
+    "bindingIndependentlyRuntimeVerified": false,
+    "browserReadAttempt": {
+      "result": "The requested private editor redirected to the public Google Developers Apps Script page. No editor file list or code was retrieved.",
+      "postRedirectUrl": "https://developers.google.com/apps-script/",
+      "sourceModified": false
+    },
+    "expectedOriginalFiles": [
+      "Code.gs",
+      "FeedbackDryRun.gs",
+      "FeedbackInteraction.gs",
+      "FeedbackLegacyBridge.gs",
+      "FeedbackProductionConfig.gs",
+      "FeedbackSender.gs",
+      "FeedbackWeb.gs",
+      "FeedbackWebSender.gs",
+      "PackingSlips.gs",
+      "PermanentWhatsAppLog.gs",
+      "Routific.gs",
+      "RoutificWebhook.gs"
+    ]
   }
 }
