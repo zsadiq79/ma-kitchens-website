@@ -15,7 +15,31 @@ Status as of 19 October 2026: the reviewed TEST installation and its designated 
 
 ## Required mapping
 
-Obtain active live web-app deployment URLs and descriptions, and the live project trigger list. Confirm which deployments serve website menu/Flow, feedback, verified WhatsApp forwarding and Routific forwarding. Record exact consumers and versions before proposing a deployment. Labels and historical notes alone are insufficient proof.
+The owner confirmed these two active web-app URLs in the production MVP Control Tower Apps Script project on 19 October 2026:
+
+| Label | Active web-app URL | Current version, description and access settings |
+| --- | --- | --- |
+| LIVE A | https://script.google.com/macros/s/AKfycbxqd0CLenSocTTP7hPl6sQcaBZC6xi3nUvjYBu1EZ5H8LKw_IrU3WKI_Z74KnIMKmzQ/exec | Not yet supplied |
+| LIVE B | https://script.google.com/macros/s/AKfycbxqPAodnUOdAQe3x82duA6q-Qld1Bb7XqoW3Mnr3JDvXOMGKuufY9dwh4JFwoEbYTLa/exec | Not yet supplied |
+
+These IDs match the historical handoff. Historical versions 46 and 33 are not current-version evidence and must not be used as rollback versions without checking Manage deployments. The previously supplied URL ending in AKfycbzFP3fsgl8ZW36XShFxOBVqwgH1W3qfXNbYHxy_nAoCATDJW3wd8YfUxgJi9AWPjIml/exec is TEST.
+
+The supplied Triggers screenshot shows one spreadsheet on-open trigger, orderRequestInboxOnOpen_, last run 19 October at 12:50:07 PM with 0% errors. Its project name/ID is absent, so it cannot establish the production trigger inventory.
+
+### Confirmed consumer contracts, deployment destination pending
+
+Read the following files from production main commit 27ef64557f82361effbb90d7f75442b32df4096a through GitHub on 19 October. Main still points to that commit. The Vercel environment read used decrypt=false and confirmed that the production URL values are sensitive and omitted. No secret values were requested or printed.
+
+| Consumer | Vercel destination setting | Apps Script routing and authentication | Matching LIVE URL |
+| --- | --- | --- | --- |
+| app/api/whatsapp-flow/route.ts | FLOW_MENU_API_URL | POST action=menu; FLOW_MENU_API_SECRET in JSON body | A or B, pending |
+| lib/feedbackApi.ts | FLOW_MENU_API_URL | POST action=feedback_read, feedback_draft, feedback_event or feedback_submit; same secret in JSON body | Same setting as menu; A or B, pending |
+| app/api/whatsapp-events/route.ts | FLOW_MENU_API_URL | Verify Meta signature, then POST action=whatsapp_verified with forwarding secret and payload | Same setting as menu; A or B, pending |
+| app/api/routific-webhook/route.js | CONTROL_TOWER_WEBHOOK_URL | Verify Routific signature, then POST controlTowerSecret and payload; backend requires status=200 acknowledgement | A or B, pending |
+
+The supplied original Code.gs dispatcher supports these menu, feedback, verified WhatsApp and Routific contracts. This is source evidence, not proof that both active deployed snapshots match editor source. Direct provider callback configuration and any additional consumers still require reconciliation. Do not infer that a deployment is unused because it is absent from these two Vercel settings.
+
+Obtain the current descriptions, versions, access/execute-as settings and the live project trigger list. Privately compare the two production Vercel URL settings with LIVE A/B without sharing any secret. Confirm the actual Meta and Routific callback routes. Record exact consumers and versions before proposing a deployment. Labels and historical notes alone are insufficient proof. No production endpoint requests or configuration changes were issued while recording this inventory.
 
 ## Production candidate to prepare
 
