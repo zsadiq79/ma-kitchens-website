@@ -199,3 +199,9 @@ The owner reports callback https://www.makitchens.com.au/api/whatsapp-events and
 A concrete release report, installation sequence and stop/rollback plan are prepared in the three dated REVIEW documents. They do not authorize production changes. Website release must replace the rehearsal-derived public JSON with a current LIVE snapshot before merge/activation.
 
 Production configuration preflight reads metadata only: ORDER_REQUEST_API_URL, ORDER_REQUEST_API_SECRET and ORDER_REQUEST_ALLOWED_ORIGINS have no Production entry yet. Configure them during the approved window, with https://www.makitchens.com.au as the canonical allowed origin. ORDER_AUTOMATION_TEST_ONLY is scoped to the rehearsal preview and must remain absent/false in Production. Existing provider variables are preserved; no values were printed or changed.
+# Weekly menu image generator dependency, 20 October 2026
+
+The owner disclosed an existing shortcut to a separate running Apps Script tool, deployment AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ, which reads Weekly Menu and provides PNG/WebP/JPEG downloads. This generator is absent from the reviewed Control Tower source. OrderingMenuPublisher publishes JSON and does not generate artwork. The historical Slides-bound implementation is not proven to be this current deployment. HTTP inspection reached Google sign-in, not generator content.
+
+Current LIVE versus migrated rehearsal: all 26 Weekly Menu headers, 16 inspected Dishes headers and their respective 18/five row-2 formula anchors match. The migration preserves those tabs/columns. Complete current-source and export checks remain a gate before production approval. Retain the existing generator project, shortcut and resources. See order-automation-menu-generator-dependency-20261020.json and the updated release/rollout reviews. No production change or generator invocation was made.
+

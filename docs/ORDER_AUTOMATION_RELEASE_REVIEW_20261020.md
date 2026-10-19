@@ -4,6 +4,8 @@
 
 **36 findings addressed: 16 High, 17 Medium and 3 Low. All 179 automated tests pass. The private rehearsal has passed its designated native checks and is paused. Production has not been upgraded.**
 
+**Additional dependency disclosed after this report was prepared: the owner's weekly-menu artwork generator and PNG/WebP/JPEG downloads have not yet passed current-source or export verification. The consolidated Code.gs does not contain that generator. Production readiness remains pending this check as well as the recent LIVE execution review.**
+
 ## What changed
 
 The main fixes protect against duplicate orders, mismatched customers, lost-response retries, changed prices/cook payouts, stock errors, unsafe legacy writers and accidental provider actions in rehearsal. The website saves a tentative request first. The owner matches the real WhatsApp sender, reviews the final quote and accepts it once. Existing cook, packing, delivery, feedback and publisher functions remain included in the consolidated source.
@@ -30,6 +32,16 @@ Current-source compatibility is based on supplied source, backup provenance, vis
 Production request URL, signing secret and canonical-origin allowlist are not yet configured; these are explicit approved-rollout steps. Existing provider configuration remains unchanged. Before approval, review recent failed/timed-out LIVE executions. At the approved cutover, reconcile the current LIVE draft and all latest records, take another fresh backup, preserve settings/triggers, migrate that same workbook and verify the current production menu and existing provider contracts. No rehearsal customer, order, counter, ledger or published snapshot is imported into production. Replace the rehearsal-derived public menu JSON with a freshly built LIVE snapshot before merging the website release.
 
 The later workspace-confirmation sender and 10 on 10 offer are excluded from this release and logged in MA_KITCHENS_FUTURE_FEATURES.md.
+
+## Weekly menu artwork generator, added dependency check
+
+The owner supplied a separate running-tool shortcut ending AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ/exec and requires the existing PNG, WebP and JPEG downloads. The reviewed 13 Control Tower modules and consolidated candidate contain no menu artwork renderer or download/export implementation. OrderingMenuPublisher writes ordering-menu JSON and is a different function.
+
+A 24 September historical handoff describes a separate Slides-bound generator reading the original LIVE Weekly Menu. It does not prove the current shortcut uses that same project or implementation. A read-only HTTP request to the current shortcut redirected to Google Accounts sign-in; no current generator HTML, source or export was retrieved. This does not establish that the app is broken.
+
+Native reads confirm that the rehearsal retains all 26 Weekly Menu columns in their original positions and all 16 inspected Dishes columns. All 18 Weekly Menu and five Dishes row-2 formula anchors match current LIVE. The migration plan does not rename or reorder those tabs or rewrite their columns. This supports schema compatibility but does not confirm the current generator's complete dependencies, menu/offer/deadline content or three download formats.
+
+Obtain the current generator project/source and verify it before declaring this workflow preserved. Keep its existing shortcut/project and any template/output resources intact; there is no established need to merge a separate generator into the Control Tower. Track this as an unverified dependency, not an additional fixed defect. Evidence: order-automation-menu-generator-dependency-20261020.json.
 
 ## Every finding and its fix
 
