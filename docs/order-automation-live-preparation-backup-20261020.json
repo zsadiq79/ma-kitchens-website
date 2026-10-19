@@ -27,7 +27,7 @@
   "ownerReportedAtSydney": "2026-10-20 07:20:20",
   "boundScriptConfirmationBasis": "Owner opened Apps Script from the named preparation backup, supplied this distinct editor URL, and reported the original separate .gs files. No backup source was modified or executed.",
   "sourceInventoryComparisonPending": false,
-  "sourceHashComparisonPending": true,
+  "sourceHashComparisonPending": false,
   "bindingIndependentlyRuntimeVerified": false,
   "browserReadAttempt": {
     "result": "The requested private editor redirected to the public Google Developers Apps Script page. No editor file list or code was retrieved.",
@@ -72,5 +72,15 @@
     "ownerProvidedAtSydney": "2026-10-20 07:26:05",
     "visuallyInspected": true,
     "scope": "File names only. Source contents and hidden manifest are not verified by this screenshot."
-  }
+  },
+  "currentLiveSourceOwnerConfirmation": {
+    "ownerReportedAtSydney": "2026-10-20 07:29:37",
+    "changedSinceSuppliedSource": false,
+    "includes": "Code.gs and other .gs files in original LIVE, separate from rehearsal changes.",
+    "basis": "Direct owner response: no. Original 12 modules were supplied in the handoff and OrderingMenuPublisher.gs was separately supplied in this conversation.",
+    "independentEditorOrDeployedSourceHashVerified": false
+  },
+  "sourceCompatibilityOwnerConfirmed": true,
+  "sourceHashIndependentlyRetrieved": false,
+  "remainingSourceEvidenceLimitation": "Compatibility is based on supplied original source, native backup provenance, visible inventory and owner confirmation, not an independently retrieved current editor/version hash."
 }
