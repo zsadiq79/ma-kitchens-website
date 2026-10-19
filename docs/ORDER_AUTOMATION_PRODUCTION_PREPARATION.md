@@ -50,7 +50,7 @@ Read the following files from production main commit 27ef64557f82361effbb90d7f75
 | app/api/whatsapp-flow/route.ts | FLOW_MENU_API_URL | POST action=menu; FLOW_MENU_API_SECRET in JSON body | LIVE A, Version 46, verified through shared setting and execution trace |
 | lib/feedbackApi.ts | FLOW_MENU_API_URL | POST action=feedback_read, feedback_draft, feedback_event or feedback_submit; same secret in JSON body | LIVE A, Version 46, directly traced through invalid-link lookup |
 | app/api/whatsapp-events/route.ts | FLOW_MENU_API_URL | Verify Meta signature, then POST action=whatsapp_verified with forwarding secret and payload | LIVE A, Version 46, verified through shared setting and execution trace; upstream Meta subscription destination still to reconcile |
-| app/api/routific-webhook/route.js | CONTROL_TOWER_WEBHOOK_URL | Verify Routific signature, then POST controlTowerSecret and payload; backend requires status=200 acknowledgement | Authenticated provider test reached Apps Script and received status 200; A or B/version still pending |
+| app/api/routific-webhook/route.js | CONTROL_TOWER_WEBHOOK_URL | Verify Routific signature, then POST controlTowerSecret and payload; backend requires status=200 acknowledgement | LIVE B, Version 33; owner confirmed the matching provider-test execution at 2:38 PM |
 
 The supplied original Code.gs dispatcher supports these menu, feedback, verified WhatsApp and Routific contracts. This is source evidence, not proof that both active deployed snapshots match editor source. Direct provider callback configuration and any additional consumers still require reconciliation. Do not infer that a deployment is unused because it is absent from these two Vercel settings.
 
@@ -101,9 +101,11 @@ Read the production Vercel runtime logs for the corresponding request, 694ms-179
 - This verifies the current provider signature, redirect-following behavior for this test, Vercel forwarding credentials, transport to an Apps Script receiver and backend acknowledgement. It does not exercise a real order.status_updated or route.published event or identify the Apps Script deployment/version by itself.
 - The error log at 2:33:05 PM reporting a missing signature corresponds to the deliberate unsigned boundary check above. Do not classify it as a failing Routific delivery.
 
-Next evidence: the LIVE Apps Script project's doPost execution around 2:34:43 PM and its Deployment/version. Logs are not required; the execution row is sufficient to finish matching the delivery backend to LIVE A or B.
+The owner checked the matching LIVE Apps Script doPost execution and confirmed Version 33 at 2:38 PM. No screenshot or logs were requested again. Together with the authenticated provider test and current deployment inventory, this verifies CONTROL_TOWER_WEBHOOK_URL as LIVE B. The two existing Vercel backend destinations are now mapped: FLOW_MENU_API_URL to LIVE A/46, and CONTROL_TOWER_WEBHOOK_URL to LIVE B/33. Preserve both existing URLs and their different current rollback versions. Upstream Meta subscription settings and source/migration rehearsal remain separate readiness checks; do not claim that tracing the two backend connections completes production rollout preparation.
 
 ## Production candidate to prepare
+
+The two existing Vercel backend destinations are now verified. Preparation has moved to the production-specific build and a fresh-copy migration rehearsal. No production candidate has been installed or deployed.
 
 1. Build a separate production candidate from the reviewed source, using the live workbook and an explicit production environment. Do not disable TEST guards in-place as a deployment shortcut.
 2. Preserve all required existing service handlers and their authentication contracts, including verified WhatsApp/Routific ingress, feedback and publisher functions. Re-enable providers only in the deliberate production configuration and approved rollout stage.
@@ -113,6 +115,31 @@ Next evidence: the LIVE Apps Script project's doPost execution around 2:34:43 PM
 6. Preserve current live provider credentials and existing document IDs. Never copy TEST provider settings or copied TEST output links over live configuration.
 
 ## Rehearsal and rollout gates
+
+Created a fresh native copy directly from LIVE on 19 October, after completing the connection map. It is distinct from LIVE and the previous TEST installation:
+
+- Title: Ma Kitchens PRODUCTION REHEARSAL 19 Oct 2026.
+- Spreadsheet ID: 1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs.
+- Verified connector URL: https://docs.google.com/spreadsheets/d/1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs/edit?usp=drivesdk.
+- Stored in the owner's private ChatGPT folder. Drive metadata reports shared=false and only an owner permission.
+- Native copy checks: all 26 sheet property records match, including sheet IDs/order, row/column counts and frozen rows. All 6,505 sampled native cells match for user-entered values/formulas, formatting, validation and chips.
+- All nine formula anchors are identical. The 52 Order IDs, operational item-to-order ID relationships and 45 customer ID-to-phone mappings match the source baseline.
+- Order Entry K1:K18 metadata matches the captured LIVE values exactly, including CREATED / ORD-000052 / confirmation UNCERTAIN. Nine historical entry IDs match. No resend was attempted or authorized.
+- The seven new request/owner ledgers are not installed. Orders still has 31 columns and Order Items 23. No TEST synthetic customer, request, order, journal, reference counter or provider configuration was imported.
+- No source workbook writes were issued. Screen rendering has not been inspected; verification used native copy metadata and bounded native formatting/validation reads.
+- Safe, non-customer baseline results are recorded in docs/order-automation-production-rehearsal-baseline.json. Actual customer mappings, cart JSON and feedback tokens are not included in that repository artifact.
+
+The rehearsal Apps Script editor URL/project ID is not exposed by the Drive connector and must be obtained from Extensions > Apps Script in this exact copied workbook. Verify that it differs from both LIVE and the old TEST project before compiling or installing an explicitly bound rehearsal package. Do not run copied script functions before replacing their live workbook binding and applying the rehearsal service boundary. The supplied originals contain the LIVE workbook ID, so an unmodified copied script is not a safe test installer. The existing TEST installer targets a different workbook and must not be pasted into this fresh copy.
+
+Build requirements for the production/rehearsal pair:
+
+1. Generate from the supplied original modules plus reviewed shared order modules, preserving a function inventory and exact input hashes. Keep the completed TEST build unchanged.
+2. Give the rehearsal package an explicit workbook/project binding and block all network, document/Drive output and background provider triggers before any provider side effect. Keep native read/write operations within the new copied workbook only. Do not copy production credentials into it.
+3. Preserve the four LIVE Head handlers before activation. Saving source and changing web-app versions are separate changes. In particular, the feedback timer must not acquire TEST guards or new-schema requirements before migration is ready.
+4. Validate all operational headers, destination columns, recognized formula variants, pending submissions and allowed triggers before schema writes. Group compatible schema mutations atomically; preserve records and handle an uncertain response by reconciliation rather than a blind repeat.
+5. Start the new owner/request ledgers from this fresh baseline, reserve IDs under the shared lock across old and new writers, and keep public capture disabled until schema/menu state and the approved rollout stage are ready.
+6. Rehearse normal installation, rerun/idempotence, unexpected-schema rejection, uncertain migration recovery, owner-only authorization, capture/recovery, customer identity preservation, accepted-order totals, stock and all existing downstream outputs. Use no external provider effects in the rehearsal.
+7. Prepare rollback for both web-app versions and saved Head source/trigger controls. Preserve new ledgers and accepted operational records; do not blindly undo new snapshot formulas or delete new orders after use.
 
 Rehearse against a fresh authorized copy of the live workbook, compare operational/customer identities and totals, and verify shared downstream outputs. Preserve or explicitly reconcile any active in-flight submission before cutover. Prepare exact install, deployment, trigger and rollback steps as a concrete reviewable package before requesting production rollout approval.
 
