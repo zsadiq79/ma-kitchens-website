@@ -418,14 +418,21 @@
   },
   "rehearsalCodeReplacement": {
     "prepared": true,
-    "installationConfirmed": false,
+    "installationConfirmed": true,
     "previousInstalledBuildSha256": "454c7a06c1a002a1555cc166a348af7a8229fc27a145dd809aef4933659989d4",
     "preparedBuildSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
     "requiredSteps": [
-      "Replace rehearsal Code.gs with the complete updated file.",
-      "Run repairOrderDeliveryChargeDisplay. Expected zero formula changes because the equivalent repair was already applied through native Sheets.",
       "Reopen the workbook and verify the Packing Slips menu.",
       "Recheck ORD-000053 in the owner workspace."
-    ]
+    ],
+    "confirmationBasis": "Owner reported saved, then executed the new repair helper successfully in the designated rehearsal project.",
+    "editorSourceIndependentlyFetched": false,
+    "nativeRepairCheck": {
+      "ownerReportedAtSydney": "2026-10-19 18:23:47",
+      "ok": true,
+      "environment": "REHEARSAL",
+      "changedFormulaCount": 0,
+      "recordsPreserved": true
+    }
   }
 }

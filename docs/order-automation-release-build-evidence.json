@@ -16,7 +16,7 @@
       "codeSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
       "lines": 16632,
       "nativeMigrationVerified": true,
-      "replacementInstallationConfirmed": false
+      "replacementInstallationConfirmed": true
     },
     {
       "profile": {
@@ -35,10 +35,18 @@
   "productionRolloutApproved": false,
   "googleInstallationCompleted": true,
   "externalSideEffectsIssued": false,
-  "scope": "177 offline checks and static inventory, plus native rehearsal migration/rerun, owner activation, customer save, manual order verification/repeated checks, cook and delivery previews, packing preview, and cancellation/restoration with standard and free-delivery calculations. All 3,998 delivery-charge formulas were repaired and independently read back in the rehearsal workbook. The prepared source replacement and packing menu require native installation/confirmation. Website capture/recovery and external provider behavior remain unverified; production remains untouched.",
+  "scope": "177 offline checks and static inventory, plus native rehearsal migration/rerun, owner activation, customer save, manual order verification/repeated checks, cook and delivery previews, packing preview, and cancellation/restoration with standard and free-delivery calculations. All 3,998 delivery-charge formulas were repaired and independently read back in the rehearsal workbook. The owner installed the prepared source replacement and the native repair-helper rerun passed with zero formula changes. Native packing-menu and owner-recheck confirmations remain pending. Website capture/recovery and external provider behavior remain unverified; production remains untouched.",
   "installationEnvironment": "REHEARSAL",
   "nativeRehearsalSchemaMigrationVerified": true,
   "productionInstallationCompleted": false,
   "nativeEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json",
-  "preparedCodeReplacementInstalled": false
+  "preparedCodeReplacementInstalled": true,
+  "rehearsalReplacementConfirmationBasis": "Owner saved and successfully executed repairOrderDeliveryChargeDisplay. Editor source has not been fetched independently.",
+  "nativeRehearsalRepairCheck": {
+    "ownerReportedAtSydney": "2026-10-19 18:23:47",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "changedFormulaCount": 0,
+    "recordsPreserved": true
+  }
 }

@@ -400,11 +400,14 @@
     }
   ],
   "installationApproved": true,
-  "nativeMigrationVerified": false,
+  "nativeMigrationVerified": true,
   "productionRolloutApproved": false,
   "knownGates": [
-    "Native fresh-copy migration and downstream rehearsal remain required.",
+    "Native packing menu and owner recheck confirmations, website capture/recovery and remaining downstream rehearsal are required.",
     "Current LIVE editor source backup/confirmation and upstream Meta settings remain required.",
     "No provider sends, route dispatch or document operations are authorized by preparation."
-  ]
+  ],
+  "ownerReportedReplacementInstalled": true,
+  "editorSourceIndependentlyFetched": false,
+  "nativeRepairVerifiedAtSydney": "2026-10-19 18:23:47"
 }
