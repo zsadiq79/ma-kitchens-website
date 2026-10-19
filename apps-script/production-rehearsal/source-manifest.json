@@ -400,11 +400,15 @@
     }
   ],
   "installationApproved": true,
-  "nativeMigrationVerified": false,
+  "nativeMigrationVerified": true,
   "productionRolloutApproved": false,
   "knownGates": [
-    "Native fresh-copy migration and downstream rehearsal remain required.",
-    "Current LIVE editor source backup/confirmation and upstream Meta settings remain required.",
-    "No provider sends, route dispatch or document operations are authorized by preparation."
-  ]
+    "Production source backup/copy verification and upstream Meta settings remain required.",
+    "No provider sends, route dispatch or document operations were authorized by preparation.",
+    "Explicit production rollout approval remains required."
+  ],
+  "nativeLatestOwnerRepairVerified": true,
+  "sourceInstallationOwnerConfirmed": true,
+  "sourceHashIndependentlyFetched": false,
+  "nativeEvidence": "docs/order-automation-discount-label-repair-20261020.json"
 }

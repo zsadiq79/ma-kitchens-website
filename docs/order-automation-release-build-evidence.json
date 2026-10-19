@@ -15,8 +15,10 @@
       "functions": 472,
       "codeSha256": "ea4bf111d0447afb2ca5496cae69407fb12a3632ad1f3c1cbaf1d4c396d1389d",
       "lines": 16657,
-      "nativeMigrationVerified": false,
-      "replacementInstallationConfirmed": false
+      "nativeMigrationVerified": true,
+      "replacementInstallationConfirmed": true,
+      "nativeLatestOwnerRepairVerified": true,
+      "sourceHashIndependentlyFetched": false
     },
     {
       "profile": {
@@ -35,13 +37,13 @@
   "productionRolloutApproved": false,
   "googleInstallationCompleted": true,
   "externalSideEffectsIssued": false,
-  "scope": "179 automated checks; prior compatible 470-function source passed native migration, rerun, protected-ledger validation, manual and website acceptance, repeated saved-order checks, pricing/stock/cancellation, cook/delivery/packing previews and paused signed recovery. Latest prepared 472-function source adds only the discount-label repair helper and per-commit label correction. Its owner installation/helper execution remains pending. No production installation or provider sends were issued.",
+  "scope": "179 automated tests; rehearsal migration/rerun, schema and protection validation, manual and website acceptance, repeated saved-order checks, pricing/stock/cancellation, downstream previews and paused signed recovery passed. Latest prepared 472-function source was owner-installed and its new discount-label helper completed natively; all 4998 label formulas are corrected without errors, and original 52 order / 184 item financial records retain expected values. No production installation or provider sends were issued.",
   "installationEnvironment": "REHEARSAL",
   "nativeRehearsalSchemaMigrationVerified": true,
   "productionInstallationCompleted": false,
   "nativeEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json",
-  "preparedCodeReplacementInstalled": false,
-  "rehearsalReplacementConfirmationBasis": "Previous source was owner-installed and exercised. Latest 472-function replacement has not yet been installed; current editor source has not been independently fetched.",
+  "preparedCodeReplacementInstalled": true,
+  "rehearsalReplacementConfirmationBasis": "Owner installed the distinctly named source and successfully ran its new repair helper. Native formula readback passed.",
   "nativeRehearsalRepairCheck": {
     "ownerReportedAtSydney": "2026-10-19 18:23:47",
     "ok": true,
@@ -79,7 +81,7 @@
     "nativeMigrationVerified": true,
     "replacementInstallationConfirmed": true
   },
-  "latestPreparedCodeInstalled": false,
+  "latestPreparedCodeInstalled": true,
   "nativePausedPreflight": {
     "ownerReportedAtSydney": "2026-10-20 06:56:35",
     "ok": true,
@@ -105,15 +107,82 @@
     "externalActions": "BLOCKED"
   },
   "discountLabelRepair": {
-    "severity": "Low",
-    "nativeRehearsalCells": [
-      "Order Items!H187",
-      "Order Items!H188"
+    "ownerReportedAtSydney": "2026-10-20 07:09:15",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "changedFormulaCount": 4996,
+    "recordsPreserved": true,
+    "nativeReadback": {
+      "formulaCount": 4998,
+      "oldFormatCount": 0,
+      "newFormatCount": 4998,
+      "formulaErrors": 0,
+      "examples": [
+        {
+          "row": 3,
+          "label": "Paid",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 187,
+          "label": "20% Off",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 188,
+          "label": "20% Off",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 2500,
+          "label": "",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 2501,
+          "label": "",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 5000,
+          "label": "",
+          "hasCorrectedFormat": true
+        }
+      ],
+      "financialsCorrect": true,
+      "passed": true
+    },
+    "originalFinancialPreservation": {
+      "originalOrdersChecked": 52,
+      "originalItemsChecked": 184,
+      "unexpectedDifferences": []
+    },
+    "installedPreparedSourceHash": "ea4bf111d0447afb2ca5496cae69407fb12a3632ad1f3c1cbaf1d4c396d1389d",
+    "installedSourceHashIndependentlyFetched": false,
+    "installationEvidence": "Owner installed the distinctly named source and successfully ran its new repair helper. Native formula readback passed."
+  },
+  "livePreparationBackup": {
+    "sourceId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "backupId": "1iDPVdKHQKLnF3PGS40USwxXztU0RlRV7KL08TVKgSwM",
+    "backupTitle": "Ma Kitchens LIVE PREPARATION BACKUP 20 Oct 2026 0710 Sydney",
+    "backupUrl": "https://docs.google.com/spreadsheets/d/1iDPVdKHQKLnF3PGS40USwxXztU0RlRV7KL08TVKgSwM/edit?usp=drivesdk",
+    "private": true,
+    "permissionRoles": [
+      "owner"
     ],
-    "before": "20.% Off",
-    "after": "20% Off",
-    "financialsUnchanged": true,
-    "sourceReady": true,
-    "nativeOwnerHelperRunPending": true
+    "sheetCount": 26,
+    "sampledNativeCellsCompared": 6782,
+    "userEnteredValueOrFormulaDifferences": [],
+    "sourceWritesIssued": false,
+    "orderCount": 58,
+    "lastOrderId": "ORD-000058",
+    "itemCount": 216,
+    "customerCount": 50,
+    "legacyState": "DRAFT",
+    "legacyOrderId": "",
+    "legacyConfirmationState": "",
+    "boundScriptCopyVerificationPending": true,
+    "finalCutoverBackupStillRequired": true,
+    "notForProductionDataReplacement": true
   }
 }

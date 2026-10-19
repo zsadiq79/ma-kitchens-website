@@ -8,8 +8,8 @@ Status as of 19 October 2026: the reviewed TEST installation and its designated 
 - Live Apps Script editor: https://script.google.com/u/0/home/projects/1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE/edit.
 - 26 tabs; Orders has 31 columns and Order Items 23 columns.
 - Nine formula anchors match recognized migration inputs. Address and item-code snapshots are already present; the additional contact, price, cook-cost and owner journal structures are not yet installed.
-- Latest live order observed: ORD-000052. Re-read under the live lock at cutover; this observation is not an ID reservation.
-- Legacy state is CREATED, planned order ORD-000052, confirmation UNCERTAIN. Preserve this evidence and historical records. No resend is authorized.
+- Latest LIVE preparation read on 20 October: 58 orders through ORD-000058, 216 item rows and 50 customers. Re-read under the live lock at cutover; this is not an ID reservation. The 52-order original rehearsal baseline is historical.
+- The original rehearsal copied legacy CREATED / ORD-000052 / confirmation UNCERTAIN and preserves it. Current LIVE preparation read on 20 October shows a DRAFT with blank planned ID and confirmation fields. Reconcile the current live draft at cutover; the historical uncertainty is not permission to resend.
 - Production main remains 27ef64557f82361effbb90d7f75442b32df4096a with READY deployment dpl_8Wt9R8WEcLbFAddsxsfsRCZAjZvj.
 - Production FLOW_MENU_API_URL and CONTROL_TOWER_WEBHOOK_URL are sensitive. Their actual values cannot be read through the connector. Keep existing secret values private.
 
@@ -165,3 +165,11 @@ Website request 1002 was created through the owner-tested website/WhatsApp journ
 The latest prepared source adds a small discount-label repair and future-writer normalization. Both builds have 472 unique functions and 179 passing tests. Its installation/helper execution in rehearsal remains pending; all earlier native checks were on the prior compatible 470-function source. The labels were already corrected through the Sheets connector on the two rehearsal orders with no change to financial values. This does not authorize changing LIVE.
 
 Future workspace confirmation sending and 10 on 10 automation are logged in MA_KITCHENS_FUTURE_FEATURES.md for later releases. Neither is part of this rollout.
+
+## Private current-LIVE preparation backup, 20 October 2026
+
+Created Ma Kitchens LIVE PREPARATION BACKUP 20 Oct 2026 0710 Sydney. Verified URL: https://docs.google.com/spreadsheets/d/1iDPVdKHQKLnF3PGS40USwxXztU0RlRV7KL08TVKgSwM/edit?usp=drivesdk . Metadata reports shared false and only an owner permission. It contains 26 tabs, 58 order IDs, 216 item rows and 50 customers. All 6782 sampled native user-entered values/formulas match the contemporaneous LIVE read. This includes the six live orders added after the earlier rehearsal baseline. The current legacy screen is DRAFT, with no planned ID or confirmation flag. Its source points to LIVE, so use the backup editor for source inspection only. Bound-script copy verification remains pending; this workbook copy is not an independent export of deployed Versions 46/33, script properties, installable triggers or external configuration.
+
+This is a preparation checkpoint. Take a fresh private backup and inventory again at the approved cutover, preserve all newer real orders in the same LIVE workbook, and do not import the rehearsal orders or counters.
+
+Latest rehearsal source installation and native label repair now passed. All 4998 formulas are corrected, and the original financial comparison has no unexpected differences. The latest installation pending notes above are superseded by this checkpoint.
