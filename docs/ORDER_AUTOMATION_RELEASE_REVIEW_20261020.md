@@ -4,7 +4,7 @@
 
 **36 findings addressed: 16 High, 17 Medium and 3 Low. All 179 automated tests pass. The private rehearsal has passed its designated native checks and is paused. Production has not been upgraded.**
 
-**Additional dependency disclosed after this report was prepared: the owner's weekly-menu artwork generator and PNG/WebP/JPEG downloads have not yet passed current-source or export verification. The consolidated Code.gs does not contain that generator. Production readiness remains pending this check as well as the recent LIVE execution review.**
+**Additional dependency disclosed after this report was prepared: the owner's weekly-menu artwork generator and PNG/WebP/JPEG downloads have not yet passed current-source or export verification. The consolidated Code.gs does not contain that generator. This check remains before production approval. The recent LIVE execution review is complete based on the reviewed Order Entry sample, native record checks and the owner's confirmation that there were no other failures.**
 
 ## What changed
 
@@ -29,7 +29,7 @@ Production main and its READY deployment remain unchanged. Latest prepared produ
 
 Current-source compatibility is based on supplied source, backup provenance, visible inventory and direct owner confirmation. Current editor and deployed Version 46/33 hashes were not independently retrieved. Meta's app settings are owner-confirmed; phone/account callback overrides were not independently queried. No claim is made that every provider send or every runtime path was exercised. Newly accepted orders freeze their prices and identities; historical rows retain their reviewed legacy fallbacks and are not claimed to be retroactively immutable.
 
-Production request URL, signing secret and canonical-origin allowlist are not yet configured; these are explicit approved-rollout steps. Existing provider configuration remains unchanged. Before approval, review recent failed/timed-out LIVE executions. At the approved cutover, reconcile the current LIVE draft and all latest records, take another fresh backup, preserve settings/triggers, migrate that same workbook and verify the current production menu and existing provider contracts. No rehearsal customer, order, counter, ledger or published snapshot is imported into production. Replace the rehearsal-derived public menu JSON with a freshly built LIVE snapshot before merging the website release.
+Production request URL, signing secret and canonical-origin allowlist are not yet configured; these are explicit approved-rollout steps. Existing provider configuration remains unchanged. The owner has completed the recent failed/timed-out execution check and reports no failures beyond the reviewed old Order Entry error. At the approved cutover, reconcile the current LIVE draft and all latest records, take another fresh backup, preserve settings/triggers, migrate that same workbook and verify the current production menu and existing provider contracts. No rehearsal customer, order, counter, ledger or published snapshot is imported into production. Replace the rehearsal-derived public menu JSON with a freshly built LIVE snapshot before merging the website release.
 
 The later workspace-confirmation sender and 10 on 10 offer are excluded from this release and logged in MA_KITCHENS_FUTURE_FEATURES.md.
 
@@ -52,6 +52,8 @@ Native reads found two text-phone Order Entry intake rows at 20:05:11 and 20:34:
 This evidence accounts for the sample and supports the already fixed High finding 01. The release writes new intake phones numerically, uses fresh readback, records durable customer operations and retires the old entry writer after owner workspace activation. No additional code change or production cleanup was made. Do not convert or delete the historical intake rows as a routine repair because formula-generated customer IDs and consent history require preservation. Different errors/functions still require separate review; this sample does not certify every failed execution. Evidence: order-automation-legacy-entry-failure-20261020.json.
 
 Seven existing regressions covering numeric phones, fresh customer reads, stable IDs, pending retries and old-entry retirement passed again for this investigation. The production source hash is unchanged.
+
+At 07:56 Sydney on 20 October, the owner confirmed there were no other failures. The recent-execution preflight is therefore complete for the reported review window. This uses owner-reported coverage plus the inspected sample and native record reconciliation; it is not an independent audit of every execution log or a provider-send test. Earlier pending wording in the sample discussion is superseded by this confirmation.
 
 ## Every finding and its fix
 

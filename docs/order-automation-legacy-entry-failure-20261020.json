@@ -1,7 +1,12 @@
 {
   "checkedAt": "2026-10-20 Australia/Sydney",
   "productionModified": false,
-  "targetedVerification": {"existingRegressionTestsRun":7,"passed":7,"failed":0,"newSourceChanges":false},
+  "targetedVerification": {
+    "existingRegressionTestsRun": 7,
+    "passed": 7,
+    "failed": 0,
+    "newSourceChanges": false
+  },
   "sample": {
     "function": "orderEntryPlaceOrder",
     "deployment": "Head",
@@ -110,9 +115,14 @@
     "additionalSourceChange": false
   },
   "remaining": [
-    "Owner to identify failures with a different error or function; one sample does not clear all failures",
     "Reconcile current LIVE state again at cutover",
     "Do not delete, convert or normalize historical failed intake rows without a separately reviewed ID/consent impact assessment",
     "Menu generator compatibility check deferred by owner until preproduction checks"
-  ]
+  ],
+  "ownerConfirmation": {
+    "at": "2026-10-20T07:56:02+11:00",
+    "reportedNoOtherFailures": true,
+    "executionReviewGate": "COMPLETE_OWNER_REPORTED_PLUS_SAMPLE_AND_NATIVE_RECORD_CHECKS",
+    "allLogsIndependentlyRetrieved": false
+  }
 }

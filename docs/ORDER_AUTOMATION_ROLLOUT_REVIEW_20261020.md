@@ -1,6 +1,6 @@
 # Production installation plan for review
 
-Status: NOT APPROVED. Complete recent LIVE execution review, identify and verify the current weekly-menu artwork generator including PNG/WebP/JPEG downloads, and obtain explicit rollout approval before changing original LIVE source, settings, deployments or data. Rehearsal and the preparation backup are separate files.
+Status: NOT APPROVED. Recent LIVE execution review is complete based on the inspected Order Entry sample, native record checks and the owner's 20 October confirmation of no other failures. Identify and verify the current weekly-menu artwork generator including PNG/WebP/JPEG downloads, and obtain explicit rollout approval before changing original LIVE source, settings, deployments or data. Rehearsal and the preparation backup are separate files.
 
 The menu artwork generator is a newly disclosed external dependency, absent from consolidated Code.gs. The included ordering-menu JSON publisher does not replace it. The existing Weekly Menu/Dishes columns and inspected formula anchors are preserved in rehearsal, but current generator source, deployment mapping and exports remain unverified. Preserve its shortcut, project and template/output resources; do not change or consolidate them during the order-system installation. Record its current baseline and verify the same workflow after the approved in-place upgrade.
 

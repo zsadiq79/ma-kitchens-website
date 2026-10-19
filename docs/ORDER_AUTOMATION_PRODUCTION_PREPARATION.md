@@ -209,3 +209,7 @@ Current LIVE versus migrated rehearsal: all 26 Weekly Menu headers, 16 inspected
 
 The owner's 19 October 20:07 Sydney orderEntryPlaceOrder failure is the pre-order customer recalculation guard. Two failed draft intakes used text phones and were later followed by numeric WhatsApp intake and operational orders ORD-000053 / ORD-000055. Neither failed draft has an order. Current LIVE: DRAFT, no planned ID or confirmation state; 58 unique orders, 216 linked item rows, 50 customers, no orphan items or itemless orders in the populated ranges inspected. The customer phone-type issue is already High finding 01 and addressed in prepared source. Keep failed intake records intact. Other error types/functions remain to be reviewed; do not mark the whole failed-execution gate complete from one sample. No production mutation. See order-automation-legacy-entry-failure-20261020.json.
 
+## Recent failure review completed, 20 October 2026 at 07:56 Sydney
+
+The owner confirms no other failures beyond the reviewed old orderEntryPlaceOrder customer-recalculation error. The recent-execution preflight is complete on that owner-reported basis, supported by the inspected sample, native draft/order/item/customer checks and seven passing relevant regressions. This supersedes earlier pending notes for this review window, without claiming independent retrieval of every execution log or actual provider sends. The weekly-menu image generator remains the next outstanding compatibility check before rollout approval. Production remains unchanged and unapproved.
+
