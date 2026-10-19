@@ -247,5 +247,56 @@
     "sourceHashIndependentlyRetrieved": false,
     "remainingSourceEvidenceLimitation": "Compatibility is based on supplied original source, native backup provenance, visible inventory and owner confirmation, not an independently retrieved current editor/version hash."
   },
-  "liveSourceCompatibilityOwnerConfirmed": true
+  "liveSourceCompatibilityOwnerConfirmed": true,
+  "metaPreflight": {
+    "ownerReportedAtSydney": "2026-10-20 07:33:22",
+    "callbackUrl": "https://www.makitchens.com.au/api/whatsapp-events",
+    "messagesSubscribed": true,
+    "matchesReviewedWebsiteHandler": true,
+    "productionMain": "27ef64557f82361effbb90d7f75442b32df4096a",
+    "productionDeployment": "dpl_8Wt9R8WEcLbFAddsxsfsRCZAjZvj",
+    "productionState": "READY",
+    "boundaryProbe": {
+      "method": "GET",
+      "verificationTokenSupplied": false,
+      "httpStatus": 403,
+      "response": "Verification failed",
+      "providerMessageSubmitted": false
+    },
+    "appConfigurationOwnerConfirmed": true,
+    "phoneOrWabaCallbackOverrideIndependentlyQueried": false,
+    "actualInboundProviderDeliveryTestedInThisStep": false,
+    "productionChangesIssued": false,
+    "recentFailedExecutionReviewPending": true,
+    "productionRequestConfiguration": {
+      "missingProductionKeys": [
+        "ORDER_REQUEST_API_URL",
+        "ORDER_REQUEST_API_SECRET",
+        "ORDER_REQUEST_ALLOWED_ORIGINS"
+      ],
+      "requiredCanonicalOrigin": "https://www.makitchens.com.au",
+      "previewIsolationFlag": "ORDER_AUTOMATION_TEST_ONLY",
+      "previewIsolationProductionTargetPresent": false,
+      "metadataOnlyNoSecretValuesPrinted": true,
+      "productionChangesIssued": false
+    }
+  },
+  "recentFailedExecutionReviewPending": true,
+  "releaseReviewDocuments": [
+    "docs/ORDER_AUTOMATION_RELEASE_REVIEW_20261020.md",
+    "docs/ORDER_AUTOMATION_ROLLOUT_REVIEW_20261020.md",
+    "docs/ORDER_AUTOMATION_ROLLBACK_REVIEW_20261020.md"
+  ],
+  "productionRequestConfigurationPending": {
+    "missingProductionKeys": [
+      "ORDER_REQUEST_API_URL",
+      "ORDER_REQUEST_API_SECRET",
+      "ORDER_REQUEST_ALLOWED_ORIGINS"
+    ],
+    "requiredCanonicalOrigin": "https://www.makitchens.com.au",
+    "previewIsolationFlag": "ORDER_AUTOMATION_TEST_ONLY",
+    "previewIsolationProductionTargetPresent": false,
+    "metadataOnlyNoSecretValuesPrinted": true,
+    "productionChangesIssued": false
+  }
 }
