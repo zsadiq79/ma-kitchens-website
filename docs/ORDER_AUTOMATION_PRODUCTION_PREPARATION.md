@@ -213,3 +213,9 @@ The owner's 19 October 20:07 Sydney orderEntryPlaceOrder failure is the pre-orde
 
 The owner confirms no other failures beyond the reviewed old orderEntryPlaceOrder customer-recalculation error. The recent-execution preflight is complete on that owner-reported basis, supported by the inspected sample, native draft/order/item/customer checks and seven passing relevant regressions. This supersedes earlier pending notes for this review window, without claiming independent retrieval of every execution log or actual provider sends. The weekly-menu image generator remains the next outstanding compatibility check before rollout approval. Production remains unchanged and unapproved.
 
+## Current menu-generator source and LIVE rules, 20 October 2026 at 08:27 Sydney
+
+The owner supplied current Code.gs for Ma Kitchens Menu V2, a separate read-only HTML app, plus a screenshot showing its remaining MenuV2.html file. Required Weekly Menu / Dishes / Menu Config source fields are preserved, including Dish Category in Dishes Q. A local replay builds the current 14-dish menu. MenuV2.html, actual PNG/WebP/JPEG exports and deployed-source mapping remain pending. New source finding MG-01 reproduces the time-cell parsing fallback from configured 17:00 to 20:00 and remains open. Do not alter poster/ordering deadline policy silently. See ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md.
+
+Latest LIVE Menu Config now reads 0% standard discount, minimum five items, AUD 2.50 delivery and no free delivery. Rehearsal remains 20% / AUD 10. Preserve the current LIVE rules and accepted snapshots at cutover, and build the public JSON freshly from LIVE. This updates the latest configuration checkpoint only; no source, workbook, deployment or configuration was changed.
+

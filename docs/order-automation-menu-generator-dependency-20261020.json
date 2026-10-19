@@ -1,6 +1,6 @@
 {
   "checkedAt": "2026-10-20 Australia/Sydney",
-  "status": "PENDING_CURRENT_GENERATOR_SOURCE_AND_EXPORT_CHECK",
+  "status": "CURRENT_SERVER_SOURCE_COMPATIBLE_HTML_EXPORT_AND_DEADLINE_CORRECTION_PENDING",
   "userShortcut": "https://script.google.com/macros/s/AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ/exec",
   "userRequiredOutputs": [
     "PNG",
@@ -86,10 +86,16 @@
   ],
   "checkedMigrationBehavior": "Adds order/item snapshots and private ledgers; does not rename, reorder or rewrite Weekly Menu or Dishes columns.",
   "pending": [
-    "Identify current shortcut project and deployed source/version",
-    "Review current generator .gs/.html/manifest and all live source/config dependencies",
-    "Verify current menu content, ordering, portions, offer/deadline and PNG/WebP/JPEG exports",
-    "Record generator preservation and rollback in approved rollout"
+    "Review MenuV2.html and actual PNG/WebP/JPEG outputs",
+    "Correct and verify MG-01 time-cell parsing; explicitly resolve poster versus ordering deadline wording",
+    "Confirm shortcut deployment version/mapping and manifest/timezone"
   ],
-  "productionModified": false
+  "productionModified": false,
+  "currentProject": {
+    "name": "Ma Kitchens Menu V2",
+    "scriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
+    "suppliedServerSourceSha256": "19fbf51903d677d82ee1074f0c4ae2192b8bfc2d5ccc5153a5cecef3d927fc86",
+    "htmlSupplied": false,
+    "deployedSourceIndependentlyVerified": false
+  }
 }
