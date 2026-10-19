@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html>
+<head><title>Ma Kitchens menu generator candidate review</title>
+  <base target="_top">
+  <style>
+    :root {
+      --paper: #FAF7F2;
+      --ink: #2F2F2F;
+      --terracotta: #C96A4A;
+      --sage: #6F7F5C;
+      --line: rgba(47, 47, 47, 0.16);
+      --card-width: 300px;
+      --gap: 22px;
+      --page-width: 1360px;
+      --name-size: 28px;
+      --description-size: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #e9e6e0;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .selector {
+      max-width: 760px;
+      margin: 60px auto;
+      background: white;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+
+    .selector h1 { margin-top: 0; }
+
+    .cycle-link {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+      border-top: 1px solid #eee;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .cycle-link small { font-weight: 400; color: #666; }
+
+    .export-toolbar {
+      width: var(--page-width);
+      margin: 20px auto 0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .export-button,
+    .back-button {
+      appearance: none;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .export-button {
+      background: var(--terracotta);
+      color: white;
+    }
+
+    .export-button:hover { filter: brightness(.96); }
+    .export-button:disabled { cursor: wait; opacity: .65; }
+
+    .back-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .export-status {
+      margin-right: auto;
+      align-self: center;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .menu-page {
+      width: var(--page-width);
+      margin: 16px auto 28px;
+      background: var(--paper);
+      padding: 46px 48px 36px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+
+    .hero {
+      position: relative;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 24px;
+      margin-bottom: 22px;
+    }
+
+    .hero-channel {
+      position: absolute;
+      top: 58px;
+      right: 0;
+      bottom: 24px;
+      width: 260px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-channel-cta {
+      margin: 0;
+      width: 260px;
+      font-size: 25px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .hero-channel-qr-shell {
+      width: 118px;
+      height: 118px;
+      margin: 0;
+      padding: 3px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    .hero-channel-qr {
+      width: 112px;
+      height: 112px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    .hero-channel-qr canvas,
+    .hero-channel-qr img {
+      width: 112px !important;
+      height: 112px !important;
+      display: block;
+    }
+
+    .brand {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 60px;
+      line-height: .96;
+      font-weight: 700;
+      letter-spacing: -1.8px;
+    }
+
+    .menu-title {
+      margin-top: 8px;
+      font-size: 31px;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2.4px;
+      color: var(--terracotta);
+    }
+
+    .delivery {
+      margin-top: 17px;
+      font-size: 25px;
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .tagline {
+      margin-top: 7px;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .deadline {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 15px;
+      border-radius: 999px;
+      background: rgba(111,127,92,.13);
+      color: #4f5c42;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .section { margin-top: 30px; }
+
+    .kitchen-name,
+    .dessert-heading {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: var(--name-size);
+      line-height: 1.05;
+      font-weight: 700;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(201,106,74,.85);
+      margin-bottom: 14px;
+    }
+
+    .dish-row {
+      display: flex;
+      justify-content: space-evenly;
+      gap: var(--gap);
+      align-items: stretch;
+    }
+
+    .dish-row.count-1 { justify-content: center; }
+    .dish-row.count-2 { justify-content: center; gap: 96px; }
+    .dish-row.count-3 { justify-content: space-evenly; }
+    .dish-row.count-4 { justify-content: space-between; }
+
+    .packed-row {
+      display: grid;
+      grid-template-columns: repeat(var(--row-count), var(--card-width));
+      column-gap: var(--gap);
+      align-items: start;
+      margin-top: 30px;
+    }
+
+    .packed-row.count-1 { justify-content: center; }
+    .packed-row.count-2 { justify-content: center; column-gap: 96px; }
+    .packed-row.count-3 { justify-content: space-evenly; }
+    .packed-row.count-4 { justify-content: space-between; }
+
+    .packed-kitchen {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(var(--segment-count), var(--card-width));
+      column-gap: inherit;
+      align-items: start;
+    }
+
+    .packed-kitchen .kitchen-name {
+      grid-column: 1 / -1;
+      min-height: 58px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .packed-kitchen .dish-card {
+      margin-top: 0;
+    }
+
+    .dish-card {
+      flex: 0 0 var(--card-width);
+      width: var(--card-width);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .dish-photo {
+      width: 100%;
+      height: 260px;
+      display: block;
+      background-color: #ddd;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .dish-photo-missing {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      font-size: 14px;
+    }
+
+    .dish-body {
+      padding: 12px 14px 13px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .dish-name {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: var(--name-size);
+      line-height: 1.04;
+      font-weight: 700;
+      height: calc(var(--name-size) * 2.08);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .dish-description {
+      margin-top: 8px;
+      font-size: var(--description-size);
+      line-height: 1.28;
+      color: #484848;
+      height: calc(var(--description-size) * 3.84);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .dish-source {
+      margin-top: 6px;
+      min-height: 15px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #666;
+      line-height: 1.2;
+    }
+
+    .dish-source.is-empty {
+      visibility: hidden;
+    }
+
+    .dish-meta {
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      min-height: 66px;
+      gap: 10px;
+    }
+
+    .price-block {
+      display: flex;
+      align-items: flex-end;
+      min-height: 100%;
+    }
+
+    .price {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--terracotta);
+      white-space: nowrap;
+    }
+
+    .meta-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      gap: 4px;
+      min-height: 100%;
+      text-align: right;
+    }
+
+    .portion {
+      font-size: 17px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: #4f4f4f;
+      white-space: nowrap;
+    }
+
+    .dietary {
+      font-size: 17px;
+      line-height: 1.15;
+      font-weight: 700;
+      color: #5e6c50;
+      white-space: nowrap;
+    }
+
+    .portion.is-empty,
+    .dietary.is-empty { visibility: hidden; }
+
+    .desserts {
+      margin-top: 32px;
+      padding-top: 2px;
+    }
+
+    .dessert-row {
+      display: flex;
+      justify-content: space-evenly;
+      gap: var(--gap);
+      margin-top: 16px;
+      align-items: stretch;
+    }
+
+    .dessert-row.count-1 { justify-content: center; }
+    .dessert-row.count-2 { justify-content: center; gap: 96px; }
+    .dessert-row.count-3 { justify-content: space-evenly; }
+    .dessert-row.count-4 { justify-content: space-between; }
+
+    .footer {
+      margin-top: 34px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 58px;
+      align-items: start;
+    }
+
+    .footer-order {
+      text-align: left;
+    }
+
+    .footer-offer {
+      text-align: right;
+    }
+
+    .footer-title {
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 1.4px;
+    }
+
+    .whatsapp-row {
+      margin-top: 11px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .whatsapp-logo {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: block;
+    }
+
+    .whatsapp-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .whatsapp-label {
+      font-size: 19px;
+      line-height: 1.1;
+      font-weight: 800;
+      color: var(--sage);
+    }
+
+    .whatsapp-number {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--sage);
+      letter-spacing: .2px;
+    }
+
+    .offer-lines {
+      margin-top: 10px;
+      font-size: 21px;
+      line-height: 1.40;
+      color: #3f3f3f;
+    }
+
+    .offer-highlight {
+      color: var(--terracotta);
+      font-weight: 900;
+    }
+
+    .website {
+      margin-top: 13px;
+      padding-top: 11px;
+      border-top: 1px solid rgba(47,47,47,.10);
+      text-align: center;
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .3px;
+    }
+
+    @media (max-width: 1400px) {
+      body { overflow-x: auto; }
+      .menu-page { margin-left: 0; margin-right: 0; }
+      .export-toolbar { margin-left: 0; margin-right: 0; }
+    }
+
+    @media print {
+      body { background: white; }
+      .menu-page { margin: 0; box-shadow: none; }
+      .export-toolbar { display: none !important; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+
+
+  <div class="export-toolbar">
+    <div id="exportStatus" class="export-status"></div>
+
+    <a class="back-button" href="https://script.google.com/macros/s/AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ/exec">
+      Change menu
+    </a>
+
+    <button
+      id="downloadPngButton"
+      class="export-button"
+      type="button"
+      onclick="downloadMenuFile_('png')"
+    >
+      Download HD PNG
+    </button>
+
+    <button
+      id="downloadJpgButton"
+      class="export-button"
+      type="button"
+      onclick="downloadMenuFile_('jpg')"
+    >
+      Download WhatsApp JPG
+    </button>
+
+    <button
+      id="downloadWebpButton"
+      class="export-button"
+      type="button"
+      onclick="downloadMenuFile_('webp')"
+    >
+      Download WebP
+    </button>
+  </div>
+
+  <main
+    id="menuCapture"
+    class="menu-page"
+    data-cycle-id="MENU-2026-10-22"
+  >
+    <header class="hero">
+      <div class="brand">Ma Kitchens</div>
+      <div class="menu-title">Weekly Menu</div>
+      <div class="delivery">Delivery: Thursday, 22 October 2026</div>
+      <div class="tagline">Home cooked food by local cooks, delivered to you.</div>
+
+      
+        <div class="deadline">
+          Orders close: Wednesday, 21 October at 5:00 PM
+        </div>
+      
+
+      
+        <aside class="hero-channel">
+          <div class="hero-channel-cta">Join our WhatsApp<br>Channel</div>
+          <div class="hero-channel-qr-shell">
+            <div
+              id="channelQr"
+              class="hero-channel-qr"
+              data-channel-url="https://whatsapp.com/channel/0029Vb6Ct1GF1YlbaAkXCs1C"
+              aria-label="QR code for Ma Kitchens WhatsApp Channel"
+            ></div>
+          </div>
+        </aside>
+      
+    </header>
+
+    
+
+      <section
+        class="packed-row count-4"
+        style="--row-count: 4;"
+      >
+
+        
+
+          <div
+            class="packed-kitchen"
+            style="grid-column: span 4; --segment-count: 4;"
+          >
+            <div class="kitchen-name">FOODIE CLUB</div>
+
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Crazy Haleem" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0030.png" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0030.png&quot;)"></div><div class="dish-body"><div class="dish-name">Crazy Haleem</div><div class="dish-description">Beef and lentils slow-cooked to perfection. Garnished with crispy fried onions and traditional lawazamat</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$14.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Qeema Dillema" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0059.jpg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0059.jpg&quot;)"></div><div class="dish-body"><div class="dish-name">Qeema Dillema</div><div class="dish-description">Lean beef mince slow-cooked with potatoes and capsicum along with aromatic spices for a satisfying kick</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$14.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Stir Fried Veggies" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0002.jpg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0002.jpg&quot;)"></div><div class="dish-body"><div class="dish-name">Stir Fried Veggies</div><div class="dish-description">Premium stir fried vegetables including broccoli, cauliflower, baby corn, carrots and capsicum</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$11.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Chicken Shashlik with White Rice" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0061.jpg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0061.jpg&quot;)"></div><div class="dish-body"><div class="dish-name">Chicken Shashlik with White Rice</div><div class="dish-description">Tender marinated chicken and crisp vegetables tossed in a tangy, tomato gravy served over white rice</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$15.00</span></div><div class="meta-right"><div class="portion">1000 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+          </div>
+
+        
+
+      </section>
+
+    
+
+      <section
+        class="packed-row count-4"
+        style="--row-count: 4;"
+      >
+
+        
+
+          <div
+            class="packed-kitchen"
+            style="grid-column: span 4; --segment-count: 4;"
+          >
+            <div class="kitchen-name">ZAUQ KITCHEN</div>
+
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Achari Kabuli Biryani" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0049.jpeg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0049.jpeg&quot;)"></div><div class="dish-body"><div class="dish-name">Achari Kabuli Biryani</div><div class="dish-description">Spicy aromatic rice layered with tangy achari spiced chickpeas served w/ fresh Turkish salad</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$15.00</span></div><div class="meta-right"><div class="portion">1000 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Highway Balochi karhai" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0050.jpeg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0050.jpeg&quot;)"></div><div class="dish-body"><div class="dish-name">Highway Balochi karhai</div><div class="dish-description">Tender chicken cooked in a unique balochi spice blend with fresh green chilies and ginger</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$17.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Desi Phalliya Alo" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0051.jpeg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0051.jpeg&quot;)"></div><div class="dish-body"><div class="dish-name">Desi Phalliya Alo</div><div class="dish-description">Tender green beans with potatoes tempered with spices</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$11.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Tawa Beef Kebab w/ Vegetables" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0052.jpeg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0052.jpeg&quot;)"></div><div class="dish-body"><div class="dish-name">Tawa Beef Kebab w/ Vegetables</div><div class="dish-description">Juicy mouthwatering beef kebab tossed with crisp vegetables</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$15.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+          </div>
+
+        
+
+      </section>
+
+    
+
+      <section
+        class="packed-row count-4"
+        style="--row-count: 4;"
+      >
+
+        
+
+          <div
+            class="packed-kitchen"
+            style="grid-column: span 1; --segment-count: 1;"
+          >
+            <div class="kitchen-name">ZAUQ KITCHEN</div>
+
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Dahi Phulkiya Chaat" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0053.jpeg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0053.jpeg&quot;)"></div><div class="dish-body"><div class="dish-name">Dahi Phulkiya Chaat</div><div class="dish-description">Besan dumplings soaked in spiced , seasoned yoghurt and other condiments</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$7.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+          </div>
+
+        
+
+          <div
+            class="packed-kitchen"
+            style="grid-column: span 3; --segment-count: 3;"
+          >
+            <div class="kitchen-name">DASTARKHWAAN</div>
+
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Beef Palao" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0055.jpeg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0055.jpeg&quot;)"></div><div class="dish-body"><div class="dish-name">Beef Palao</div><div class="dish-description">Rice pilaf cooked in beef broth with tender pieces of beef</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$17.00</span></div><div class="meta-right"><div class="portion">1000 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Bhindi" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0056.jpg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0056.jpg&quot;)"></div><div class="dish-body"><div class="dish-name">Bhindi</div><div class="dish-description">Okra cooked in mildly spicy masala</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$14.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Daal Maash" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0035.jpg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0035.jpg&quot;)"></div><div class="dish-body"><div class="dish-name">Daal Maash</div><div class="dish-description">Split white urad lentil cooked with aromatic spices, ginger, garlic, and tomatoes</div><div class="dish-source is-empty">&nbsp;</div><div class="dish-meta"><div class="price-block"><span class="price">$12.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+          </div>
+
+        
+
+      </section>
+
+    
+
+    
+
+      <section class="desserts">
+        <div class="dessert-heading">DESSERTS</div>
+
+        
+
+        
+          <div class="dessert-row count-2">
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Crème Criminal" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0016.jpg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0016.jpg&quot;)"></div><div class="dish-body"><div class="dish-name">Crème Criminal</div><div class="dish-description">Smooth pudding with a layer of caramel sauce. Criminally comforting</div><div class="dish-source">From FOODIE CLUB</div><div class="dish-meta"><div class="price-block"><span class="price">$10.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+              <article class="dish-card"><div class="dish-photo" role="img" aria-label="Fudge Brownie Trifle" data-image-url="https://www.makitchens.com.au/menu-images/Dish-0054.jpeg" style="background-image:url(&quot;https://www.makitchens.com.au/menu-images/Dish-0054.jpeg&quot;)"></div><div class="dish-body"><div class="dish-name">Fudge Brownie Trifle</div><div class="dish-description">Rich brownie layered with smooth cream,custard and chocolate sauce</div><div class="dish-source">From ZAUQ KITCHEN</div><div class="dish-meta"><div class="price-block"><span class="price">$11.00</span></div><div class="meta-right"><div class="portion">500 ml</div><div class="dietary">Halal</div></div></div></div></article>
+            
+          </div>
+        
+      </section>
+
+    
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <section class="footer-order">
+          <div class="footer-title">HOW TO ORDER</div>
+
+          <div class="whatsapp-row">
+            <svg
+              class="whatsapp-logo"
+              viewBox="0 0 32 32"
+              role="img"
+              aria-label="WhatsApp"
+            >
+              <circle cx="16" cy="16" r="16" fill="#25D366"></circle>
+              <path
+                fill="#fff"
+                d="M23.7 8.2A10.8 10.8 0 0 0 6.8 21.3L5.3 26.8l5.6-1.5a10.8 10.8 0 0 0 5.1 1.3h.1A10.8 10.8 0 0 0 23.7 8.2Zm-7.6 16.5h-.1a8.9 8.9 0 0 1-4.5-1.2l-.3-.2-3.3.9.9-3.2-.2-.3a8.9 8.9 0 1 1 7.5 4Zm4.9-6.6c-.3-.1-1.6-.8-1.8-.9-.2-.1-.4-.1-.6.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.5.3-.5c.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3Z"
+              ></path>
+            </svg>
+
+            <div class="whatsapp-copy">
+              <div class="whatsapp-label">Order on WhatsApp</div>
+              <div class="whatsapp-number">0420 246 023</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="footer-offer">
+          <div class="footer-title">ORDERING INFO</div>
+
+          <div class="offer-lines">
+            
+
+            
+              <div>Minimum order: 5 items</div>
+            
+
+            <div>Delivery: $2.5</div>
+            
+          </div>
+        </section>
+      </div>
+
+      <div class="website">makitchens.com.au</div>
+    </footer>
+  </main>
+
+  <script>
+    function alignHeroChannel_() {
+      const hero = document.querySelector('.hero');
+      const brand = document.querySelector('.brand');
+      const deadline = document.querySelector('.deadline');
+      const channel = document.querySelector('.hero-channel');
+
+      if (!hero || !brand || !deadline || !channel) return;
+
+      const heroRect = hero.getBoundingClientRect();
+      const brandRect = brand.getBoundingClientRect();
+      const deadlineRect = deadline.getBoundingClientRect();
+
+      channel.style.top = Math.round(brandRect.bottom - heroRect.top) + 'px';
+      channel.style.bottom = Math.round(heroRect.bottom - deadlineRect.bottom) + 'px';
+    }
+
+    function initChannelQr_() {
+      const target = document.getElementById('channelQr');
+      if (!target) return;
+
+      const url = target.getAttribute('data-channel-url') || '';
+      if (!url) return;
+
+      if (typeof QRCode !== 'function') {
+        target.textContent = 'QR unavailable';
+        return;
+      }
+
+      target.innerHTML = '';
+
+      new QRCode(target, {
+        text: url,
+        width: 420,
+        height: 420,
+        colorDark: '#6F7F5C',
+        colorLight: '#FFFFFF',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    initChannelQr_();
+    alignHeroChannel_();
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(alignHeroChannel_);
+    }
+
+    window.addEventListener('load', alignHeroChannel_);
+
+    async function downloadMenuFile_(format) {
+      const status = document.getElementById('exportStatus');
+      const menu = document.getElementById('menuCapture');
+
+      const buttons = {
+        png: document.getElementById('downloadPngButton'),
+        jpg: document.getElementById('downloadJpgButton'),
+        webp: document.getElementById('downloadWebpButton')
+      };
+
+      const settings = {
+        png: {
+          label: 'HD PNG',
+          preparing: 'Preparing HD PNG...',
+          mimeType: 'image/png',
+          extension: 'png',
+          quality: undefined,
+          preferredScale: 3,
+          maxDimension: 24000,
+          maxPixels: 120000000
+        },
+        jpg: {
+          label: 'WhatsApp JPG',
+          preparing: 'Preparing WhatsApp JPG...',
+          mimeType: 'image/jpeg',
+          extension: 'jpg',
+          quality: 0.93,
+          preferredScale: 2,
+          maxDimension: 16000,
+          maxPixels: 70000000
+        },
+        webp: {
+          label: 'WebP',
+          preparing: 'Preparing WebP...',
+          mimeType: 'image/webp',
+          extension: 'webp',
+          quality: 0.90,
+          preferredScale: 2,
+          maxDimension: 16000,
+          maxPixels: 70000000
+        }
+      };
+
+      const option = settings[format];
+      const activeButton = buttons[format];
+
+      if (!option || !activeButton || !menu) return;
+
+      if (typeof html2canvas !== 'function') {
+        alert('Image exporter did not load. Refresh the page and try again.');
+        return;
+      }
+
+      Object.values(buttons).forEach(button => {
+        if (button) button.disabled = true;
+      });
+
+      const originalButtonText = activeButton.textContent;
+      activeButton.textContent = option.preparing;
+      status.textContent = 'Loading food images...';
+
+      try {
+        await waitForMenuImages_();
+        await waitForChannelQr_();
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        alignHeroChannel_();
+
+        status.textContent = 'Rendering ' + option.label + '...';
+
+        const width = Math.ceil(menu.scrollWidth);
+        const height = Math.ceil(menu.scrollHeight);
+
+        const scale = calculateExportScale_(
+          width,
+          height,
+          option.preferredScale,
+          option.maxDimension,
+          option.maxPixels
+        );
+
+        const canvas = await html2canvas(menu, {
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: '#FAF7F2',
+          scale: scale,
+          width: width,
+          height: height,
+          windowWidth: width,
+          windowHeight: height,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false,
+          imageTimeout: 20000
+        });
+
+        const blob = await canvasToBlob_(
+          canvas,
+          option.mimeType,
+          option.quality
+        );
+
+        const cycleId = menu.getAttribute('data-cycle-id') || 'menu';
+        const safeCycleId = cycleId.replace(/[^a-z0-9_-]+/gi, '-');
+
+        let descriptor = option.label;
+        if (format === 'png') descriptor = 'HD';
+        if (format === 'jpg') descriptor = 'WhatsApp';
+        if (format === 'webp') descriptor = 'Web';
+
+        const fileName =
+          'Ma Kitchens Weekly Menu - ' +
+          safeCycleId +
+          ' - ' +
+          descriptor +
+          '.' +
+          option.extension;
+
+        downloadBlob_(blob, fileName);
+
+        const fileSizeMb = (blob.size / (1024 * 1024)).toFixed(1);
+
+        status.textContent =
+          option.label +
+          ' created: ' +
+          canvas.width +
+          ' × ' +
+          canvas.height +
+          ' px · ' +
+          fileSizeMb +
+          ' MB';
+
+      } catch (err) {
+        console.error(err);
+        const message = err && err.message ? err.message : String(err);
+        status.textContent = option.label + ' export failed: ' + message;
+        alert('The ' + option.label + ' could not be created.\n\n' + message);
+      } finally {
+        Object.values(buttons).forEach(button => {
+          if (button) button.disabled = false;
+        });
+
+        activeButton.textContent = originalButtonText;
+      }
+    }
+
+    function waitForChannelQr_() {
+      const target = document.getElementById('channelQr');
+      if (!target) return Promise.resolve();
+
+      if (target.querySelector('canvas, img')) {
+        return Promise.resolve();
+      }
+
+      return new Promise((resolve, reject) => {
+        const started = Date.now();
+
+        const timer = setInterval(() => {
+          if (target.querySelector('canvas, img')) {
+            clearInterval(timer);
+            resolve();
+            return;
+          }
+
+          if (Date.now() - started > 5000) {
+            clearInterval(timer);
+            reject(new Error('WhatsApp Channel QR code did not finish loading.'));
+          }
+        }, 50);
+      });
+    }
+
+    function waitForMenuImages_() {
+      const photoBlocks = Array.from(document.querySelectorAll('#menuCapture .dish-photo[data-image-url]'));
+
+      return Promise.all(
+        photoBlocks.map(block => {
+          const url = block.getAttribute('data-image-url');
+
+          if (!url) return Promise.resolve();
+
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            const timeout = setTimeout(() => {
+              reject(new Error('A food image did not finish loading.'));
+            }, 20000);
+
+            img.crossOrigin = 'anonymous';
+
+            img.onload = () => {
+              clearTimeout(timeout);
+              resolve();
+            };
+
+            img.onerror = () => {
+              clearTimeout(timeout);
+              reject(new Error('A food image failed to load.'));
+            };
+
+            img.src = url;
+          });
+        })
+      );
+    }
+
+    function calculateExportScale_(
+      width,
+      height,
+      preferredScale,
+      maxDimension,
+      maxPixels
+    ) {
+      if (![width, height, preferredScale, maxDimension, maxPixels].every(value => Number.isFinite(value) && value > 0)) {
+        throw new Error('The menu size is unavailable. Refresh the page and try again.');
+      }
+      return Math.min(
+        preferredScale,
+        maxDimension / width,
+        maxDimension / height,
+        Math.sqrt(maxPixels / (width * height))
+      );
+    }
+
+    function canvasToBlob_(canvas, mimeType, quality) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+          if (!blob) {
+            reject(new Error('Browser could not encode the image.'));
+            return;
+          }
+
+          if (blob.type !== mimeType) {
+            reject(new Error('This browser does not support the requested image format.'));
+            return;
+          }
+
+          resolve(blob);
+        }, mimeType, quality);
+      });
+    }
+
+    function downloadBlob_(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+  </script>
+
+
+</body>
+</html>

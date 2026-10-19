@@ -8,8 +8,9 @@
     "Code.gs",
     "MenuV2.html"
   ],
-  "htmlSupplied": false,
+  "htmlSupplied": true,
   "manifestSupplied": false,
   "deploymentMapping": "Owner identifies this project; shortcut deployment source/version has not been independently matched",
-  "productionModified": false
+  "productionModified": false,
+  "htmlSha256": "580bdb7d74c0d9f012e10f8a4e2ce55897ad4864553987f7ea4e3b7b6ac67f99"
 }

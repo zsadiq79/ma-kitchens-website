@@ -1,0 +1,17 @@
+{
+  "project": "Ma Kitchens Menu V2, separate standalone app",
+  "status": "TEST CANDIDATE. Not installed or deployed.",
+  "baselineScriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
+  "spreadsheetReadTarget": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+  "codeSha256": "dea7211901cd3ecc3beacd7afafdbf9ba335e3e97d1007f7c39df0215d59021e",
+  "htmlSha256": "c7ded32b9811d83fe9f71fce885bfd80162319c0b799d08733c573e6c5f5d66a",
+  "findings": [
+    "MG-01: Date/time-cell parsing and Sydney calendar deadline",
+    "MG-02: Export downscaling below 1 and explicit MIME validation",
+    "MG-03: Correct free-delivery threshold-basis text"
+  ],
+  "otherBehavior": "Original menu data, images, grouping, ordering, styles and original 22 server functions retained.",
+  "configuredPosterDeadline": "Read from Menu Config. No LIVE setting changed.",
+  "nativeDeploymentVerified": false,
+  "productionModified": false
+}
