@@ -52,8 +52,8 @@
     "existingPaymentStatusQuantityPayoutAndItemInputsPreserved": true,
     "expectedCancellationFixes": {
       "orderCount": 2,
-      "deliveryChargeRemovedPerOrder": 10,
-      "derivedContributionAdjusted": true
+      "derivedContributionAdjusted": true,
+      "orderTotalReductionPerCancelledOrder": 10
     },
     "legacy": {
       "state": "CREATED",
@@ -421,10 +421,7 @@
     "installationConfirmed": true,
     "previousInstalledBuildSha256": "454c7a06c1a002a1555cc166a348af7a8229fc27a145dd809aef4933659989d4",
     "preparedBuildSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
-    "requiredSteps": [
-      "Reopen the workbook and verify the Packing Slips menu.",
-      "Recheck ORD-000053 in the owner workspace."
-    ],
+    "requiredSteps": [],
     "confirmationBasis": "Owner reported saved, then executed the new repair helper successfully in the designated rehearsal project.",
     "editorSourceIndependentlyFetched": false,
     "nativeRepairCheck": {
@@ -433,6 +430,42 @@
       "environment": "REHEARSAL",
       "changedFormulaCount": 0,
       "recordsPreserved": true
+    },
+    "menusVerified": {
+      "ownerReportedAtSydney": "2026-10-19 18:27:05",
+      "menus": [
+        "Website Requests",
+        "Packing Slips"
+      ]
+    },
+    "savedReviewReopen": {
+      "orderId": "ORD-000053",
+      "status": "Confirmed",
+      "total": 66,
+      "cookPayout": 50,
+      "reviewState": "VERIFIED",
+      "reviewUpdatedAt": "2026-10-19T07:28:46.817Z",
+      "reviewOrderId": "ORD-000053",
+      "itemOrderId": "ORD-000053",
+      "ownerReportedMenusPresent": [
+        "Website Requests",
+        "Packing Slips"
+      ],
+      "ownerReportedAtSydney": "2026-10-19 18:29:01",
+      "independentReadbackPassed": true
     }
+  },
+  "websitePreConnectionCheck": {
+    "checkedAt": "2026-10-19T07:31:48.700Z",
+    "previewBranch": "codex/order-request-capture-preview",
+    "menuRevision": "f2d81367cf41f8ecefac52edfbcea3ae06e02f34d2c514a366583cba5ede1c0b",
+    "dishCount": 14,
+    "deliveryDate": "2026-10-22",
+    "apiUrlBranchScoped": true,
+    "apiSecretBranchScoped": true,
+    "backendMatchesOldTest": true,
+    "rehearsalEndpointPending": true,
+    "providerActionsIssued": false,
+    "productionWritesIssued": false
   }
 }
