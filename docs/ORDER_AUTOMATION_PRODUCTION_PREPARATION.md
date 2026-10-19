@@ -75,6 +75,23 @@ Attempted a read-only production Vercel runtime-log lookup for existing Routific
 
 Only this invalid-link read probe was issued to production during this mapping step. Production source, deployments, triggers, sheet data, settings, credentials, provider sends and dispatch were not changed.
 
+### Routific provider callback supplied 19 October at 2:30 PM
+
+The owner reports the active callback in Routific as https://makitchens.com.au/api/routific-webhook. This identifies the provider-to-website hop; it does not reveal the sensitive CONTROL_TOWER_WEBHOOK_URL value used for the website-to-Apps-Script hop.
+
+Read-only boundary checks, without following redirects:
+
+| URL | HEAD result | POST with empty JSON and no signature |
+| --- | --- | --- |
+| https://makitchens.com.au/api/routific-webhook | 308 redirect to the corresponding www URL | 308 redirect to the corresponding www URL; request started 2:32:49 PM Sydney |
+| https://www.makitchens.com.au/api/routific-webhook | 405, method not allowed | 401, Missing signature; request started 2:32:56 PM Sydney |
+
+Main is still 27ef64557f82361effbb90d7f75442b32df4096a. Its original Routific website handler checks the provider signature before parsing or forwarding the body; the missing-signature checks above therefore do not reach Apps Script or update delivery/customer records. HEAD 405 on the direct address is consistent with a POST-only route and is not a failed webhook test. Neither probe is an authenticated provider-to-Apps-Script test.
+
+The configured non-www address adds a canonical-domain redirect. Removing that redirect by configuring https://www.makitchens.com.au/api/routific-webhook is a concrete configuration improvement to consider in the approved production plan. Current evidence does not establish whether Routific follows this redirect, whether any delivery updates were missed, or whether that address is causing an outage. The callback was not changed. Do not treat this observation as a fixed production issue or change both Apps Script deployments by elimination.
+
+Routific's official help describes a built-in Test Connection action under Company Settings > Routific Webhook, for checking reachability: https://help.routific.com/en/articles/68-webhooks-get-real-time-updates-from-routific. The next check is that built-in connection test against the existing configuration, followed by the matching Apps Script doPost deployment/version if the request reaches it. This avoids manufacturing a delivery or publishing a route. No provider test has yet been initiated, and the public documentation does not give the exact test payload. Inspect any test options or payload preview before selecting a customer event or replaying an operational event.
+
 ## Production candidate to prepare
 
 1. Build a separate production candidate from the reviewed source, using the live workbook and an explicit production environment. Do not disable TEST guards in-place as a deployment shortcut.
