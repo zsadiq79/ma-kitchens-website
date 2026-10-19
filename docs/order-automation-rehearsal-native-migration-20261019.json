@@ -1,0 +1,71 @@
+{
+  "dateSydney": "2026-10-19",
+  "configuration": {
+    "ownerReportedAtSydney": "17:12:28",
+    "environment": "REHEARSAL",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "externalActions": "BLOCKED",
+    "triggerCount": 0
+  },
+  "preflight": {
+    "sydneyTime": "2026-10-19 17:14:30",
+    "phase": "LEGACY",
+    "sheetCount": 26,
+    "orderColumns": 31,
+    "itemColumns": 23,
+    "formulaAnchors": 9,
+    "legacyState": "CREATED",
+    "legacyOrderId": "ORD-000052",
+    "confirmationState": "UNCERTAIN",
+    "newLedgerCount": 7,
+    "writesIssued": false
+  },
+  "migration": {
+    "sydneyTime": "2026-10-19 17:19:40",
+    "phase": "MIGRATED",
+    "recordsPreserved": true,
+    "ownerWorkspaceActive": false,
+    "publicCaptureActive": false
+  },
+  "nativeReadbackAt": "2026-10-19T06:21:43.248Z",
+  "nativeChecks": {
+    "passed": true,
+    "sheetCount": 33,
+    "orderColumns": 37,
+    "itemColumns": 30,
+    "orderCount": 52,
+    "itemRows": 184,
+    "customerCount": 45,
+    "customerMappingsMatchCurrentLive": true,
+    "allOperationalAndLedgerHeadersMatch": true,
+    "snapshotFormulaAnchorsMatch": 9,
+    "newLedgerRecordCounts": {
+      "Owner Order Reviews": 0,
+      "Order Operation Journal": 0,
+      "Owner Customer Operations": 0,
+      "Order Requests": 0,
+      "Order Request Items": 0,
+      "Order Request Events": 0,
+      "Order Menu State": 0
+    },
+    "unexpectedFinancialDifferences": 0,
+    "existingPaymentStatusQuantityPayoutAndItemInputsPreserved": true,
+    "expectedCancellationFixes": {
+      "orderCount": 2,
+      "deliveryChargeRemovedPerOrder": 10,
+      "derivedContributionAdjusted": true
+    },
+    "legacy": {
+      "state": "CREATED",
+      "orderId": "ORD-000052",
+      "confirmationState": "UNCERTAIN"
+    }
+  },
+  "protectionEvidence": "Owner-reported script reconciliation validated native protected ranges. Metadata connector does not expose protected ranges.",
+  "idempotenceNativeCheck": "PENDING",
+  "ownerWorkspaceActivated": false,
+  "publicCaptureActivated": false,
+  "providerActionsIssued": false,
+  "productionWritesIssued": false,
+  "productionRolloutApproved": false
+}

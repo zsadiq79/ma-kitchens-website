@@ -31,8 +31,17 @@
     "owner"
   ],
   "rehearsalAppsScriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5",
-  "rehearsalCodeInstalled": false,
+  "rehearsalCodeInstalled": true,
   "rehearsalAppsScriptUrl": "https://script.google.com/u/0/home/projects/1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5/edit",
   "editorUrlEvidence": "Owner supplied 19 October 2026. Bound workbook will be independently checked during configuration.",
-  "rehearsalCodeBuilt": true
+  "rehearsalCodeBuilt": true,
+  "rehearsalHtmlInstalled": true,
+  "rehearsalManifestInstalled": true,
+  "installationEvidence": "Owner reported saved files. Bound project/owner configuration and native schema migration completed; installed editor source has not been independently fetched or hashed.",
+  "rehearsalConfiguredAtSydney": "2026-10-19 17:12:28",
+  "rehearsalMigrationCompletedAtSydney": "2026-10-19 17:19:40",
+  "currentRehearsalPhase": "MIGRATED",
+  "ownerWorkspaceActivated": false,
+  "publicCaptureActivated": false,
+  "nativeMigrationEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json"
 }

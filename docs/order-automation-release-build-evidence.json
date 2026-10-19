@@ -15,7 +15,7 @@
       "functions": 468,
       "codeSha256": "454c7a06c1a002a1555cc166a348af7a8229fc27a145dd809aef4933659989d4",
       "lines": 16602,
-      "nativeMigrationVerified": false
+      "nativeMigrationVerified": true
     },
     {
       "profile": {
@@ -31,7 +31,11 @@
     }
   ],
   "productionRolloutApproved": false,
-  "googleInstallationCompleted": false,
+  "googleInstallationCompleted": true,
   "externalSideEffectsIssued": false,
-  "scope": "Offline Apps Script simulations and static inventory. Native rehearsal remains pending."
+  "scope": "Offline Apps Script simulations and static inventory. Native rehearsal remains pending.",
+  "installationEnvironment": "REHEARSAL",
+  "nativeRehearsalSchemaMigrationVerified": true,
+  "productionInstallationCompleted": false,
+  "nativeEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json"
 }
