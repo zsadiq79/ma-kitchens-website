@@ -23,3 +23,7 @@ Account for source Head and public deployment versions separately. Restoring web
 Restore the exact archived editor source/manifest and agreed trigger behavior together with both appropriate web-app versions and website/configuration state. Do not delete the new ledgers or blindly overwrite snapshot formulas or newer rows with an old workbook copy. Recheck all latest customer/order/item links, stock and financial values before resuming. A full data restoration requires a separately reviewed reconciliation plan, not an automatic step in rollback.
 
 No rollback action, source replacement, deployment change, provider send or data overwrite is performed by this package.
+
+## Separate menu generator
+
+Preserve the original Ma Kitchens Menu V2 source files, manifest, actual deployment version and working shortcut before any separately approved generator update. Supplied baselines and candidate hashes are in the menu-generator review, but the shortcut's deployed source version has not been independently retrieved. The private review copy is not a rollback source for later production edits unless its exact source is verified. Restoring this read-only renderer must not restore an old workbook, change order records, or blindly overwrite deadline/price settings updated by the owner. An 8 PM poster time is selected but no LIVE configuration change has been made. Control Tower and generator rollback scopes remain separate.

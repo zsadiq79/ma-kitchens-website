@@ -15,5 +15,13 @@
   "nativeDeploymentVerified": false,
   "productionModified": false,
   "ownerSelectedPosterDeadline": "20:00 on day before delivery, selected 20 October 2026",
-  "liveDeadlineConfigChanged": false
+  "liveDeadlineConfigChanged": false,
+  "privateReviewCopyScriptId": "1aU80zoZXg1-VVmJ3mMwFmEZJz_FrcTuun7JugnTh8-APHAIiNRRF9Foy",
+  "candidateInstalled": false,
+  "automatedTests": {
+    "generator": 9,
+    "combined": 188,
+    "failed": 0
+  },
+  "actualBrowserDownloadsVerified": false
 }

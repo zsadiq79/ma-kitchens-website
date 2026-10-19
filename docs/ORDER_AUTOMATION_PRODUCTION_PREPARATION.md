@@ -219,3 +219,9 @@ The owner supplied current Code.gs for Ma Kitchens Menu V2, a separate read-only
 
 Latest LIVE Menu Config now reads 0% standard discount, minimum five items, AUD 2.50 delivery and no free delivery. Rehearsal remains 20% / AUD 10. Preserve the current LIVE rules and accepted snapshots at cutover, and build the public JSON freshly from LIVE. This updates the latest configuration checkpoint only; no source, workbook, deployment or configuration was changed.
 
+
+## Menu-generator second pass, 20 October 2026 continuation
+
+Supersedes the earlier HTML-pending/MG-01-open checkpoint above. Both current source files are now reviewed. Three Medium fixes are prepared in a separate candidate: deadline time-cell/calendar handling, export shrinking/MIME validation with font readiness, and free-delivery basis wording. Nine new tests plus the existing 179 pass, total 188. The Control Tower source is unchanged. Actual PNG/JPEG/WebP downloads, native visuals and the original deployed-version mapping remain pending. Protected-preview access was not established; local generated HTML navigation was rejected by the cloud browser HTTP/HTTPS-only policy and no workaround was attempted after rejection.
+
+An owner-only private copy, Ma Kitchens Menu V2 PRIVATE REVIEW COPY 20 Oct 2026 (script 1aU80zoZXg1-VVmJ3mMwFmEZJz_FrcTuun7JugnTh8-APHAIiNRRF9Foy), is ready for owner-assisted candidate installation. It still contains the original copied source, not the prepared fixes. The connector cannot edit Apps Script source. The owner chose an 8 PM poster deadline; LIVE remains 17:00 and website enforcement remains 22:00. The private native test will read current LIVE settings without changing them. See the full generator review for evidence and pending checks. Production remains unchanged and unapproved.

@@ -1,6 +1,6 @@
 {
   "reviewedAt": "2026-10-20T08:27:31+11:00",
-  "status": "CURRENT_SERVER_SOURCE_REVIEWED_HTML_EXPORT_REVIEW_PENDING",
+  "status": "BOTH_SOURCE_FILES_REVIEWED_THREE_FIXES_PREPARED_NATIVE_EXPORTS_PENDING",
   "scriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
   "projectName": "Ma Kitchens Menu V2",
   "sourceSha256": "19fbf51903d677d82ee1074f0c4ae2192b8bfc2d5ccc5153a5cecef3d927fc86",
@@ -8,7 +8,7 @@
     "Code.gs",
     "MenuV2.html"
   ],
-  "htmlReceived": false,
+  "htmlReceived": true,
   "manifestReceived": false,
   "architecture": {
     "standalone": true,
@@ -31,24 +31,14 @@
   "localReplay": {
     "nativeReadFixture": true,
     "appsScriptExecuted": false,
-    "htmlRendered": false,
+    "htmlRendered": true,
     "cycle": "MENU-2026-10-22",
     "dishes": 14,
     "mainDishes": 12,
     "desserts": 2,
     "portionsPopulated": 14,
-    "imagesPopulated": 14
-  },
-  "openFinding": {
-    "id": "MG-01",
-    "severity": "Medium",
-    "status": "REPRODUCED_IN_LOCAL_SERVER_REPLAY_FIX_AND_RENDERER_CHECK_PENDING",
-    "function": "calculateDeadlineV2_",
-    "configuredDeadline": "One day before delivery at 17:00 Australia/Sydney",
-    "reproducedDeadline": "21 October 2026 at 20:00 Australia/Sydney",
-    "cause": "A TIME cell read with getValues is treated as a Date. The code casts it to text, splits at colons and falls back to hour 20 when the first segment is not numeric.",
-    "existingNewOrderingRule": "22:00 Sydney on day before delivery, explicitly agreed in original order-automation handoff",
-    "policy": "Do not silently overwrite poster or LIVE deadline settings; review the HTML and explicitly resolve presentation versus ordering cutoff."
+    "imagesPopulated": 14,
+    "renderingScope": "Local template emulator, not native Google templates or actual browser canvas output"
   },
   "latestPricing": {
     "live": {
@@ -66,13 +56,55 @@
     "policy": "Read current LIVE rules during cutover; rehearsal pricing is test evidence and must not replace LIVE configuration. Preserve accepted order/cart snapshots."
   },
   "pending": [
-    "Receive and review MenuV2.html",
-    "Prepare and test narrowly scoped deadline correction after confirming the renderer's use of the field and agreed poster wording",
-    "Verify PNG/WebP/JPEG export logic and actual output",
-    "Confirm current shortcut deployment mapping/version and manifest/timezone"
+    "Install matching candidate in the separate private review copy",
+    "Native menu render and actual PNG/JPEG/WebP downloads with visual inspection",
+    "Confirm original shortcut deployment mapping/version and capture manifest",
+    "Approve and apply intended poster configuration separately; preserve website cutoff unless explicitly changed"
   ],
   "productionModified": false,
   "controlTowerSourceChanged": false,
   "existingOrderTestCount": 179,
-  "newFindingAddedTo36FixedCount": false
+  "htmlSourceSha256": "580bdb7d74c0d9f012e10f8a4e2ce55897ad4864553987f7ea4e3b7b6ac67f99",
+  "generatorTestCount": 9,
+  "combinedTestCount": 188,
+  "findings": [
+    {
+      "id": "MG-01",
+      "severity": "Medium",
+      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_NATIVE_VERIFICATION_PENDING",
+      "issue": "Deadline time-cell parsing and calendar handling"
+    },
+    {
+      "id": "MG-02",
+      "severity": "Medium",
+      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_NATIVE_VERIFICATION_PENDING",
+      "issue": "Canvas downscaling below one and MIME validation"
+    },
+    {
+      "id": "MG-03",
+      "severity": "Medium",
+      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_NATIVE_VERIFICATION_PENDING",
+      "issue": "Free-delivery threshold-basis wording"
+    }
+  ],
+  "deadlineDecision": {
+    "ownerSelectedPosterTime": "20:00 day before delivery",
+    "liveConfigAtRead": "17:00 day before delivery",
+    "liveConfigChanged": false,
+    "websiteEnforcement": "22:00 day before delivery, unchanged",
+    "nativeTestExpectedUntilConfigChange": "5 PM from current LIVE setting"
+  },
+  "privateReviewCopy": {
+    "scriptId": "1aU80zoZXg1-VVmJ3mMwFmEZJz_FrcTuun7JugnTh8-APHAIiNRRF9Foy",
+    "name": "Ma Kitchens Menu V2 PRIVATE REVIEW COPY 20 Oct 2026",
+    "shared": false,
+    "ownerOnlyPermissionVerified": true,
+    "candidateInstalled": false
+  },
+  "browserVerification": {
+    "actualDownloadsVerified": false,
+    "protectedPreviewAccessEstablished": false,
+    "localFileNavigation": "Rejected by cloud browser URL policy: only HTTP/HTTPS allowed",
+    "workaroundAttemptedAfterRejection": false
+  }
 }

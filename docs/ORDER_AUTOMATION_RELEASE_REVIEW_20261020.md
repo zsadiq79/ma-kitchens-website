@@ -2,9 +2,9 @@
 
 20 October 2026, Australia/Sydney.
 
-**36 findings addressed: 16 High, 17 Medium and 3 Low. All 179 automated tests pass. The private rehearsal has passed its designated native checks and is paused. Production has not been upgraded.**
+**36 order-system findings addressed: 16 High, 17 Medium and 3 Low. Three additional Medium menu-generator fixes are prepared, awaiting native export verification. All 188 automated tests pass: 179 order tests plus nine generator tests. The private order rehearsal is paused. Production has not been upgraded.**
 
-**Additional dependency disclosed after this report was prepared: the owner's weekly-menu artwork generator and PNG/WebP/JPEG downloads have not yet passed current-source or export verification. The consolidated Code.gs does not contain that generator. This check remains before production approval. The recent LIVE execution review is complete based on the reviewed Order Entry sample, native record checks and the owner's confirmation that there were no other failures.**
+**The separate weekly-menu generator's Code.gs and MenuV2.html have now both been reviewed. Its three real image downloads and original shortcut deployment mapping remain a preproduction gate. The recent LIVE execution review is complete on the inspected sample, native reconciliation and owner-confirmed basis.**
 
 ## What changed
 
@@ -33,17 +33,13 @@ Production request URL, signing secret and canonical-origin allowlist are not ye
 
 The later workspace-confirmation sender and 10 on 10 offer are excluded from this release and logged in MA_KITCHENS_FUTURE_FEATURES.md.
 
-## Weekly menu artwork generator, added dependency check
+## Weekly menu artwork generator
 
-The owner supplied a separate running-tool shortcut ending AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ/exec and requires the existing PNG, WebP and JPEG downloads. The reviewed 13 Control Tower modules and consolidated candidate contain no menu artwork renderer or download/export implementation. OrderingMenuPublisher writes ordering-menu JSON and is a different function.
+The current Ma Kitchens Menu V2 tool stays separate from Control Tower. The reviewed source reads original LIVE Weekly Menu, Dishes and Menu Config; required 26/17 headers are compatible with migration. The current 14-dish model is preserved. Three Medium fixes address deadline parsing, export bounds/encoding, and free-delivery basis wording. They are prepared and pass nine source/model/mocked-client checks; none is installed in a native project. The owner-only private review copy still contains original copied source.
 
-A 24 September historical handoff describes a separate Slides-bound generator reading the original LIVE Weekly Menu. It does not prove the current shortcut uses that same project or implementation. A read-only HTTP request to the current shortcut redirected to Google Accounts sign-in; no current generator HTML, source or export was retrieved. This does not establish that the app is broken.
+Actual PNG/JPEG/WebP downloads, visual output and original deployment mapping remain pending. The browser blocked local-file navigation because it accepts only HTTP/HTTPS; protected-preview access was not established. No output validation is claimed from automated mocks. See ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md for each fix, hashes, evidence and remaining gate.
 
-Native reads confirm that the rehearsal retains all 26 Weekly Menu columns in their original positions and all 16 inspected Dishes columns. All 18 Weekly Menu and five Dishes row-2 formula anchors match current LIVE. The migration plan does not rename or reorder those tabs or rewrite their columns. This supports schema compatibility but does not confirm the current generator's complete dependencies, menu/offer/deadline content or three download formats.
-
-Obtain the current generator project/source and verify it before declaring this workflow preserved. Keep its existing shortcut/project and any template/output resources intact; there is no established need to merge a separate generator into the Control Tower. Track this as an unverified dependency, not an additional fixed defect. Evidence: order-automation-menu-generator-dependency-20261020.json.
-
-Update at 08:27 Sydney: the owner supplied current Code.gs and a two-file screenshot for the separate Ma Kitchens Menu V2 project. It is a read-only HTML web app using the original LIVE Weekly Menu, Dishes and Menu Config, rather than the historical Slides implementation. All required source columns, including Dishes Q / Dish Category, are preserved in rehearsal. A local replay using current native menu data builds 14 dishes for 22 October. MenuV2.html and the actual three export formats remain unverified. A further Medium source finding MG-01 reproduces a TIME-cell parsing error: configured 17:00 becomes 20:00. It remains open pending the renderer review and correction, so the count of 36 addressed findings has not been increased. Latest LIVE pricing is 0% discount / AUD 2.50 delivery, distinct from rehearsal's 20% / AUD 10. Preserve current LIVE rules at cutover. See ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md and order-automation-menu-generator-source-review-20261020.json.
+The owner selected an 8 PM poster deadline on the preceding day. LIVE remains configured at 17:00; website enforcement remains 22:00. No LIVE setting was changed. Current captured LIVE prices are 0% discount / AUD 2.50 delivery; preserve current LIVE rules at cutover rather than rehearsal's 20% / AUD 10.
 
 ## LIVE failed-execution sample, 20 October 2026
 
@@ -97,3 +93,11 @@ At 07:56 Sydney on 20 October, the owner confirmed there were no other failures.
 | 34 | Low | A fresh rehearsal copy had no Packing Slips menu because its original trigger was absent. The production HTML also retained a TEST startup label. | The existing owner opening handler now adds the packing menu without creating another trigger. The production startup text now says Owner workspace ready. Menu wiring passes offline checks, and the owner confirmed both menus after installing the source and reopening the workbook. |
 | 35 | Medium | The website stopped waiting after 12 seconds while native Apps Script capture was still committing. A real rehearsal request was saved once as reference 1000 but the website returned ORDER_CAPTURE_UNCERTAIN. | Recovery found the same unassigned request. Both request routes now wait up to 45 seconds within an explicit 60-second function budget. No automatic write retries were added. Two regression checks pass, bringing the suite to 179. The revised preview is READY and native capture/recovery/retry/conflict checks pass; a fresh capture completed successfully in 19,929 ms. |
 | 36 | Low | Integer percentage labels rendered as 20.% Off because the inherited optional-decimal number format retained a decimal point. Numeric pricing was correct. | The prepared release selects an integer format for whole percentages and retains up to two decimal places for fractional discounts. Future writer commits normalize the label formula. A locked owner-only helper repairs existing matching formulas without altering prices or statuses. Native rehearsal labels on both accepted test orders now show 20% Off with unchanged financials. The owner installed the source and ran its repair helper; all 4998 formulas now pass native checks with no unexpected original financial differences. |
+
+## Additional prepared generator findings
+
+| ID | Severity | Finding | Prepared fix and verification |
+| --- | --- | --- | --- |
+| MG-01 | Medium | Sheets TIME Date parsed as text, causing fallback to 20:00. | Typed clock parsing, validation and spreadsheet-calendar calculation. Time/DST tests pass; native verification pending. |
+| MG-02 | Medium | Very large canvases could not shrink below scale 1; image encoders could return a different format. | Permit bounded shrinking, validate MIME for all formats and await fonts. Mocked pipeline/error checks pass; actual downloads pending. |
+| MG-03 | Medium | Free-delivery text always described a pre-discount threshold. | Respect the existing basis setting. Both wording variants pass; native visual verification pending. |

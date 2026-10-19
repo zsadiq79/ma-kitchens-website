@@ -1,6 +1,6 @@
 {
   "checkedAt": "2026-10-20 Australia/Sydney",
-  "status": "CURRENT_SERVER_SOURCE_COMPATIBLE_HTML_EXPORT_AND_DEADLINE_CORRECTION_PENDING",
+  "status": "SOURCE_COMPATIBLE_THREE_FIXES_PREPARED_NATIVE_EXPORTS_PENDING",
   "userShortcut": "https://script.google.com/macros/s/AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ/exec",
   "userRequiredOutputs": [
     "PNG",
@@ -77,25 +77,29 @@
         "Allergens / Notes",
         "Image URL",
         "Average Rating",
-        "Rating Count"
+        "Rating Count",
+        "Dish Category"
       ],
       "headersMatch": true,
       "row2FormulaAnchorsCompared": 5,
-      "row2FormulaAnchorsMatch": true
+      "row2FormulaAnchorsMatch": true,
+      "headersInspected": 17
     }
   ],
   "checkedMigrationBehavior": "Adds order/item snapshots and private ledgers; does not rename, reorder or rewrite Weekly Menu or Dishes columns.",
   "pending": [
-    "Review MenuV2.html and actual PNG/WebP/JPEG outputs",
-    "Correct and verify MG-01 time-cell parsing; explicitly resolve poster versus ordering deadline wording",
-    "Confirm shortcut deployment version/mapping and manifest/timezone"
+    "Install matching candidate in the separate private review copy",
+    "Native menu render and actual PNG/JPEG/WebP downloads with visual inspection",
+    "Confirm original shortcut deployment mapping/version and capture manifest",
+    "Approve and apply intended poster configuration separately; preserve website cutoff unless explicitly changed"
   ],
   "productionModified": false,
   "currentProject": {
     "name": "Ma Kitchens Menu V2",
     "scriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
     "suppliedServerSourceSha256": "19fbf51903d677d82ee1074f0c4ae2192b8bfc2d5ccc5153a5cecef3d927fc86",
-    "htmlSupplied": false,
+    "htmlSupplied": true,
     "deployedSourceIndependentlyVerified": false
-  }
+  },
+  "sourceReview": "ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md"
 }
