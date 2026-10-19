@@ -464,8 +464,44 @@
     "apiUrlBranchScoped": true,
     "apiSecretBranchScoped": true,
     "backendMatchesOldTest": true,
-    "rehearsalEndpointPending": true,
+    "rehearsalEndpointPending": false,
     "providerActionsIssued": false,
-    "productionWritesIssued": false
+    "productionWritesIssued": false,
+    "endpointConfiguredAt": "2026-10-19T07:45:15.802Z",
+    "matchingSigningSecretPending": true,
+    "redeploymentPending": true
+  },
+  "rehearsalWebApp": {
+    "checkedAt": "2026-10-19T07:45:15.802Z",
+    "url": "https://script.google.com/macros/s/AKfycbzm4aBFH6yKiqsul7Ts6nsRtzlAJRfMQLQoK3VUbv28GMokknU5Hm7hqIfB2JfwCm87xA/exec",
+    "httpStatus": 200,
+    "response": {
+      "ok": true,
+      "environment": "REHEARSAL",
+      "externalActions": "BLOCKED"
+    },
+    "captureEnabled": false,
+    "captureGateProbePending": false,
+    "captureGateProbe": {
+      "httpStatus": 200,
+      "response": {
+        "ok": false,
+        "error": "ORDER_REQUEST_NOT_READY"
+      },
+      "payload": "Empty JSON; no valid request signature or operational order was submitted."
+    },
+    "previewConfiguration": {
+      "projectId": "prj_XY2JKlYycxkX7uIWhPQxE8lccVJV",
+      "branch": "codex/order-request-capture-preview",
+      "key": "ORDER_REQUEST_API_URL",
+      "target": [
+        "preview"
+      ],
+      "readbackVerified": true,
+      "matchingSigningSecretPending": true,
+      "redeploymentPending": true
+    },
+    "providerActionsIssued": false,
+    "productionChangesIssued": false
   }
 }

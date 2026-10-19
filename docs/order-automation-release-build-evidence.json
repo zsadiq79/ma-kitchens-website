@@ -35,7 +35,7 @@
   "productionRolloutApproved": false,
   "googleInstallationCompleted": true,
   "externalSideEffectsIssued": false,
-  "scope": "177 offline checks and static inventory, plus native rehearsal migration/rerun, owner activation, customer save, manual order verification/repeated checks, cook and delivery previews, packing preview, and cancellation/restoration with standard and free-delivery calculations. All 3,998 delivery-charge formulas were repaired and read back. The updated source repair rerun returned zero changes. The owner confirmed both menus and reopened ORD-000053; independent readback confirms VERIFIED and $66. Website preview menu/revision matches this rehearsal and its request variables are branch-scoped, still pointing to the earlier TEST endpoint. New rehearsal web-app deployment, website capture/recovery and external provider behavior remain pending; production remains unchanged.",
+  "scope": "177 offline checks and static inventory, plus native rehearsal migration/rerun, owner activation, customer save, manual order verification/repeated checks, cook and delivery previews, packing preview, and cancellation/restoration with standard and free-delivery calculations. All 3,998 delivery-charge formulas were repaired and read back. The updated source repair rerun returned zero changes. The owner confirmed both menus and reopened ORD-000053; independent readback confirms VERIFIED and $66. Website preview menu/revision matches this rehearsal and its request variables are branch-scoped, now updated to the separately deployed rehearsal endpoint, with native HTTP 200 REHEARSAL health verified and capture still blocked. Preview signing-secret synchronization, redeployment, website capture/recovery and external provider behavior remain pending; production remains unchanged.",
   "installationEnvironment": "REHEARSAL",
   "nativeRehearsalSchemaMigrationVerified": true,
   "productionInstallationCompleted": false,
@@ -58,5 +58,10 @@
     "state": "VERIFIED",
     "total": 66,
     "independentReadbackPassed": true
-  }
+  },
+  "rehearsalWebAppDeployed": true,
+  "rehearsalPublicHealthVerified": true,
+  "previewRehearsalBackendConfigured": true,
+  "previewSigningSecretSynchronizationPending": true,
+  "previewRedeploymentPending": true
 }
