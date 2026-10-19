@@ -2,7 +2,7 @@
 
 Reviewed on 18 and 19 October 2026.
 
-The review identified **27 defects: 13 High, 13 Medium and 1 Low**. Fixes are in the reviewed source. **137 automated tests pass.** The updated TEST candidate is prepared; its final installation and retirement of the old entry controls remain to be run in Google.
+The review identified **27 defects: 13 High, 13 Medium and 1 Low**. Fixes are in the reviewed source. **137 automated tests pass.** The updated TEST candidate is installed. Old-entry retirement completed, and the owner workspace still verifies ORD-000055. The existing TEST web-app deployment is updated and passes health, unsigned-request and legacy-ingress checks.
 
 Severity reflects the potential effect of using the earlier candidate for operational ordering.
 
@@ -65,10 +65,10 @@ The public reference format is now `Order ref: 1000`. Numeric references increas
 
 ## Final TEST steps
 
-1. Install the consolidated 19 October Code.gs candidate in the TEST project. The already installed owner HTML and manifest do not need replacement for this update.
-2. Run `retireLegacyOrderEntryInTest`. It hides the old entry sheet and removes only its own TEST-bound entry menu/edit triggers, while preserving records. It stops before changes if a copied legacy submission is still COMMITTING.
-3. Reopen the TEST spreadsheet and verify the Owner Order workspace and saved ORD-000055 review.
-4. Update the existing TEST web-app deployment to a new version, keeping its URL.
+1. Completed: installed the consolidated 19 October Code.gs candidate in the TEST project. The owner HTML and manifest were retained.
+2. Completed: ran `retireLegacyOrderEntryInTest`. The old entry sheet is hidden, records are retained, and zero matching old entry triggers were present to remove.
+3. Completed: reopened the TEST spreadsheet and confirmed ORD-000055 / VERIFIED in the Owner Order workspace.
+4. Completed: updated the existing TEST web-app deployment to a new version at the same URL. Health returns TEST / external actions BLOCKED; unsigned capture and legacy ingress are rejected. Public handler source is unchanged from the earlier successful signed capture/recovery version.
 
 The cancelled-order total formula is already corrected and verified in the TEST spreadsheet. The consolidated candidate adds its migration and acceptance guard for subsequent setup/writes.
 
