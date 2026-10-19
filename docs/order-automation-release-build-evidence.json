@@ -62,6 +62,8 @@
   "rehearsalWebAppDeployed": true,
   "rehearsalPublicHealthVerified": true,
   "previewRehearsalBackendConfigured": true,
-  "previewSigningSecretSynchronizationPending": true,
-  "previewRedeploymentPending": true
+  "previewSigningSecretSynchronizationPending": false,
+  "previewRedeploymentPending": true,
+  "previewSigningSecretOwnerCopyConfirmed": true,
+  "previewSigningCompatibilityVerified": false
 }
