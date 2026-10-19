@@ -72,7 +72,7 @@
     "financialRecordDifferencesAfterRerun": 0,
     "basis": "Owner followed rerun/preview sequence; independent native comparison against the post-migration checkpoint confirms unchanged 52 order and 184 item financial records. This is not a measured API write-call count."
   },
-  "ownerWorkspaceActivated": false,
+  "ownerWorkspaceActivated": true,
   "publicCaptureActivated": false,
   "providerActionsIssued": false,
   "productionWritesIssued": false,
@@ -105,5 +105,49 @@
       "uniquePublicIds": true
     },
     "passed": true
+  },
+  "activation": {
+    "ownerReportedAtSydney": "2026-10-19 17:31:19",
+    "phase": "ACTIVE",
+    "retiredEntryTriggers": 0,
+    "recordsPreserved": true,
+    "captureEnabled": false,
+    "ownerUiOpenedSuccessfullyAtSydney": "2026-10-19 17:33:28",
+    "ownerConfirmedBanner": "PRODUCTION REHEARSAL",
+    "legacyScreenHiddenVerifiedIndependently": true,
+    "customerCountBeforeManualTest": 45,
+    "samplePhoneAlreadyInCustomers": false
+  },
+  "manualCustomerTest": {
+    "verifiedAt": "2026-10-19T06:45:14.643Z",
+    "customerId": "CUST-000046",
+    "customerCount": 46,
+    "originalCustomerIdentitiesPreserved": 45,
+    "checks": {
+      "newCustomerId": true,
+      "name": true,
+      "phone": true,
+      "postcode": true,
+      "address": true,
+      "consent": true,
+      "numericIntakePhone": true,
+      "intakeConsentFalse": true,
+      "oldIdentitiesPreserved": true,
+      "newTimestampAfterPriorNumeric": true
+    },
+    "operationReady": true,
+    "intakeRowsCreatedForAttempt": 1,
+    "plannedOrder": {
+      "deliveryDate": "2026-10-22",
+      "dishName": "Crazy Haleem",
+      "quantity": 5,
+      "discountPercent": 20,
+      "foodSubtotalCents": 5600,
+      "deliveryFeeCents": 1000,
+      "totalCents": 6600,
+      "cookPayoutCents": 5000,
+      "reviewCompleted": false,
+      "acceptanceCompleted": false
+    }
   }
 }
