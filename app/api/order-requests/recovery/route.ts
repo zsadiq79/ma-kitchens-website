@@ -6,6 +6,8 @@ import { orderRequestFollowUpMessage, validOrderReference } from '../../../../li
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+// Allow Apps Script cold starts and Sheets work before reporting an uncertain result.
+export const maxDuration = 60;
 
 const ACTION = 'order_request_recover';
 const MAX_BODY_BYTES = 2000;
@@ -46,7 +48,7 @@ export async function POST(request: Request) {
   const signature = createHmac('sha256', secret).update(`${timestamp}\n${ACTION}\n${body}`).digest('hex');
   try {
     const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ timestamp, body, signature }), signal: AbortSignal.timeout(12000), cache: 'no-store' });
+      body: JSON.stringify({ timestamp, body, signature }), signal: AbortSignal.timeout(45000), cache: 'no-store' });
     const final = new URL(response.url);
     if (!response.ok || final.protocol !== 'https:' || !['script.google.com', 'script.googleusercontent.com'].includes(final.hostname)) throw new Error();
     const result: unknown = await response.json();

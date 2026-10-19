@@ -55,6 +55,8 @@ These were found while adapting the completed 27-finding TEST review to a staged
 | Medium | A cancelled order could still display a delivery fee or a free-delivery discount although its order total and payout were zero. | Guard both charge formulas, preserve their original active-order calculations, repair existing formulas through an owner-only locked helper and include the guards in all future commits. Native cancellation, free-delivery and restoration checks pass. Original cancelled fee displays were corrected in rehearsal only. |
 | Low | A fresh rehearsal copy had no Packing Slips menu because its original trigger was absent. The production HTML also retained a TEST startup label. | The existing owner opening handler now adds the packing menu without creating another trigger. The production startup text now says Owner workspace ready. Menu wiring passes offline checks, and the owner confirmed both menus after installing the source and reopening the workbook. |
 
+| Medium | The website stopped waiting after 12 seconds while native Apps Script capture was still committing. A real rehearsal request was saved once as reference 1000 but the website returned ORDER_CAPTURE_UNCERTAIN. | Recovery found the same unassigned request. Both request routes now wait up to 45 seconds within an explicit 60-second function budget. No automatic write retries were added. Two regression checks pass, bringing the suite to 179. Native verification of the revised preview is pending. |
+
 ## Offline validation
 
 - 177 tests passed, including the previous 137 and 40 release-specific checks.
@@ -90,3 +92,9 @@ Run migration on current LIVE data under the shared lock after known web-app wri
 
 Rollback must preserve orders and customer changes recorded after the backup. Restoring source or deployment versions is separate from restoring workbook data; never replace the active workbook with the earlier rehearsal or blindly overwrite newer production records from a backup.
 
+
+## Website capture verification, 20 October 2026
+
+The owner ran enableOrderAutomationRequestCapture successfully at 06:21 Sydney. The rebuilt preview at commit 2d2280050bc58125dfbc6c976e18a18d40bcfe7d had already passed signed negative recovery and capture-disabled checks with unchanged native records. After enablement, the first capture saved one UNASSIGNED request, reference 1000, for five Crazy Haleem packs: $70 food, $10 delivery and $80 public estimate. No customer or sender was assigned and no operational order was created. Native records show one request, one item and one REQUEST_SAVED event; operational order count remains 53. The website returned ORDER_CAPTURE_UNCERTAIN because its upstream wait was only 12 seconds. Signed recovery by the original private retry key subsequently returned reference 1000 and the same $80 estimate. No duplicate submission was issued before reconciliation.
+
+The preview route timeout fix is documented in ORDER_AUTOMATION_WEBSITE_CAPTURE_20261020.md. Production has not been modified.

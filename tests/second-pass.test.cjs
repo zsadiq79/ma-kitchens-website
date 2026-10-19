@@ -429,3 +429,28 @@ test('Packing excludes flagged orders and strips internal legacy draft markers',
   f.tables.Orders[1][23]='REVIEW';assert.equal(f.ctx.collectPackingSlipData_().length,0);
   assert.equal(f.ctx.cleanDeliveryNote_('Order Entry draft 123e4567-e89b-42d3-a456-426614174000 | Delivery instructions: Ring twice'),'Ring twice');
 });
+
+
+test('Capture waits within the function budget and sends only once',async()=>{
+  const menu=JSON.parse(fs.readFileSync(path.join(root,'data/published-order-menu.json'),'utf8'));
+  let sends=0, budget;
+  const ctx=await route('app/api/order-requests/route.ts',{
+    AbortSignal:{timeout:ms=>{budget=ms;return new AbortController().signal;}},
+    fetch:async()=>{sends++;const r=Response.json({ok:true,reference:'1000'});Object.defineProperty(r,'url',{value:'https://script.googleusercontent.com/macros/echo'});return r;}
+  });
+  const response=await ctx.POST(new Request('https://audit-preview.test/api/order-requests',{method:'POST',headers:{origin:'https://audit-preview.test','x-real-ip':'slow-save-budget'},body:JSON.stringify({requestKey:crypto.randomUUID(),menuRevision:menu.menuRevision,menuCycleId:menu.menuCycleId,deliveryDate:menu.deliveryDate,items:[{id:menu.meals[0].id,quantity:5}]})}));
+  assert.equal(response.status,200);assert.equal((await response.json()).reference,'1000');
+  assert.equal(sends,1);assert.equal(budget,45000);
+  assert.match(fs.readFileSync(path.join(root,'app/api/order-requests/route.ts'),'utf8'),/export const maxDuration = 60;/);
+});
+
+test('Recovery uses the same bounded Apps Script wait as capture',async()=>{
+  let budget;
+  const ctx=await route('app/api/order-requests/recovery/route.ts',{
+    AbortSignal:{timeout:ms=>{budget=ms;return new AbortController().signal;}},
+    fetch:async()=>{const r=Response.json({ok:true,found:false});Object.defineProperty(r,'url',{value:'https://script.googleusercontent.com/macros/echo'});return r;}
+  });
+  const response=await ctx.POST(new Request('https://audit-preview.test/api/order-requests/recovery',{method:'POST',headers:{origin:'https://audit-preview.test','x-real-ip':'slow-recovery-budget'},body:JSON.stringify({requestKey:crypto.randomUUID()})}));
+  assert.equal(response.status,200);assert.equal((await response.json()).found,false);assert.equal(budget,45000);
+  assert.match(fs.readFileSync(path.join(root,'app/api/order-requests/recovery/route.ts'),'utf8'),/export const maxDuration = 60;/);
+});

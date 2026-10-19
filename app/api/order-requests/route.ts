@@ -7,6 +7,8 @@ import { ORDERING_WHATSAPP_NUMBER, readPublishedOrderMenu } from '../../../lib/p
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+// Allow Apps Script cold starts and Sheets work before reporting an uncertain result.
+export const maxDuration = 60;
 
 const ACTION = 'order_request_capture';
 const MAX_BODY_BYTES = 20000;
@@ -83,7 +85,7 @@ export async function POST(request: Request) {
 
   try {
     const response = await fetch(backend, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: signedEnvelope, signal: AbortSignal.timeout(12000), cache: 'no-store' });
+      body: signedEnvelope, signal: AbortSignal.timeout(45000), cache: 'no-store' });
     const finalUrl = new URL(response.url);
     if (finalUrl.protocol !== 'https:' || !['script.google.com', 'script.googleusercontent.com'].includes(finalUrl.hostname)) throw new Error('BACKEND_FAILED');
     if (!response.ok) throw new Error('BACKEND_FAILED');
