@@ -146,3 +146,14 @@ Build requirements for the production/rehearsal pair:
 Rehearse against a fresh authorized copy of the live workbook, compare operational/customer identities and totals, and verify shared downstream outputs. Preserve or explicitly reconcile any active in-flight submission before cutover. Prepare exact install, deployment, trigger and rollback steps as a concrete reviewable package before requesting production rollout approval.
 
 Actual provider sends, route dispatch and existing document generation were blocked during the TEST pilot. Their activation and any controlled live-order test require the rollout authorization. No customer messages or dispatch actions are authorized by this preparation note.
+
+## Orders arriving before production cutover
+
+Owner confirmed on 19 October at 6:40 PM Sydney that real orders are arriving during rehearsal. Continue using the original LIVE MVP Control Tower for all real orders and customer updates. The production release upgrades that same LIVE workbook in place. No rehearsal rows, customers, histories, counters or ledgers are imported, and no rehearsal workbook replaces LIVE.
+
+At the agreed cutover, pause owner entry and coordinate known automated writers, reconcile in-progress submissions, then create a fresh private LIVE workbook backup and preserve the exact editor source/configuration and deployment rollback references. Capture a fresh pre-migration record inventory from LIVE, including every current order ID, customer identity mapping, item relationship/quantity, statuses, payments, totals and cook payouts. The original 52-order rehearsal baseline is historical evidence only and must never serve as a production cutover limit or replacement dataset.
+
+Run migration on current LIVE data under the shared lock after known web-app writers have the migration guard. Verify every pre-cutover order/customer/item identity and quantity afterward; reconcile financial values against the captured baseline and the explicitly approved cancellation corrections. Validate the next order ID against current LIVE records, durable reservations, old-entry metadata and journals. Only resume entry after the latest real orders are accounted for. Incoming orders during the pause must be reconciled from their original messages/durable attempts without duplicate entry.
+
+Rollback must preserve orders and customer changes recorded after the backup. Restoring source or deployment versions is separate from restoring workbook data; never replace the active workbook with the earlier rehearsal or blindly overwrite newer production records from a backup.
+
