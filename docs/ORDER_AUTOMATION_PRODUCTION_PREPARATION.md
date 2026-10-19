@@ -54,7 +54,22 @@ Read the following files from production main commit 27ef64557f82361effbb90d7f75
 
 The supplied original Code.gs dispatcher supports these menu, feedback, verified WhatsApp and Routific contracts. This is source evidence, not proof that both active deployed snapshots match editor source. Direct provider callback configuration and any additional consumers still require reconciliation. Do not infer that a deployment is unused because it is absent from these two Vercel settings.
 
-Current deployment versions, blank descriptions, access settings and the owner-supplied LIVE trigger list are now recorded above. Privately compare the two production Vercel URL settings with LIVE A/B without sharing any secret. Confirm the actual Meta and Routific callback routes. Record exact consumers and versions before proposing a deployment. Labels and historical notes alone are insufficient proof. No production endpoint requests or configuration changes were issued while recording this inventory.
+Current deployment versions, blank descriptions, access settings and the owner-supplied LIVE trigger list are now recorded above. Both production URL variables are sensitive and non-readable after creation, including in the Vercel Dashboard; do not ask the owner to reveal their values there. Official platform guidance: https://vercel.com/docs/environment-variables/manage-across-environments. Confirm the actual Meta and Routific callback routes and match the consumer destinations through execution evidence or another non-secret configuration record. Record exact consumers and versions before proposing a deployment. Labels and historical notes alone are insufficient proof. No production configuration changes were issued while recording this inventory.
+
+### Read-only production FLOW_MENU_API_URL routing trace
+
+Earlier setup context retrieved on 19 October indicates an intended Routific destination of LIVE B and a Meta destination of LIVE A, but it does not establish the currently saved Vercel values. Keep both mappings pending until verified.
+
+To identify the deployment behind FLOW_MENU_API_URL without reading that sensitive value, issued one request to https://www.makitchens.com.au/api/feedback using action=feedback_read and a newly generated random, nonexistent feedback token. No existing customer link was used, and browserOpened, submission, revision and event fields were absent. Reviewed the production website forwarding contract and original Apps Script read path first. A nonexistent token is rejected during the locked link lookup before any tracking, feedback, customer or operational-order write. No test link was created, and the random token was not retained or printed.
+
+- Request started 19 October 2026 at 1:58:29.536 PM Sydney time; completed at 1:58:45.553 PM.
+- HTTP 410, response {"error":"INVALID_LINK"}, which is the expected rejection for this input.
+- Correlation ID a793d258f0a7467da0408069e0b1cc0d.
+- Server timing: route 2770 ms, upstream 2770 ms, Apps Script 1481 ms, lock 65 ms, sheet reads 751 ms, sheet writes 0 ms.
+- This confirms a successful authenticated website-to-Apps-Script feedback lookup and expected invalid-link handling. It does not yet identify LIVE A/B, verify a real feedback submission, or exercise provider sending.
+- Next evidence: the LIVE project's doPost execution around 1:58 PM and its Deployment/version value. Matching it will identify the current menu/feedback/verified-WhatsApp destination because all three read FLOW_MENU_API_URL. Routific uses its separate setting and still needs independent mapping.
+
+Only this invalid-link read probe was issued to production during this mapping step. Production source, deployments, triggers, sheet data, settings, credentials, provider sends and dispatch were not changed.
 
 ## Production candidate to prepare
 
