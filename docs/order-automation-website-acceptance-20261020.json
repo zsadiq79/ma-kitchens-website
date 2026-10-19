@@ -1,0 +1,69 @@
+{
+  "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+  "orderId": "ORD-000054",
+  "requestReference": "1002",
+  "orderRow": 55,
+  "itemRow": 188,
+  "customerId": "CUST-000023",
+  "reviewId": "REV-ed4faae4-b6ef-4b00-bfda-c276b9dd83d4",
+  "checks": {
+    "singleOrder": true,
+    "singleItem": true,
+    "singleReview": true,
+    "singleJournal": true,
+    "requestAccepted": true,
+    "requestOrderLink": true,
+    "customerAndSender": true,
+    "reviewVerified": true,
+    "journalRecorded": true,
+    "snapshots": true,
+    "pricing": true,
+    "financials": true,
+    "status": true,
+    "noManualConfirmationMarked": true,
+    "stock": true,
+    "originalSyntheticOrderPreserved": true
+  },
+  "passed": true,
+  "financials": {
+    "foodSubtotal": 56,
+    "delivery": 10,
+    "total": 66,
+    "cookPayout": 50,
+    "contribution": 16,
+    "quantity": 5,
+    "discountPercent": 20
+  },
+  "menuStock": {
+    "before": 45,
+    "after": 40,
+    "totalCommitted": 10
+  },
+  "requestEvents": [
+    "REQUEST_SAVED",
+    "WHATSAPP_RECEIVED",
+    "OWNER_REVIEWED",
+    "REQUEST_ACCEPTED"
+  ],
+  "orderCount": 54,
+  "itemCount": 186,
+  "providerActionsIssued": false,
+  "productionWritesIssued": false,
+  "browserJourneyOwnerReported": {
+    "reference": "1002",
+    "senderLookupMatchedSavedCustomer": true,
+    "reviewTotal": 66,
+    "acceptedResult": "ORD-000054 · VERIFIED"
+  },
+  "remainingChecks": [
+    "Reopen the saved review and repeat the native saved-order check.",
+    "Capture pause and signed recovery.",
+    "Final production source backup, integration gates and explicit rollout approval."
+  ],
+  "cosmeticFollowup": {
+    "severity": "Low",
+    "location": "Inherited Order Items price-treatment display",
+    "observation": "The inherited TEXT(disc,\"0.##\") expression renders an integer discount as 20.% Off. Numeric prices and all financial values are correct.",
+    "status": "Queue with final source/formula polish before production rollout."
+  }
+}
