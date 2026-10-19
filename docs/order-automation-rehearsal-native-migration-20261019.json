@@ -62,10 +62,48 @@
     }
   },
   "protectionEvidence": "Owner-reported script reconciliation validated native protected ranges. Metadata connector does not expose protected ranges.",
-  "idempotenceNativeCheck": "PENDING",
+  "idempotenceNativeCheck": {
+    "status": "PASSED",
+    "ownerReportedPreviewAtSydney": "2026-10-19 17:25:05",
+    "reportedPhase": "MIGRATED",
+    "sheetCount": 33,
+    "newLedgerCount": 0,
+    "previewWritesIssued": false,
+    "financialRecordDifferencesAfterRerun": 0,
+    "basis": "Owner followed rerun/preview sequence; independent native comparison against the post-migration checkpoint confirms unchanged 52 order and 184 item financial records. This is not a measured API write-call count."
+  },
   "ownerWorkspaceActivated": false,
   "publicCaptureActivated": false,
   "providerActionsIssued": false,
   "productionWritesIssued": false,
-  "productionRolloutApproved": false
+  "productionRolloutApproved": false,
+  "privateMenuPreparation": {
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "checkedAt": "2026-10-19T06:29:30.126Z",
+    "ownerReportedPreviewAtSydney": "2026-10-19 17:25:05",
+    "ownerReportedMenuPreparationCompletedAtSydney": "2026-10-19 17:27:04",
+    "sheetCount": 33,
+    "orderCount": 52,
+    "itemRows": 184,
+    "financialChangesSinceMigration": [],
+    "menuStatus": "ACTIVE",
+    "menuCycleId": "MENU-2026-10-22",
+    "deliveryDate": "2026-10-22",
+    "menuRevision": "f2d81367cf41f8ecefac52edfbcea3ae06e02f34d2c514a366583cba5ede1c0b",
+    "dishCount": 14,
+    "minimumOrderItems": 5,
+    "deliveryFeeCents": 1000,
+    "authoritativeMenuMismatches": [],
+    "websitePublicationIssued": false,
+    "publicCaptureActivated": false,
+    "ownerWorkspaceActivated": false,
+    "externalProviderActionsIssued": false,
+    "revisionAndIdentityChecks": {
+      "revisionMatches": true,
+      "publicIdsMatch": true,
+      "uniqueMenuLineIds": true,
+      "uniquePublicIds": true
+    },
+    "passed": true
+  }
 }
