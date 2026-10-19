@@ -50,7 +50,7 @@ Read the following files from production main commit 27ef64557f82361effbb90d7f75
 | app/api/whatsapp-flow/route.ts | FLOW_MENU_API_URL | POST action=menu; FLOW_MENU_API_SECRET in JSON body | LIVE A, Version 46, verified through shared setting and execution trace |
 | lib/feedbackApi.ts | FLOW_MENU_API_URL | POST action=feedback_read, feedback_draft, feedback_event or feedback_submit; same secret in JSON body | LIVE A, Version 46, directly traced through invalid-link lookup |
 | app/api/whatsapp-events/route.ts | FLOW_MENU_API_URL | Verify Meta signature, then POST action=whatsapp_verified with forwarding secret and payload | LIVE A, Version 46, verified through shared setting and execution trace; upstream Meta subscription destination still to reconcile |
-| app/api/routific-webhook/route.js | CONTROL_TOWER_WEBHOOK_URL | Verify Routific signature, then POST controlTowerSecret and payload; backend requires status=200 acknowledgement | A or B, pending |
+| app/api/routific-webhook/route.js | CONTROL_TOWER_WEBHOOK_URL | Verify Routific signature, then POST controlTowerSecret and payload; backend requires status=200 acknowledgement | Authenticated provider test reached Apps Script and received status 200; A or B/version still pending |
 
 The supplied original Code.gs dispatcher supports these menu, feedback, verified WhatsApp and Routific contracts. This is source evidence, not proof that both active deployed snapshots match editor source. Direct provider callback configuration and any additional consumers still require reconciliation. Do not infer that a deployment is unused because it is absent from these two Vercel settings.
 
@@ -88,9 +88,20 @@ Read-only boundary checks, without following redirects:
 
 Main is still 27ef64557f82361effbb90d7f75442b32df4096a. Its original Routific website handler checks the provider signature before parsing or forwarding the body; the missing-signature checks above therefore do not reach Apps Script or update delivery/customer records. HEAD 405 on the direct address is consistent with a POST-only route and is not a failed webhook test. Neither probe is an authenticated provider-to-Apps-Script test.
 
-The configured non-www address adds a canonical-domain redirect. Removing that redirect by configuring https://www.makitchens.com.au/api/routific-webhook is a concrete configuration improvement to consider in the approved production plan. Current evidence does not establish whether Routific follows this redirect, whether any delivery updates were missed, or whether that address is causing an outage. The callback was not changed. Do not treat this observation as a fixed production issue or change both Apps Script deployments by elimination.
+The configured non-www address adds a canonical-domain redirect. The owner-initiated provider test below followed that path successfully and reached the www website handler. Therefore this redirect is not a demonstrated current connection failure. Configuring https://www.makitchens.com.au/api/routific-webhook directly remains an optional improvement to remove an extra hop in an approved maintenance step, rather than a reason to change the current callback during preparation. The callback was not changed. Do not claim missed deliveries from the redirect observation or change both Apps Script deployments by elimination.
 
-Routific's official help describes a built-in Test Connection action under Company Settings > Routific Webhook, for checking reachability: https://help.routific.com/en/articles/68-webhooks-get-real-time-updates-from-routific. The next check is that built-in connection test against the existing configuration, followed by the matching Apps Script doPost deployment/version if the request reaches it. This avoids manufacturing a delivery or publishing a route. No provider test has yet been initiated, and the public documentation does not give the exact test payload. Inspect any test options or payload preview before selecting a customer event or replaying an operational event.
+Routific's official help describes a built-in Test Connection action under Company Settings > Routific Webhook, for checking reachability: https://help.routific.com/en/articles/68-webhooks-get-real-time-updates-from-routific. The owner used that existing test button and supplied image(20261019-033459).png at 2:35 PM. Its dialog says a test was sent to the unchanged non-www callback and asks the owner to check its arrival. That dialog alone is not a backend success acknowledgement.
+
+Read the production Vercel runtime logs for the corresponding request, 694ms-1792380883054-414c3d1f6ba4, without printing customer payloads or credentials. They show:
+
+- 19 October at 2:34:43.120 PM Sydney, POST /api/routific-webhook, domain www.makitchens.com.au, production main deployment dpl_8Wt9R8WEcLbFAddsxsfsRCZAjZvj: provider signature verified.
+- The verified test payload is exactly a message of Routific test webhook and timestamp 2026-10-19T03:34:42.536Z. It has no type, order, route or delivery data.
+- At 2:34:44.294 PM, the same website request logged the Apps Script acknowledgement {"status":200,"message":"Ignored unsupported Routific event."}.
+- That is the expected harmless response to a payload with no event type. The original receiver returns before operational processing for that input. No delivery was manufactured, status changed, route published or customer message requested.
+- This verifies the current provider signature, redirect-following behavior for this test, Vercel forwarding credentials, transport to an Apps Script receiver and backend acknowledgement. It does not exercise a real order.status_updated or route.published event or identify the Apps Script deployment/version by itself.
+- The error log at 2:33:05 PM reporting a missing signature corresponds to the deliberate unsigned boundary check above. Do not classify it as a failing Routific delivery.
+
+Next evidence: the LIVE Apps Script project's doPost execution around 2:34:43 PM and its Deployment/version. Logs are not required; the execution row is sufficient to finish matching the delivery backend to LIVE A or B.
 
 ## Production candidate to prepare
 
