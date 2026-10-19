@@ -215,7 +215,7 @@
     "reviewUpdatedAt": "2026-10-19T07:02:01.330Z",
     "ownerFollowedRepeatedCheckInstruction": true,
     "verifiedAt": "2026-10-19T07:04:19.661Z",
-    "ownerReportedResult": "ORD-000053 · VERIFIED",
+    "ownerReportedResult": "ORD-000053 \u00b7 VERIFIED",
     "verificationBasis": "Owner reported the same verified result after the requested repeated check. Independent native reads show one matching order, one matching item, one review and one journal operation; the review has a fresh check timestamp."
   },
   "confirmedOrderDownstream": {
@@ -264,7 +264,7 @@
           "orderId": "ORD-000053",
           "customerMatches": true,
           "addressMatches": true,
-          "window": "4–10 PM",
+          "window": "4\u201310 PM",
           "notesMatch": true
         }
       ],
@@ -463,13 +463,13 @@
     "deliveryDate": "2026-10-22",
     "apiUrlBranchScoped": true,
     "apiSecretBranchScoped": true,
-    "backendMatchesOldTest": true,
+    "backendMatchesOldTest": false,
     "rehearsalEndpointPending": false,
     "providerActionsIssued": false,
     "productionWritesIssued": false,
     "endpointConfiguredAt": "2026-10-19T07:45:15.802Z",
     "matchingSigningSecretPending": false,
-    "redeploymentPending": true
+    "redeploymentPending": false
   },
   "rehearsalWebApp": {
     "checkedAt": "2026-10-19T07:45:15.802Z",
@@ -480,7 +480,7 @@
       "environment": "REHEARSAL",
       "externalActions": "BLOCKED"
     },
-    "captureEnabled": false,
+    "captureEnabled": true,
     "captureGateProbePending": false,
     "captureGateProbe": {
       "httpStatus": 200,
@@ -499,7 +499,7 @@
       ],
       "readbackVerified": true,
       "matchingSigningSecretPending": false,
-      "redeploymentPending": true,
+      "redeploymentPending": false,
       "signingSecretOwnerCopy": {
         "ownerReportedSavedAtSydney": "2026-10-20 06:04:17",
         "vercelUpdatedAt": "2026-10-19T19:04:00.004Z",
@@ -511,13 +511,104 @@
           "type": "sensitive"
         },
         "secretValueReadOrPrinted": false,
-        "signedCompatibilityVerified": false,
+        "signedCompatibilityVerified": true,
         "redeploymentPath": "Existing GitHub integration; documentation commit triggers a fresh preview build.",
         "productionChangesIssued": false
       },
-      "signatureCompatibilityVerified": false
+      "signatureCompatibilityVerified": true
     },
     "providerActionsIssued": false,
-    "productionChangesIssued": false
+    "productionChangesIssued": false,
+    "captureEnabledOwnerReportedAtSydney": "2026-10-20 06:21:05",
+    "websiteCaptureVerification": {
+      "deploymentId": "dpl_6epSNkCeMBNcfqsmrGafbvaY5ZD4",
+      "commit": "debe342078310e2c689a7fe38a02fc4a93f1dd5d",
+      "origin": "https://ma-kitchens-website-dgpnyitpn-zsadiq79s-projects.vercel.app",
+      "checks": [
+        {
+          "stage": "retry_saved_request",
+          "status": 200,
+          "elapsedMs": 11456,
+          "response": {
+            "ok": true,
+            "reference": "1000"
+          }
+        },
+        {
+          "stage": "recover_by_capability",
+          "status": 200,
+          "elapsedMs": 10674,
+          "response": {
+            "ok": true,
+            "found": true,
+            "reference": "1000",
+            "status": "UNASSIGNED",
+            "publicTotalCents": 8000
+          }
+        },
+        {
+          "stage": "reject_changed_payload_same_key",
+          "status": 409,
+          "elapsedMs": 10832,
+          "response": {
+            "ok": false,
+            "error": "REQUEST_CONFLICT"
+          }
+        },
+        {
+          "stage": "fresh_capture_with_extended_wait",
+          "status": 200,
+          "elapsedMs": 19929,
+          "response": {
+            "ok": true,
+            "reference": "1001"
+          }
+        },
+        {
+          "stage": "retry_fresh_saved_request",
+          "status": 200,
+          "elapsedMs": 12537,
+          "response": {
+            "ok": true,
+            "reference": "1001"
+          }
+        }
+      ],
+      "productionChangesIssued": false,
+      "providerMessagesSent": false,
+      "browserInteractionVerified": false,
+      "whatsappMessageUsesOrderRef": true,
+      "passed": true,
+      "nativeReadback": {
+        "orderCount": 53,
+        "itemCount": 185,
+        "customerCount": 46,
+        "requestCount": 2,
+        "requestItemCount": 2,
+        "requestEventCount": 2,
+        "requests": [
+          {
+            "reference": "1000",
+            "status": "UNASSIGNED",
+            "customerId": "",
+            "linkedOrderId": "",
+            "publicTotalCents": 8000
+          },
+          {
+            "reference": "1001",
+            "status": "UNASSIGNED",
+            "customerId": "",
+            "linkedOrderId": "",
+            "publicTotalCents": 8000
+          }
+        ]
+      },
+      "automatedTestsPassed": 179,
+      "productionDeploymentUnchanged": {
+        "id": "dpl_8Wt9R8WEcLbFAddsxsfsRCZAjZvj",
+        "commit": "27ef64557f82361effbb90d7f75442b32df4096a",
+        "state": "READY"
+      }
+    }
   }
 }
