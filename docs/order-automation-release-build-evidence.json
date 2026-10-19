@@ -33,7 +33,7 @@
   "productionRolloutApproved": false,
   "googleInstallationCompleted": true,
   "externalSideEffectsIssued": false,
-  "scope": "Offline Apps Script simulations and static inventory. Native rehearsal remains pending.",
+  "scope": "Offline Apps Script simulations and static inventory, plus native rehearsal configuration, schema migration and rerun, private menu preparation, owner activation, synthetic customer save and first verified manual order. Repeated saved-order, request and downstream checks remain pending. External provider behavior and production installation are unverified.",
   "installationEnvironment": "REHEARSAL",
   "nativeRehearsalSchemaMigrationVerified": true,
   "productionInstallationCompleted": false,

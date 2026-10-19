@@ -146,8 +146,63 @@
       "deliveryFeeCents": 1000,
       "totalCents": 6600,
       "cookPayoutCents": 5000,
-      "reviewCompleted": false,
-      "acceptanceCompleted": false
+      "reviewCompleted": true,
+      "acceptanceCompleted": true
     }
+  },
+  "manualOrderTest": {
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "verifiedAt": "2026-10-19T07:00:21.813Z",
+    "orderId": "ORD-000053",
+    "orderRow": 54,
+    "itemRows": [
+      187
+    ],
+    "customerId": "CUST-000046",
+    "reviewId": "REV-5183aec7-7e31-4790-946d-7833198fc1ca",
+    "operationId": "OWN-REV-5183aec7-7e31-4790-946d-7833198fc1ca",
+    "checks": {
+      "singleOperationalOrder": true,
+      "singleOperationalItem": true,
+      "customerId": true,
+      "deliveryDate": true,
+      "customerIdentitySnapshot": true,
+      "addressAndInstructionsSnapshot": true,
+      "reviewVerified": true,
+      "journalRecorded": true,
+      "operationIdentity": true,
+      "priceAndCookSnapshots": true,
+      "itemIdentitySnapshot": true,
+      "effectiveLineValues": true,
+      "orderFinancials": true,
+      "orderFormulaChecks": true,
+      "pricingRulesSnapshot": true,
+      "pendingAndPaymentRequested": true,
+      "noManualConfirmationMarked": true,
+      "stockReducedCorrectly": true,
+      "originalFinancialRowsPreserved": true
+    },
+    "financials": {
+      "foodSubtotal": 56,
+      "deliveryFee": 10,
+      "total": 66,
+      "cookPayout": 50,
+      "contribution": 16,
+      "totalQuantity": 5,
+      "discountPercent": 20
+    },
+    "menuStock": {
+      "menuLineId": "ML-20261022-M0058",
+      "before": 50,
+      "committed": 5,
+      "after": 45
+    },
+    "orderCount": 53,
+    "itemCount": 185,
+    "originalOrderCount": 52,
+    "originalItemCount": 184,
+    "repeatedSavedOrderChecksCompleted": false,
+    "providerActionsIssued": false,
+    "productionWritesIssued": false
   }
 }
