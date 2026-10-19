@@ -26,7 +26,7 @@
   "backupScriptUrl": "https://script.google.com/u/0/home/projects/1dm5nrH-MmcbUmfh_e-SiBCBYT_1CDu08voldBNbK5bXwVSXPlA3pLmbh/edit",
   "ownerReportedAtSydney": "2026-10-20 07:20:20",
   "boundScriptConfirmationBasis": "Owner opened Apps Script from the named preparation backup, supplied this distinct editor URL, and reported the original separate .gs files. No backup source was modified or executed.",
-  "sourceInventoryComparisonPending": true,
+  "sourceInventoryComparisonPending": false,
   "sourceHashComparisonPending": true,
   "bindingIndependentlyRuntimeVerified": false,
   "browserReadAttempt": {
@@ -47,5 +47,30 @@
     "PermanentWhatsAppLog.gs",
     "Routific.gs",
     "RoutificWebhook.gs"
-  ]
+  ],
+  "visibleSourceFiles": [
+    "Code.gs",
+    "Routific.gs",
+    "RoutificWebhook.gs",
+    "FeedbackDryRun.gs",
+    "FeedbackSender.gs",
+    "FeedbackInteraction.gs",
+    "PackingSlips.gs",
+    "PermanentWhatsAppLog.gs",
+    "FeedbackWeb.gs",
+    "FeedbackLegacyBridge.gs",
+    "FeedbackWebSender.gs",
+    "FeedbackProductionConfig.gs",
+    "OrderingMenuPublisher.gs"
+  ],
+  "visibleSourceFileCount": 13,
+  "originalModuleNamesMatched": 12,
+  "additionalKnownModule": "OrderingMenuPublisher.gs",
+  "publisherAlreadyIncludedInReviewedCandidate": true,
+  "inventoryEvidence": {
+    "attachment": "image(20261019-202532).png",
+    "ownerProvidedAtSydney": "2026-10-20 07:26:05",
+    "visuallyInspected": true,
+    "scope": "File names only. Source contents and hidden manifest are not verified by this screenshot."
+  }
 }
