@@ -70,10 +70,34 @@
       }
     ]
   },
-  "phasePropertyNativeLogPending": true,
+  "phasePropertyNativeLogPending": false,
   "savedOrderRecheck": {
     "orderId": "ORD-000054",
     "state": "VERIFIED",
     "nativeUpdatedAt": "2026-10-19T19:50:38.986Z"
+  },
+  "ownerNativePreflight": {
+    "ownerReportedAtSydney": "2026-10-20 06:56:35",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "phase": "PAUSED",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "sheetCount": 33,
+    "orderColumns": 37,
+    "itemColumns": 30,
+    "formulaAnchors": 9,
+    "legacyState": "CREATED",
+    "legacyOrderId": "ORD-000052",
+    "confirmationState": "UNCERTAIN",
+    "triggers": [
+      {
+        "handler": "orderRequestInboxOnOpen_",
+        "source": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+        "event": "ON_OPEN"
+      }
+    ],
+    "newLedgerCount": 0,
+    "writesIssued": false,
+    "externalActions": "BLOCKED"
   }
 }

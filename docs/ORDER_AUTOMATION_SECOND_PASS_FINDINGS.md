@@ -81,3 +81,9 @@ Before a production proposal, verify the exact live Apps Script deployment URLs 
 The legacy WhatsApp cart writer retains its original sequential-write/rollback behavior; the new public-request/owner-acceptance path uses the atomic journal. Per-process API rate limits are not distributed. Other projects and direct sheet edits are outside this project's ScriptLock.
 
 No production code, operational data, consumer URL or trigger was changed during this review.
+
+## Subsequent release review, 20 October 2026
+
+The fresh production rehearsal added nine findings to the 27 above: three High, four Medium and two Low. The combined review now records **36 findings: 16 High, 17 Medium and 3 Low**. The additional details and fixes are in ORDER_AUTOMATION_RELEASE_REHEARSAL.md. The current suite has **179 passing tests**. These counts describe the reviewed original TEST source and subsequent release changes; they do not claim production deployment or real provider delivery.
+
+Native rehearsal passed manual and website request acceptance, saved-order rechecks, pricing/stock/snapshots, cancellation/restoration, downstream previews and paused recovery. A native website save exposed a 12-second upstream timeout; the isolated preview now permits a 45-second bounded wait within a 60-second function limit and successfully saved a fresh request in approximately 20 seconds. A final cosmetic discount-label correction is prepared in both release builds and verified on the two rehearsal order labels. Installation and execution of that latest owner repair helper remain pending. Current LIVE source backup/comparison, upstream Meta subscription checks and production approval remain separate release gates.

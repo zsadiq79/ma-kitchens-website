@@ -157,3 +157,11 @@ Run migration on current LIVE data under the shared lock after known web-app wri
 
 Rollback must preserve orders and customer changes recorded after the backup. Restoring source or deployment versions is separate from restoring workbook data; never replace the active workbook with the earlier rehearsal or blindly overwrite newer production records from a backup.
 
+
+## Current rehearsal checkpoint, 20 October 2026
+
+Website request 1002 was created through the owner-tested website/WhatsApp journey, matched to the actual sender and existing customer, reviewed at 20%, and accepted once as ORD-000054. Native records verify $66 total, $50 cook payout, frozen identity/pricing snapshots, Pending / Payment Requested and remaining dish stock 40. Repeated saved-order checks retained VERIFIED. Pausing blocked new captures while preserving recovery of accepted 1002 and unassigned 1001. No extra order/request rows were created. Native paused preflight at 06:56:35 verified the expected schema/protections and retained the legacy uncertainty.
+
+The latest prepared source adds a small discount-label repair and future-writer normalization. Both builds have 472 unique functions and 179 passing tests. Its installation/helper execution in rehearsal remains pending; all earlier native checks were on the prior compatible 470-function source. The labels were already corrected through the Sheets connector on the two rehearsal orders with no change to financial values. This does not authorize changing LIVE.
+
+Future workspace confirmation sending and 10 on 10 automation are logged in MA_KITCHENS_FUTURE_FEATURES.md for later releases. Neither is part of this rollout.

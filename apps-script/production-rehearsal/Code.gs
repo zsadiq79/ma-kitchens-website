@@ -15672,6 +15672,8 @@ function mkOwnerRowFormulaRequests_(orders, orderRow, items, itemRows) {
   itemRows.forEach(row => {
     for (const column of [8, 10, 12, 13, 19, 20, 21, 22]) if (!items.getRange(row, column).getFormula())
       throw new Error('Order item formula coverage is missing at row ' + row + '. Extend the formulas first.');
+    const label = items.getRange(row,8).getFormula();
+    requests.push(mkFormulaCell_(items,row,8,mkReleaseDiscountLabelFormula_(label)));
     const unit = items.getRange(row, 10).getFormula(), total = items.getRange(row, 12).getFormula();
     requests.push(mkFormulaCell_(items, row, 10, '=IF(AC' + row + '<>"",AC' + row + ',' + unit.slice(1) + ')'));
     requests.push(mkFormulaCell_(items, row, 12, '=IF(AC' + row + '<>"",IF(OR(C' + row + '="Cancelled",N' + row + '="Cancelled"),0,ROUND(G' + row + '*AC' + row + ',2)),' + total.slice(1) + ')'));
@@ -16353,6 +16355,29 @@ function repairOrderDeliveryChargeDisplay() {
       if (formula === undefined || formula === '') continue;
       const expected = mkReleaseZeroCancelledCharge_(formula,row);
       if (formula !== expected) requests.push(mkFormulaCell_(orders,row,16 + offset,expected));
+    }
+    if (requests.length) mkReleaseBatch_({requests:requests},book.getId());
+    const result = {ok:true,environment:MK_RELEASE.environment,changedFormulaCount:requests.length,recordsPreserved:true};
+    console.log(JSON.stringify(result)); return result;
+  });
+}
+function mkReleaseDiscountLabelFormula_(formula) {
+  if (typeof formula !== 'string' || formula.charAt(0) !== '=') throw new Error('Discount-label formula needs review.');
+  return formula.split('TEXT(disc,"0.##")').join('TEXT(disc,IF(MOD(disc,1)=0,"0","0.##"))');
+}
+function repairOrderDiscountLabelDisplay() {
+  const book = mkReleaseOwnerBook_(false);
+  return mkLocked_(() => {
+    if (!mkReleaseSchemaReady_()) throw new Error('Complete migration before repairing discount labels.');
+    const state = mkReleaseMigrationState_();
+    mkReleaseValidateState_(state,true); mkReleasePendingCheck_(state);
+    const items = book.getSheetByName(ORDER_ITEMS_SHEET), last = Math.min(5000,items.getMaxRows());
+    const rows = mkReleaseReadRanges_(["'Order Items'!H3:H" + last])[0], requests = [];
+    for (let row = 3; row <= last; row++) {
+      const formula = (rows[row - 3] || [])[0];
+      if (typeof formula !== 'string' || formula.charAt(0) !== '=') continue;
+      const expected = mkReleaseDiscountLabelFormula_(formula);
+      if (formula !== expected) requests.push(mkFormulaCell_(items,row,8,expected));
     }
     if (requests.length) mkReleaseBatch_({requests:requests},book.getId());
     const result = {ok:true,environment:MK_RELEASE.environment,changedFormulaCount:requests.length,recordsPreserved:true};

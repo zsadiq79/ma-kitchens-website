@@ -5,9 +5,9 @@
     "spreadsheetId": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
     "scriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5"
   },
-  "codeSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
-  "functions": 470,
-  "lines": 16632,
+  "codeSha256": "ea4bf111d0447afb2ca5496cae69407fb12a3632ad1f3c1cbaf1d4c396d1389d",
+  "functions": 472,
+  "lines": 16657,
   "originalModules": [
     {
       "name": "Code.gs",
@@ -85,7 +85,7 @@
     },
     {
       "name": "OrderReleaseSupport.gs",
-      "sha256": "d25f217ac02bbc46506d6c15fa376db938dda371e4ba2c4d9fb8de01ef73791d"
+      "sha256": "5bb8fac506643a85d875e7c393b6d05fbb0980ef0a197de72d44122d8183f405"
     },
     {
       "name": "OrderReleaseCommerce.gs",
@@ -400,16 +400,11 @@
     }
   ],
   "installationApproved": true,
-  "nativeMigrationVerified": true,
+  "nativeMigrationVerified": false,
   "productionRolloutApproved": false,
   "knownGates": [
-    "Native website capture/recovery and remaining downstream rehearsal are required.",
+    "Native fresh-copy migration and downstream rehearsal remain required.",
     "Current LIVE editor source backup/confirmation and upstream Meta settings remain required.",
     "No provider sends, route dispatch or document operations are authorized by preparation."
-  ],
-  "ownerReportedReplacementInstalled": true,
-  "editorSourceIndependentlyFetched": false,
-  "nativeRepairVerifiedAtSydney": "2026-10-19 18:23:47",
-  "nativePackingMenuConfirmed": true,
-  "nativeSavedReviewReopenConfirmed": true
+  ]
 }

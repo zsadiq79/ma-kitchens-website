@@ -57,6 +57,8 @@ These were found while adapting the completed 27-finding TEST review to a staged
 
 | Medium | The website stopped waiting after 12 seconds while native Apps Script capture was still committing. A real rehearsal request was saved once as reference 1000 but the website returned ORDER_CAPTURE_UNCERTAIN. | Recovery found the same unassigned request. Both request routes now wait up to 45 seconds within an explicit 60-second function budget. No automatic write retries were added. Two regression checks pass, bringing the suite to 179. The revised preview is READY and native capture/recovery/retry/conflict checks pass; a fresh capture completed successfully in 19,929 ms. |
 
+| Low | Integer percentage labels rendered as 20.% Off because the inherited optional-decimal number format retained a decimal point. Numeric pricing was correct. | The prepared release selects an integer format for whole percentages and retains up to two decimal places for fractional discounts. Future writer commits normalize the label formula. A locked owner-only helper repairs existing matching formulas without altering prices or statuses. Native rehearsal labels on both accepted test orders now show 20% Off with unchanged financials. Latest source/helper installation remains pending. |
+
 ## Offline validation
 
 - 177 tests passed, including the previous 137 and 40 release-specific checks.
@@ -100,3 +102,9 @@ The owner ran enableOrderAutomationRequestCapture successfully at 06:21 Sydney. 
 The preview route timeout fix is documented in ORDER_AUTOMATION_WEBSITE_CAPTURE_20261020.md. Production has not been modified.
 
 The revised preview at debe342078310e2c689a7fe38a02fc4a93f1dd5d passed the native connection sequence. Fresh reference 1001 completed in 19,929 ms with HTTP 200; identical retry returned the same reference. Private capability recovery returned 1000, and changing its quantity with the same retry key returned HTTP 409 REQUEST_CONFLICT. Native records contain exactly two unassigned requests, two items and two save events. Operational orders/items/customers remain 53/185/46. Both requests have no customer or linked operational order. Automated suite: 179 passing tests. Actual browser/WhatsApp/owner acceptance remains pending. See order-automation-website-capture-20261020.json.
+
+## Final paused preflight and prepared label correction, 20 October 2026
+
+The owner-reported native preview at 06:56:35 Sydney returned ok, REHEARSAL, PAUSED, 33 tabs, operational widths 37/30, nine formula anchors, no new ledgers to add, and exactly one owner-workspace on-open trigger. It wrote no records and retained legacy CREATED / ORD-000052 / confirmation UNCERTAIN. This completes the paused structure/protection preflight on the previously installed source.
+
+Latest prepared builds contain 472 unique functions and pass all 179 tests. The only subsequent source change is the display-only discount-label normalization and owner repair helper; the previous installed build had 470 functions. Both rehearsal test-order labels were corrected natively and their order financials remain unchanged. Install the latest rehearsal Code.gs and run repairOrderDiscountLabelDisplay before treating that helper as natively verified. Production remains untouched.

@@ -191,6 +191,29 @@ function repairOrderDeliveryChargeDisplay() {
     console.log(JSON.stringify(result)); return result;
   });
 }
+function mkReleaseDiscountLabelFormula_(formula) {
+  if (typeof formula !== 'string' || formula.charAt(0) !== '=') throw new Error('Discount-label formula needs review.');
+  return formula.split('TEXT(disc,"0.##")').join('TEXT(disc,IF(MOD(disc,1)=0,"0","0.##"))');
+}
+function repairOrderDiscountLabelDisplay() {
+  const book = mkReleaseOwnerBook_(false);
+  return mkLocked_(() => {
+    if (!mkReleaseSchemaReady_()) throw new Error('Complete migration before repairing discount labels.');
+    const state = mkReleaseMigrationState_();
+    mkReleaseValidateState_(state,true); mkReleasePendingCheck_(state);
+    const items = book.getSheetByName(ORDER_ITEMS_SHEET), last = Math.min(5000,items.getMaxRows());
+    const rows = mkReleaseReadRanges_(["'Order Items'!H3:H" + last])[0], requests = [];
+    for (let row = 3; row <= last; row++) {
+      const formula = (rows[row - 3] || [])[0];
+      if (typeof formula !== 'string' || formula.charAt(0) !== '=') continue;
+      const expected = mkReleaseDiscountLabelFormula_(formula);
+      if (formula !== expected) requests.push(mkFormulaCell_(items,row,8,expected));
+    }
+    if (requests.length) mkReleaseBatch_({requests:requests},book.getId());
+    const result = {ok:true,environment:MK_RELEASE.environment,changedFormulaCount:requests.length,recordsPreserved:true};
+    console.log(JSON.stringify(result)); return result;
+  });
+}
 function mkReleaseMigrationState_() {
   const meta = mkReleaseGrid_(MK_RELEASE.spreadsheetId, { fields: 'spreadsheetId,sheets(properties,protectedRanges)' });
   const byName = {};

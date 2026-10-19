@@ -111,7 +111,10 @@ for (const profile of profiles) {
   for (const column of [16,17]) {
     const current = orders.getRange(orderRow,column).getFormula();
     requests.push(mkFormulaCell_(orders,orderRow,column,mkReleaseZeroCancelledCharge_(current,orderRow)));
-  }`));
+  }`).replace('    const unit = items.getRange(row, 10).getFormula(), total = items.getRange(row, 12).getFormula();',
+    `    const label = items.getRange(row,8).getFormula();
+    requests.push(mkFormulaCell_(items,row,8,mkReleaseDiscountLabelFormula_(label)));
+    const unit = items.getRange(row, 10).getFormula(), total = items.getRange(row, 12).getFormula();`));
   change('OrderRequests.gs','setupOrderRequestWorkspace',()=> 'function setupOrderRequestWorkspace() { return migrateOrderAutomationWorkspace(); }');
   change('OrderRequests.gs','orderRequestOwner_',()=> 'function orderRequestOwner_() { mkReleaseOwnerBook_(false); }');
   change('OrderRequests.gs','orderRequestInboxOnOpen_',old => insert(old,"  if(!['ACTIVE','PAUSED'].includes(mkReleasePhase_())) return;")

@@ -1,7 +1,7 @@
 {
-  "dateSydney": "2026-10-19",
-  "tests": 177,
-  "passed": 177,
+  "dateSydney": "2026-10-20",
+  "tests": 179,
+  "passed": 179,
   "failed": 0,
   "originalTestBuildChanged": false,
   "profiles": [
@@ -12,11 +12,11 @@
         "spreadsheetId": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
         "scriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5"
       },
-      "functions": 470,
-      "codeSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
-      "lines": 16632,
-      "nativeMigrationVerified": true,
-      "replacementInstallationConfirmed": true
+      "functions": 472,
+      "codeSha256": "ea4bf111d0447afb2ca5496cae69407fb12a3632ad1f3c1cbaf1d4c396d1389d",
+      "lines": 16657,
+      "nativeMigrationVerified": false,
+      "replacementInstallationConfirmed": false
     },
     {
       "profile": {
@@ -25,9 +25,9 @@
         "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
         "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
       },
-      "functions": 470,
-      "codeSha256": "bd0ac5f07fa41d3dfb183fad2f24e0b98ad4c73bc0950c9fa6d287080900481e",
-      "lines": 16632,
+      "functions": 472,
+      "codeSha256": "fb1c9abc7ebff102715b15ce51705bee60b90b274a7332e4a344da9d09cb2693",
+      "lines": 16657,
       "nativeMigrationVerified": false,
       "replacementInstallationConfirmed": false
     }
@@ -35,13 +35,13 @@
   "productionRolloutApproved": false,
   "googleInstallationCompleted": true,
   "externalSideEffectsIssued": false,
-  "scope": "177 offline checks and static inventory, plus native rehearsal migration/rerun, owner activation, customer save, manual order verification/repeated checks, cook and delivery previews, packing preview, and cancellation/restoration with standard and free-delivery calculations. All 3,998 delivery-charge formulas were repaired and read back. The updated source repair rerun returned zero changes. The owner confirmed both menus and reopened ORD-000053; independent readback confirms VERIFIED and $66. Website preview menu/revision matches this rehearsal and its request variables are branch-scoped, now updated to the separately deployed rehearsal endpoint, with native HTTP 200 REHEARSAL health verified and capture still blocked. Preview signing-secret synchronization, redeployment, website capture/recovery and external provider behavior remain pending; production remains unchanged.",
+  "scope": "179 automated checks; prior compatible 470-function source passed native migration, rerun, protected-ledger validation, manual and website acceptance, repeated saved-order checks, pricing/stock/cancellation, cook/delivery/packing previews and paused signed recovery. Latest prepared 472-function source adds only the discount-label repair helper and per-commit label correction. Its owner installation/helper execution remains pending. No production installation or provider sends were issued.",
   "installationEnvironment": "REHEARSAL",
   "nativeRehearsalSchemaMigrationVerified": true,
   "productionInstallationCompleted": false,
   "nativeEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json",
-  "preparedCodeReplacementInstalled": true,
-  "rehearsalReplacementConfirmationBasis": "Owner saved and successfully executed repairOrderDeliveryChargeDisplay. Editor source has not been fetched independently.",
+  "preparedCodeReplacementInstalled": false,
+  "rehearsalReplacementConfirmationBasis": "Previous source was owner-installed and exercised. Latest 472-function replacement has not yet been installed; current editor source has not been independently fetched.",
   "nativeRehearsalRepairCheck": {
     "ownerReportedAtSydney": "2026-10-19 18:23:47",
     "ok": true,
@@ -63,7 +63,57 @@
   "rehearsalPublicHealthVerified": true,
   "previewRehearsalBackendConfigured": true,
   "previewSigningSecretSynchronizationPending": false,
-  "previewRedeploymentPending": true,
+  "previewRedeploymentPending": false,
   "previewSigningSecretOwnerCopyConfirmed": true,
-  "previewSigningCompatibilityVerified": false
+  "previewSigningCompatibilityVerified": true,
+  "previousInstalledBuild": {
+    "profile": {
+      "folder": "production-rehearsal",
+      "environment": "REHEARSAL",
+      "spreadsheetId": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+      "scriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5"
+    },
+    "functions": 470,
+    "codeSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
+    "lines": 16632,
+    "nativeMigrationVerified": true,
+    "replacementInstallationConfirmed": true
+  },
+  "latestPreparedCodeInstalled": false,
+  "nativePausedPreflight": {
+    "ownerReportedAtSydney": "2026-10-20 06:56:35",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "phase": "PAUSED",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "sheetCount": 33,
+    "orderColumns": 37,
+    "itemColumns": 30,
+    "formulaAnchors": 9,
+    "legacyState": "CREATED",
+    "legacyOrderId": "ORD-000052",
+    "confirmationState": "UNCERTAIN",
+    "triggers": [
+      {
+        "handler": "orderRequestInboxOnOpen_",
+        "source": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+        "event": "ON_OPEN"
+      }
+    ],
+    "newLedgerCount": 0,
+    "writesIssued": false,
+    "externalActions": "BLOCKED"
+  },
+  "discountLabelRepair": {
+    "severity": "Low",
+    "nativeRehearsalCells": [
+      "Order Items!H187",
+      "Order Items!H188"
+    ],
+    "before": "20.% Off",
+    "after": "20% Off",
+    "financialsUnchanged": true,
+    "sourceReady": true,
+    "nativeOwnerHelperRunPending": true
+  }
 }

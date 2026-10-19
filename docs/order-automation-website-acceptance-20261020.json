@@ -53,17 +53,21 @@
     "reference": "1002",
     "senderLookupMatchedSavedCustomer": true,
     "reviewTotal": 66,
-    "acceptedResult": "ORD-000054 · VERIFIED"
+    "acceptedResult": "ORD-000054 \u00b7 VERIFIED"
   },
   "remainingChecks": [
-    "Reopen the saved review and repeat the native saved-order check.",
-    "Capture pause and signed recovery.",
-    "Final production source backup, integration gates and explicit rollout approval."
+    "Install the latest prepared discount-label source and run its owner repair helper.",
+    "Final production source backup/comparison, upstream Meta settings and explicit rollout approval."
   ],
   "cosmeticFollowup": {
     "severity": "Low",
     "location": "Inherited Order Items price-treatment display",
     "observation": "The inherited TEXT(disc,\"0.##\") expression renders an integer discount as 20.% Off. Numeric prices and all financial values are correct.",
-    "status": "Queue with final source/formula polish before production rollout."
+    "status": "Source fix prepared in both release builds; native rehearsal H187:H188 now show 20% Off, with both orders financials unchanged. Latest source/helper installation remains pending."
+  },
+  "repeatedSavedOrderCheck": {
+    "ownerReported": "ORD-000054 \u00b7 VERIFIED",
+    "nativeState": "VERIFIED",
+    "nativeUpdatedAt": "2026-10-19T19:50:38.986Z"
   }
 }
