@@ -13,5 +13,7 @@
   "otherBehavior": "Original menu data, images, grouping, ordering, styles and original 22 server functions retained.",
   "configuredPosterDeadline": "Read from Menu Config. No LIVE setting changed.",
   "nativeDeploymentVerified": false,
-  "productionModified": false
+  "productionModified": false,
+  "ownerSelectedPosterDeadline": "20:00 on day before delivery, selected 20 October 2026",
+  "liveDeadlineConfigChanged": false
 }

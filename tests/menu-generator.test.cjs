@@ -18,6 +18,7 @@ test('Deadline accepts actual Sheets time cells, numeric fractions and clock tex
     assert.equal(ctx.calculateDeadlineV2_(delivery,{'Default Deadline Days Before Delivery':1,'Default Deadline Time':value},'Australia/Sydney'),'Wednesday, 21 October at 5:00 PM');
   }
   assert.equal(ctx.calculateDeadlineV2_(delivery,{},'Australia/Sydney'),'Tuesday, 20 October at 8:00 PM');
+  assert.equal(ctx.calculateDeadlineV2_(delivery,{'Default Deadline Days Before Delivery':1,'Default Deadline Time':'20:00'},'Australia/Sydney'),'Wednesday, 21 October at 8:00 PM');
 });
 test('Deadline uses the Sydney calendar across both DST transitions and a different script timezone',()=>{
   const {ctx}=server();
