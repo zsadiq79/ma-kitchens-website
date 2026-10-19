@@ -41,15 +41,15 @@ All four triggers target Head. Treat pasting/saving replacement editor source as
 
 The two small displayed error rates are aggregate historical evidence; the screenshot supplies no error messages or failure dates. Do not claim a current outage, a specific cause, or that these historical failures are fixed. Reconcile relevant failed executions before declaring production readiness if they are recent or recurring.
 
-### Confirmed consumer contracts, deployment destination pending
+### Consumer contracts and verified website destination
 
 Read the following files from production main commit 27ef64557f82361effbb90d7f75442b32df4096a through GitHub on 19 October. Main still points to that commit. The Vercel environment read used decrypt=false and confirmed that the production URL values are sensitive and omitted. No secret values were requested or printed.
 
 | Consumer | Vercel destination setting | Apps Script routing and authentication | Matching LIVE URL |
 | --- | --- | --- | --- |
-| app/api/whatsapp-flow/route.ts | FLOW_MENU_API_URL | POST action=menu; FLOW_MENU_API_SECRET in JSON body | A or B, pending |
-| lib/feedbackApi.ts | FLOW_MENU_API_URL | POST action=feedback_read, feedback_draft, feedback_event or feedback_submit; same secret in JSON body | Same setting as menu; A or B, pending |
-| app/api/whatsapp-events/route.ts | FLOW_MENU_API_URL | Verify Meta signature, then POST action=whatsapp_verified with forwarding secret and payload | Same setting as menu; A or B, pending |
+| app/api/whatsapp-flow/route.ts | FLOW_MENU_API_URL | POST action=menu; FLOW_MENU_API_SECRET in JSON body | LIVE A, Version 46, verified through shared setting and execution trace |
+| lib/feedbackApi.ts | FLOW_MENU_API_URL | POST action=feedback_read, feedback_draft, feedback_event or feedback_submit; same secret in JSON body | LIVE A, Version 46, directly traced through invalid-link lookup |
+| app/api/whatsapp-events/route.ts | FLOW_MENU_API_URL | Verify Meta signature, then POST action=whatsapp_verified with forwarding secret and payload | LIVE A, Version 46, verified through shared setting and execution trace; upstream Meta subscription destination still to reconcile |
 | app/api/routific-webhook/route.js | CONTROL_TOWER_WEBHOOK_URL | Verify Routific signature, then POST controlTowerSecret and payload; backend requires status=200 acknowledgement | A or B, pending |
 
 The supplied original Code.gs dispatcher supports these menu, feedback, verified WhatsApp and Routific contracts. This is source evidence, not proof that both active deployed snapshots match editor source. Direct provider callback configuration and any additional consumers still require reconciliation. Do not infer that a deployment is unused because it is absent from these two Vercel settings.
@@ -58,7 +58,7 @@ Current deployment versions, blank descriptions, access settings and the owner-s
 
 ### Read-only production FLOW_MENU_API_URL routing trace
 
-Earlier setup context retrieved on 19 October indicates an intended Routific destination of LIVE B and a Meta destination of LIVE A, but it does not establish the currently saved Vercel values. Keep both mappings pending until verified.
+Earlier setup context retrieved on 19 October indicates an intended Routific destination of LIVE B and a Meta destination of LIVE A, but it does not establish the currently saved Vercel values. The FLOW_MENU_API_URL mapping is now verified by the execution trace below. The separate Routific destination remains pending.
 
 To identify the deployment behind FLOW_MENU_API_URL without reading that sensitive value, issued one request to https://www.makitchens.com.au/api/feedback using action=feedback_read and a newly generated random, nonexistent feedback token. No existing customer link was used, and browserOpened, submission, revision and event fields were absent. Reviewed the production website forwarding contract and original Apps Script read path first. A nonexistent token is rejected during the locked link lookup before any tracking, feedback, customer or operational-order write. No test link was created, and the random token was not retained or printed.
 
@@ -66,8 +66,12 @@ To identify the deployment behind FLOW_MENU_API_URL without reading that sensiti
 - HTTP 410, response {"error":"INVALID_LINK"}, which is the expected rejection for this input.
 - Correlation ID a793d258f0a7467da0408069e0b1cc0d.
 - Server timing: route 2770 ms, upstream 2770 ms, Apps Script 1481 ms, lock 65 ms, sheet reads 751 ms, sheet writes 0 ms.
-- This confirms a successful authenticated website-to-Apps-Script feedback lookup and expected invalid-link handling. It does not yet identify LIVE A/B, verify a real feedback submission, or exercise provider sending.
-- Next evidence: the LIVE project's doPost execution around 1:58 PM and its Deployment/version value. Matching it will identify the current menu/feedback/verified-WhatsApp destination because all three read FLOW_MENU_API_URL. Routific uses its separate setting and still needs independent mapping.
+- The owner confirmed Version 46 at 2:02 PM and supplied screenshot image(20261019-030233).png. It shows doPost, Web App, Version 46, start 19 October at 1:58:43 PM, duration 2.218 seconds, Completed. This falls inside the probe interval and matches the backend timing. Logs were not available to the owner; the execution metadata is sufficient for this routing check.
+- FLOW_MENU_API_URL is therefore verified as LIVE A. The menu and verified-WhatsApp forwarding code use that same production setting, so their downstream deployment is also identified. The test directly exercised only an invalid feedback lookup, not a real feedback submission, menu transaction or Meta delivery event.
+- The same screenshot shows two Head/runFeedbackSender executions at 1:54:41 PM and 1:59:41 PM, both Completed. This is direct evidence of a five-minute observed cadence for that interval, not proof that any messages were sent and not a reason to reinstall the timer.
+- Routific uses its separate CONTROL_TOWER_WEBHOOK_URL setting and still needs independent destination mapping. Do not assign it to Version 33 by elimination.
+
+Attempted a read-only production Vercel runtime-log lookup for existing Routific calls. A seven-day lookback was rejected because the project's Hobby retention window is too short. A corrected recent-window query did not identify either Apps Script deployment. This does not show that Routific is unused or failing. Current provider callback configuration or a matching existing execution is still needed. No new Routific event, signature bypass, diagnostic route, route dispatch, secret extraction or configuration change was attempted.
 
 Only this invalid-link read probe was issued to production during this mapping step. Production source, deployments, triggers, sheet data, settings, credentials, provider sends and dispatch were not changed.
 
