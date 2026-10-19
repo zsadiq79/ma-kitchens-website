@@ -1,0 +1,37 @@
+{
+  "dateSydney": "2026-10-19",
+  "tests": 172,
+  "passed": 172,
+  "failed": 0,
+  "originalTestBuildChanged": false,
+  "profiles": [
+    {
+      "profile": {
+        "folder": "production-rehearsal",
+        "environment": "REHEARSAL",
+        "spreadsheetId": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+        "scriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5"
+      },
+      "functions": 468,
+      "codeSha256": "454c7a06c1a002a1555cc166a348af7a8229fc27a145dd809aef4933659989d4",
+      "lines": 16602,
+      "nativeMigrationVerified": false
+    },
+    {
+      "profile": {
+        "folder": "production-candidate",
+        "environment": "PRODUCTION",
+        "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+        "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
+      },
+      "functions": 468,
+      "codeSha256": "27a83ed3c17ff56831dbd1cf9d0f8da9d710c95a0c87ca1aacda919c30e93d72",
+      "lines": 16602,
+      "nativeMigrationVerified": false
+    }
+  ],
+  "productionRolloutApproved": false,
+  "googleInstallationCompleted": false,
+  "externalSideEffectsIssued": false,
+  "scope": "Offline Apps Script simulations and static inventory. Native rehearsal remains pending."
+}

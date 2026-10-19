@@ -10,10 +10,13 @@ const date = '2026-10-22', lineId = 'ML-20261022-M0001';
 const copy = value => JSON.parse(JSON.stringify(value));
 
 function fixture(options = {}) {
+  const releaseManifest=options.release?JSON.parse(fs.readFileSync(path.join(root,'apps-script',options.release,'source-manifest.json'),'utf8')):null;
+  const fixtureBookId=releaseManifest?releaseManifest.profile.spreadsheetId:testBookId;
   const state = { now: Date.parse('2026-10-18T00:00:00Z'), owner: 'owner@example.test', env: 'TEST',
     formulaFail: false, throwBefore: false, throwAfter: false, failRecovery: false, customerPending: false, shiftIds: false, writes: [], batches: 0 };
   class Clock extends Date { constructor(...args) { super(...(args.length ? args : [state.now])); } static now() { return state.now; } }
   const tables = {}, sheets = {}, formulas = {}, scriptProperties = {};
+  if(releaseManifest){state.env=releaseManifest.profile.environment;scriptProperties.ORDER_AUTOMATION_PHASE='ACTIVE';scriptProperties.ORDER_AUTOMATION_CAPTURE_ENABLED='true';}
   const headers = {
     Orders: ['Order ID','Order Date','Delivery Date','Customer ID','Customer Name','Phone','Delivery Address','Postcode','Order Status','Payment Status','Delivery Window','Order Total','Delivery Status','Notes','Items Subtotal','Delivery Fee','Free Delivery Discount (AUTO)','Cook Payout','Contribution Before Delivery Cost','Total Qty','Discounted Qty (AUTO)','Order Rules Control','Capacity Control','Order Check','Ready to Confirm?','Pricing Discount % (SNAPSHOT)','Pricing Delivery Fee (SNAPSHOT)','Free Delivery Threshold (SNAPSHOT)','Free Delivery Basis (SNAPSHOT)','Minimum Order Items (SNAPSHOT)','Delivery Address (SNAPSHOT)','Customer Name (SNAPSHOT)','Phone (SNAPSHOT)','Postcode (SNAPSHOT)','Delivery Instructions (SNAPSHOT)','Request Reference (SNAPSHOT)','Owner Operation ID'],
     'Order Items': ['Order ID','Delivery Date','Order Status','Dish Name','Item Code (AUTO, INTERNAL)','Cook ID','Qty','Price Treatment (AUTO)','List Price','Customer Unit Price','Cook Pay / Unit','Line Total','Cook Payout','Fulfilment Status','Ordered Qty / Cycle','Available Servings / Cycle','Capacity Check','Notes','Offer Eligible (AUTO)','Free Promo Qty (LEGACY)','Discounted Qty (AUTO)','Full Price Qty (LEGACY)','Item Code (SNAPSHOT)','List Price (SNAPSHOT)','Cook Pay (SNAPSHOT)','Cook ID (SNAPSHOT)','Kitchen Name (SNAPSHOT)','Menu Line ID (SNAPSHOT)','Customer Unit Price (SNAPSHOT)','Line Total (SNAPSHOT)'],
@@ -24,12 +27,13 @@ function fixture(options = {}) {
     'Menu Config': ['Setting', 'Value'],
   };
   const ctx = { Date: Clock, Object, Array, Number, String, Math, JSON, RegExp, isNaN,
-    CONTROL_TOWER_SPREADSHEET_ID: testBookId, CUSTOMERS_SHEET:'Customers', CUSTOMER_INTAKE_SHEET:'Customer Intake',
+    CONTROL_TOWER_SPREADSHEET_ID: fixtureBookId, CUSTOMERS_SHEET:'Customers', CUSTOMER_INTAKE_SHEET:'Customer Intake',
     WEEKLY_MENU_SHEET:'Weekly Menu', DISHES_SHEET:'Dishes', ORDERS_SHEET:'Orders', ORDER_ITEMS_SHEET:'Order Items',
     DELIVERY_WINDOW:'4–10 PM', PAYMENT_PAYID:'0420 246 023',
     Session: {getActiveUser:()=>({getEmail:()=>state.owner}),getEffectiveUser:()=>({getEmail:()=> 'owner@example.test'})},
-    PropertiesService:{getScriptProperties:()=>({getProperty:key=>key==='ORDER_AUTOMATION_ENV'?state.env:key==='ORDER_REQUEST_API_SECRET'?'audit-signing-secret-with-at-least-32-characters':scriptProperties[key]??null,setProperty:(key,value)=>{scriptProperties[key]=String(value);}})},
-    LockService:{getScriptLock:()=>({hasLock:()=>false,waitLock(){},tryLock:()=>true,releaseLock(){}})},
+    PropertiesService:{getScriptProperties:()=>({getProperty:key=>key==='ORDER_AUTOMATION_ENV'?state.env:key==='ORDER_REQUEST_API_SECRET'?'audit-signing-secret-with-at-least-32-characters':scriptProperties[key]??null,setProperty:(key,value)=>{scriptProperties[key]=String(value);if(key==='ORDER_AUTOMATION_ENV')state.env=String(value);},deleteProperty:key=>{delete scriptProperties[key];}})},
+    LockService:{getScriptLock:()=>({hasLock:()=>!!state.lock,waitLock(){state.lock=true},tryLock:()=>{state.lock=true;return true},releaseLock(){state.lock=false}})},
+    ScriptApp:{getScriptId:()=>releaseManifest?releaseManifest.profile.scriptId:'fixture-test-project',getProjectTriggers:()=>[]},
     Utilities:{getUuid:()=>crypto.randomUUID(),DigestAlgorithm:{SHA_256:'sha256'},Charset:{UTF_8:'UTF-8'},sleep(){},
       computeHmacSha256Signature:(value,key)=>[...crypto.createHmac('sha256',key).update(String(value)).digest()],
       computeDigest:(_,value)=>[...crypto.createHash('sha256').update(String(value)).digest()],
@@ -38,10 +42,10 @@ function fixture(options = {}) {
         return new Intl.DateTimeFormat(pattern==='HH'?'en-GB':'en-CA',pattern==='HH'?{timeZone:zone,hour:'2-digit',hourCycle:'h23'}:{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(value);
       }},
     getOrderingRules_:()=>({discountPercent:20,minimumOrderItems:5,deliveryFee:10,freeDeliveryThreshold:0,freeDeliveryBasis:'Pre-discount food value'}),
-    SpreadsheetApp:{openById:()=>book,flush:()=>recalculate()},
+    SpreadsheetApp:{openById:()=>book,getActiveSpreadsheet:()=>book,flush:()=>recalculate()},
     ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({setMimeType:()=>({getContent:()=>text})})},
     Sheets:{Spreadsheets:{batchUpdate:request=>apply(request.requests),Values:{get:(id,range,options)=>{
-      assert.equal(id,testBookId);assert.equal(options.valueRenderOption,'UNFORMATTED_VALUE');
+      assert.equal(id,fixtureBookId);assert.equal(options.valueRenderOption,'UNFORMATTED_VALUE');
       const match=range.match(/^'((?:[^']|'')+)'!A(\d+):([A-Z]+)(\d+)$/);
       if(!match)throw new Error('Unsupported fresh mock range: '+range);
       const name=match[1].replace(/''/g,"'"),first=Number(match[2])-1,last=Number(match[4]);
@@ -50,7 +54,7 @@ function fixture(options = {}) {
     }}}},
   };
   vm.createContext(ctx);
-  for(const name of (options.integrated ? ['integration-test/Code.gs'] : ['OrderEngine.gs','OrderRequests.gs','OwnerOrders.gs','OwnerCustomers.gs','OwnerOrderSetup.gs']))
+  for(const name of (options.release ? [options.release+'/Code.gs'] : options.integrated ? ['integration-test/Code.gs'] : ['OrderEngine.gs','OrderRequests.gs','OwnerOrders.gs','OwnerCustomers.gs','OwnerOrderSetup.gs']))
     vm.runInContext(fs.readFileSync(path.join(root,'apps-script',name),'utf8'),ctx);
   const schemas=vm.runInContext('Object.assign({}, MK_ORDER_REQUEST_HEADERS, MK_OWNER_HEADERS)',ctx);
   Object.assign(headers,copy(schemas));
@@ -66,7 +70,7 @@ function fixture(options = {}) {
         getFormula:()=>formulas[name][row+':'+col]??(name==='Orders'&&[16,17,20,21,22].includes(col)||name==='Order Items'&&[8,10,12,13,19,20,21,22].includes(col)?'=0':'')}}};
   }
   for(const [key,value] of Object.entries(vm.runInContext('MK_OWNER_FORMULA_SNAPSHOTS',ctx))){const [name,cell]=key.split('!');const m=cell.match(/^([A-Z]+)([0-9]+)$/);const column=[...m[1]].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0);formulas[name][Number(m[2])+':'+column]=value}
-  const book={getSpreadsheetTimeZone:()=> 'Australia/Sydney',getId:()=>testBookId,getOwner:()=>({getEmail:()=> 'owner@example.test'}),getSheetByName:name=>sheets[name]||null};
+  const book={getSpreadsheetTimeZone:()=> 'Australia/Sydney',getId:()=>fixtureBookId,getOwner:()=>({getEmail:()=> 'owner@example.test'}),getSheetByName:name=>sheets[name]||null};
   function add(name,values){tables[name].push(values);return values}
   const customer=Array(30).fill('');Object.assign(customer,{0:'CUST-000001',1:'Test Person',2:'+61400000001',3:'Greenacre',4:'2190',9:'N',29:'1 Test Street, Greenacre 2190'});add('Customers',customer);
   const intake=Array(19).fill('');Object.assign(intake,{0:'intake-1',2:'2026-09-01T00:00:00Z',3:'Test Person',4:'+61400000001',5:'2190',8:false});add('Customer Intake',intake);
@@ -117,7 +121,7 @@ function fixture(options = {}) {
   function input(patch={}){return {draftKey:crypto.randomUUID(),senderPhone:'0400000001',customerId:'CUST-000001',name:'Test Person',
     address:'1 Test Street, Greenacre 2190',postcode:'2190',consent:'KEEP',deliveryDate:date,items:[{menuLineId:lineId,quantity:5}],...patch}}
   function request(){const row=Array(22).fill('');Object.assign(row,{0:'ORQ-TEST',1:'MK-1234ABCD',5:'a'.repeat(64),6:'MENU-'+date,7:date,8:'RECEIVED',15:'2026-10-18T00:00:00.000Z',21:'61400000001'});add('Order Requests',row);add('Order Request Items',['ORQ-TEST','i_'+'a'.repeat(24),lineId,'M0001','Test Dish','Test Kitchen','COOK-1',5,1500,800,7500,'a'.repeat(64)]);return row}
-  return {ctx,state,tables,sheets,formulas,input,request,add,book};
+  return {ctx,state,tables,sheets,formulas,input,request,add,book,scriptProperties};
 }
 
 

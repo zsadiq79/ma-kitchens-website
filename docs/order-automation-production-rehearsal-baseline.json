@@ -30,6 +30,9 @@
   "copyPermissionRoles": [
     "owner"
   ],
-  "rehearsalAppsScriptId": null,
-  "rehearsalCodeInstalled": false
+  "rehearsalAppsScriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5",
+  "rehearsalCodeInstalled": false,
+  "rehearsalAppsScriptUrl": "https://script.google.com/u/0/home/projects/1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5/edit",
+  "editorUrlEvidence": "Owner supplied 19 October 2026. Bound workbook will be independently checked during configuration.",
+  "rehearsalCodeBuilt": true
 }
