@@ -1,6 +1,6 @@
 {
   "project": "Ma Kitchens Menu V2, separate standalone app",
-  "status": "TEST CANDIDATE. Not installed or deployed.",
+  "status": "Installed and deployed in private review copy per owner report. All three downloads visually accepted by owner. Production unchanged.",
   "baselineScriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
   "spreadsheetReadTarget": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "codeSha256": "dea7211901cd3ecc3beacd7afafdbf9ba335e3e97d1007f7c39df0215d59021e",
@@ -17,11 +17,15 @@
   "ownerSelectedPosterDeadline": "20:00 on day before delivery, selected 20 October 2026",
   "liveDeadlineConfigChanged": false,
   "privateReviewCopyScriptId": "1aU80zoZXg1-VVmJ3mMwFmEZJz_FrcTuun7JugnTh8-APHAIiNRRF9Foy",
-  "candidateInstalled": false,
+  "candidateInstalled": true,
   "automatedTests": {
     "generator": 9,
     "combined": 188,
     "failed": 0
   },
-  "actualBrowserDownloadsVerified": false
+  "actualBrowserDownloadsVerified": true,
+  "candidateInstallationEvidence": "Owner reported Code.gs and MenuV2.html saved",
+  "privateReviewDeploymentUrl": "https://script.google.com/macros/s/AKfycbwasj-RV_UHcZtOoUNWRFLNVL-yw9oYQbQz5C-9zl7RgXL0Gn8UJMg2gKOp42kzdxw7/exec",
+  "verificationScope": "Owner-reported menu rendering and three downloaded images; actual files and deployed source/version not independently retrieved",
+  "nativeAcceptanceEvidence": "docs/order-automation-menu-generator-native-acceptance-20261020.json"
 }

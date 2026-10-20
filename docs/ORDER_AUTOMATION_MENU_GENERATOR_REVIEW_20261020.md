@@ -1,6 +1,6 @@
 # Weekly menu generator compatibility review
 
-20 October 2026, Australia/Sydney. Both supplied source files reviewed. Three Medium fixes prepared and covered by nine automated checks. Actual native rendering and PNG/JPEG/WebP downloads remain pending. Production is unchanged.
+20 October 2026, Australia/Sydney. Both supplied source files reviewed. Three Medium fixes prepared and covered by nine automated checks. The owner has now accepted native rendering and all three actual image downloads. Exact printed date/deadline and original deployment mapping remain pending. Production is unchanged.
 
 ## What the existing tool does
 
@@ -44,3 +44,9 @@ Use only apps-script/menu-generator-review/candidate/Code.gs and MenuV2.html (or
 Browser verification stopped at an access boundary. Protected-preview access was not established. Opening a local generated HTML file in the cloud browser was rejected by its URL policy because only HTTP/HTTPS protocols are permitted. No workaround was attempted after that rejection. No real output file or visual export evidence is claimed. Temporary static fixture pages are removed from the preview branch checkpoint; the reusable test fixture and builder remain.
 
 No LIVE script, deployment, spreadsheet setting or production website was modified. The consolidated production Control Tower source remains SHA-256 fb1c9abc7ebff102715b15ce51705bee60b90b274a7332e4a344da9d09cb2693.
+
+## Native acceptance update, 20 October 2026 at 11:09 Sydney
+
+This update supersedes earlier pending candidate-installation and three-format download notes. The owner reports saving both complete candidate files in the private review copy and supplied its versioned /exec deployment URL. The menu opens. The owner then confirmed: "downloaded PNG, JPG and WEBP and they are all correct". Record the current menu and all three real downloads as owner-tested and visually accepted. The agent has not received or independently inspected those image files, measured their formats/dimensions, or retrieved the exact deployed source/version. No claim of extreme-size native testing is made from the normal-menu acceptance.
+
+Still confirm the exact printed delivery date and deadline. Original working shortcut mapping/version and hidden manifest remain to capture before a separately approved original-generator update. LIVE still has the captured 17:00 poster setting; the owner's selected 20:00 time has not been applied. Website enforcement remains 22:00. No production source, deployment or configuration was changed. Evidence: order-automation-menu-generator-native-acceptance-20261020.json.

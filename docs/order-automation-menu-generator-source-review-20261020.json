@@ -1,6 +1,6 @@
 {
   "reviewedAt": "2026-10-20T08:27:31+11:00",
-  "status": "BOTH_SOURCE_FILES_REVIEWED_THREE_FIXES_PREPARED_NATIVE_EXPORTS_PENDING",
+  "status": "OWNER_NATIVE_MENU_AND_THREE_EXPORTS_ACCEPTED_DATE_DEADLINE_AND_ORIGINAL_MAPPING_PENDING",
   "scriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
   "projectName": "Ma Kitchens Menu V2",
   "sourceSha256": "19fbf51903d677d82ee1074f0c4ae2192b8bfc2d5ccc5153a5cecef3d927fc86",
@@ -56,10 +56,9 @@
     "policy": "Read current LIVE rules during cutover; rehearsal pricing is test evidence and must not replace LIVE configuration. Preserve accepted order/cart snapshots."
   },
   "pending": [
-    "Install matching candidate in the separate private review copy",
-    "Native menu render and actual PNG/JPEG/WebP downloads with visual inspection",
-    "Confirm original shortcut deployment mapping/version and capture manifest",
-    "Approve and apply intended poster configuration separately; preserve website cutoff unless explicitly changed"
+    "Confirm printed delivery date and deadline",
+    "Capture original menu shortcut deployment mapping/version and manifest before a separately approved production update",
+    "Apply selected poster time only within explicitly approved LIVE configuration scope"
   ],
   "productionModified": false,
   "controlTowerSourceChanged": false,
@@ -71,19 +70,19 @@
     {
       "id": "MG-01",
       "severity": "Medium",
-      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_NATIVE_VERIFICATION_PENDING",
+      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_PRINTED_DEADLINE_CONFIRMATION_PENDING",
       "issue": "Deadline time-cell parsing and calendar handling"
     },
     {
       "id": "MG-02",
       "severity": "Medium",
-      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_NATIVE_VERIFICATION_PENDING",
+      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_OWNER_THREE_FORMAT_DOWNLOAD_ACCEPTANCE",
       "issue": "Canvas downscaling below one and MIME validation"
     },
     {
       "id": "MG-03",
       "severity": "Medium",
-      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_NATIVE_VERIFICATION_PENDING",
+      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_CURRENT_DISABLED_THRESHOLD_NATIVE_MENU_ACCEPTED",
       "issue": "Free-delivery threshold-basis wording"
     }
   ],
@@ -99,12 +98,18 @@
     "name": "Ma Kitchens Menu V2 PRIVATE REVIEW COPY 20 Oct 2026",
     "shared": false,
     "ownerOnlyPermissionVerified": true,
-    "candidateInstalled": false
+    "candidateInstalled": true,
+    "installationEvidence": "Owner reported both full files saved",
+    "deploymentUrl": "https://script.google.com/macros/s/AKfycbwasj-RV_UHcZtOoUNWRFLNVL-yw9oYQbQz5C-9zl7RgXL0Gn8UJMg2gKOp42kzdxw7/exec",
+    "deploymentVersionIndependentlyVerified": false
   },
   "browserVerification": {
-    "actualDownloadsVerified": false,
+    "actualDownloadsVerified": true,
     "protectedPreviewAccessEstablished": false,
     "localFileNavigation": "Rejected by cloud browser URL policy: only HTTP/HTTPS allowed",
-    "workaroundAttemptedAfterRejection": false
-  }
+    "workaroundAttemptedAfterRejection": false,
+    "verificationScope": "Owner downloaded and visually accepted all three formats; files not independently inspected",
+    "nativeAcceptanceEvidence": "order-automation-menu-generator-native-acceptance-20261020.json"
+  },
+  "reviewUpdatedAt": "2026-10-20T11:09:10+11:00"
 }

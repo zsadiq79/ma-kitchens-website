@@ -1,6 +1,6 @@
 {
   "checkedAt": "2026-10-20 Australia/Sydney",
-  "status": "SOURCE_COMPATIBLE_THREE_FIXES_PREPARED_NATIVE_EXPORTS_PENDING",
+  "status": "OWNER_NATIVE_MENU_AND_THREE_EXPORTS_ACCEPTED_FINAL_CONTENT_AND_ORIGINAL_MAPPING_PENDING",
   "userShortcut": "https://script.google.com/macros/s/AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ/exec",
   "userRequiredOutputs": [
     "PNG",
@@ -88,10 +88,9 @@
   ],
   "checkedMigrationBehavior": "Adds order/item snapshots and private ledgers; does not rename, reorder or rewrite Weekly Menu or Dishes columns.",
   "pending": [
-    "Install matching candidate in the separate private review copy",
-    "Native menu render and actual PNG/JPEG/WebP downloads with visual inspection",
-    "Confirm original shortcut deployment mapping/version and capture manifest",
-    "Approve and apply intended poster configuration separately; preserve website cutoff unless explicitly changed"
+    "Confirm printed delivery date and deadline",
+    "Capture original menu shortcut deployment mapping/version and manifest before a separately approved production update",
+    "Apply selected poster time only within explicitly approved LIVE configuration scope"
   ],
   "productionModified": false,
   "currentProject": {
@@ -101,5 +100,6 @@
     "htmlSupplied": true,
     "deployedSourceIndependentlyVerified": false
   },
-  "sourceReview": "ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md"
+  "sourceReview": "ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md",
+  "nativeAcceptanceEvidence": "order-automation-menu-generator-native-acceptance-20261020.json"
 }

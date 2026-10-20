@@ -2,9 +2,9 @@
 
 20 October 2026, Australia/Sydney.
 
-**36 order-system findings addressed: 16 High, 17 Medium and 3 Low. Three additional Medium menu-generator fixes are prepared, awaiting native export verification. All 188 automated tests pass: 179 order tests plus nine generator tests. The private order rehearsal is paused. Production has not been upgraded.**
+**36 order-system findings addressed: 16 High, 17 Medium and 3 Low. Three additional Medium menu-generator fixes are prepared; the owner has accepted native rendering and all three exports, with exact deadline confirmation still pending. All 188 automated tests pass: 179 order tests plus nine generator tests. The private order rehearsal is paused. Production has not been upgraded.**
 
-**The separate weekly-menu generator's Code.gs and MenuV2.html have now both been reviewed. Its three real image downloads and original shortcut deployment mapping remain a preproduction gate. The recent LIVE execution review is complete on the inspected sample, native reconciliation and owner-confirmed basis.**
+**The separate weekly-menu generator's Code.gs and MenuV2.html have now both been reviewed. The owner accepted all three real image downloads. Exact printed deadline and original shortcut deployment mapping remain to confirm. The recent LIVE execution review is complete on the inspected sample, native reconciliation and owner-confirmed basis.**
 
 ## What changed
 
@@ -101,3 +101,9 @@ At 07:56 Sydney on 20 October, the owner confirmed there were no other failures.
 | MG-01 | Medium | Sheets TIME Date parsed as text, causing fallback to 20:00. | Typed clock parsing, validation and spreadsheet-calendar calculation. Time/DST tests pass; native verification pending. |
 | MG-02 | Medium | Very large canvases could not shrink below scale 1; image encoders could return a different format. | Permit bounded shrinking, validate MIME for all formats and await fonts. Mocked pipeline/error checks pass; actual downloads pending. |
 | MG-03 | Medium | Free-delivery text always described a pre-discount threshold. | Respect the existing basis setting. Both wording variants pass; native visual verification pending. |
+
+## Native acceptance update, 20 October 2026 at 11:09 Sydney
+
+This update supersedes earlier pending candidate-installation and three-format download notes. The owner reports saving both complete candidate files in the private review copy and supplied its versioned /exec deployment URL. The menu opens. The owner then confirmed: "downloaded PNG, JPG and WEBP and they are all correct". Record the current menu and all three real downloads as owner-tested and visually accepted. The agent has not received or independently inspected those image files, measured their formats/dimensions, or retrieved the exact deployed source/version. No claim of extreme-size native testing is made from the normal-menu acceptance.
+
+Still confirm the exact printed delivery date and deadline. Original working shortcut mapping/version and hidden manifest remain to capture before a separately approved original-generator update. LIVE still has the captured 17:00 poster setting; the owner's selected 20:00 time has not been applied. Website enforcement remains 22:00. No production source, deployment or configuration was changed. Evidence: order-automation-menu-generator-native-acceptance-20261020.json.

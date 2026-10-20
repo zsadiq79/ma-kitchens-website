@@ -31,3 +31,9 @@ The separate Ma Kitchens Menu V2 source and required schema are reviewed, with t
 The 58-order preparation count is historical, not a production limit or reserved next ID. Re-read current LIVE records and durable reservations at cutover. Keep recording real orders in original LIVE until the agreed pause begins.
 
 The generator candidate is an independent review package, not an instruction to install it during the Control Tower source save. Any approved generator update needs its own preserved baseline/deployment reference and explicit deadline configuration scope. Current LIVE pricing must be read again; captured values were 0% discount, minimum five and AUD 2.50 delivery.
+
+## Native acceptance update, 20 October 2026 at 11:09 Sydney
+
+This update supersedes earlier pending candidate-installation and three-format download notes. The owner reports saving both complete candidate files in the private review copy and supplied its versioned /exec deployment URL. The menu opens. The owner then confirmed: "downloaded PNG, JPG and WEBP and they are all correct". Record the current menu and all three real downloads as owner-tested and visually accepted. The agent has not received or independently inspected those image files, measured their formats/dimensions, or retrieved the exact deployed source/version. No claim of extreme-size native testing is made from the normal-menu acceptance.
+
+Still confirm the exact printed delivery date and deadline. Original working shortcut mapping/version and hidden manifest remain to capture before a separately approved original-generator update. LIVE still has the captured 17:00 poster setting; the owner's selected 20:00 time has not been applied. Website enforcement remains 22:00. No production source, deployment or configuration was changed. Evidence: order-automation-menu-generator-native-acceptance-20261020.json.
