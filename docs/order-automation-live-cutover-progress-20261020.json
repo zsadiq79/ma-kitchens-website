@@ -4,7 +4,7 @@
     "atSydney": "2026-10-20T11:17:57+11:00",
     "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
   },
-  "phase": "PAUSED_FINAL_BACKUP_VERIFIED_READY_FOR_SOURCE_INSTALL",
+  "phase": "EXISTING_DEPLOYMENTS_UPDATED_TO_47_PREPARING_SCHEMA_MIGRATION",
   "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
   "backup": {
@@ -37,16 +37,12 @@
       "freeDeliveryThreshold": 0
     }
   },
-  "sourceChangesMade": false,
-  "productionDeploymentChangesMade": false,
+  "sourceChangesMade": true,
+  "productionDeploymentChangesMade": true,
   "entryPauseAcknowledged": true,
   "boundScriptCopyOwnerVerified": true,
   "backupIsFinalPauseBaseline": true,
-  "requirementsBeforeSourceSave": [
-    "Preserve current triggers and private properties",
-    "Add matching production OwnerOrderWorkspace.html, then consolidate reviewed .gs source promptly in original LIVE",
-    "Keep order entry paused and feedback disabled until verification completes"
-  ],
+  "requirementsBeforeSourceSave": [],
   "privateRawEvidenceSaved": true,
   "backupScriptId": "1UGSD2sYDXVteVyVOBEv_NK37nAZ9FHEVvyHZSePvHwqbIPjEWw9A_261",
   "backupScriptUrl": "https://script.google.com/u/0/home/projects/1UGSD2sYDXVteVyVOBEv_NK37nAZ9FHEVvyHZSePvHwqbIPjEWw9A_261/edit",
@@ -100,5 +96,25 @@
     "customers": 50,
     "legacyState": "DRAFT"
   },
-  "productionSourceInstalled": false
+  "productionSourceInstalled": true,
+  "sourceInstallationOwnerReportedAtSydney": "2026-10-20T11:53:02+11:00",
+  "sourceInstallationBasis": "Owner reported saving production OwnerOrderWorkspace.html, deleting other .gs files and replacing Code.gs with complete production candidate. Native editor bytes not independently retrieved.",
+  "productionSchemaMigrationPerformed": false,
+  "nextStep": "Run migrateOrderAutomationWorkspace once, then inspect its result and independently compare LIVE against the final paused baseline.",
+  "productionConfigured": true,
+  "nativePreflightPassed": true,
+  "nativePreflightEvidence": "order-automation-live-native-preflight-20261020.json",
+  "deploymentVersions": {
+    "LIVE_A": {
+      "previousRollbackVersion": 46,
+      "newVersion": 47,
+      "urlPreserved": true
+    },
+    "LIVE_B": {
+      "previousRollbackVersion": 33,
+      "newVersion": 47,
+      "urlPreserved": true
+    }
+  },
+  "legacyContractCheckEvidence": "order-automation-live-legacy-contract-checks-20261020.json"
 }
