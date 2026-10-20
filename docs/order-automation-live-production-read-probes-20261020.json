@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "check": "published_menu",
+      "status": 200,
+      "elapsedMs": 6859,
+      "cacheControl": "no-store",
+      "response": {
+        "ok": true,
+        "menuCycleId": "MENU-2026-10-22",
+        "deliveryDate": "2026-10-22",
+        "publishedAt": "2026-10-20T01:12:53.724Z",
+        "menuRevision": "761d25a410c79bd30809f161e42008d87a2455c7cf82a7873a866e5ebd784ce7",
+        "dishCount": 14
+      }
+    },
+    {
+      "check": "signed_recovery",
+      "status": 200,
+      "elapsedMs": 10364,
+      "cacheControl": "no-store",
+      "response": {
+        "ok": true,
+        "found": false
+      }
+    }
+  ],
+  "randomRecoveryKeyRetained": false,
+  "captureEnabledDuringProbe": false,
+  "operationalWriteRequested": false,
+  "publicPrivateMenuRevisionMatches": true,
+  "signedWebsiteToLiveRecoveryVerifiedWithoutReadingSecret": true,
+  "requestItemEventAndJournalRowsAfterReadProbe": "Headers only within inspected first three rows",
+  "browserUiRead": {
+    "url": "https://www.makitchens.com.au/go/order/current",
+    "dishQuantityControls": 14,
+    "minimumItems": 5,
+    "deliveryFeeAud": 2.5,
+    "saveRequestButtonVisible": true,
+    "requestSubmitted": false
+  }
+}

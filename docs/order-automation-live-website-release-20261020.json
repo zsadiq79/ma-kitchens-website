@@ -1,0 +1,44 @@
+{
+  "ownerExplicitSettingsApprovalAtSydney": "2026-10-20T12:22:32+11:00",
+  "ownerPrivateSecretSaveConfirmationAtSydney": "2026-10-20T12:26:55+11:00",
+  "secretValueRead": false,
+  "productionSettings": [
+    {
+      "key": "ORDER_REQUEST_API_URL",
+      "type": "plain",
+      "target": [
+        "production"
+      ],
+      "value": "https://script.google.com/macros/s/AKfycbxqd0CLenSocTTP7hPl6sQcaBZC6xi3nUvjYBu1EZ5H8LKw_IrU3WKI_Z74KnIMKmzQ/exec"
+    },
+    {
+      "key": "ORDER_REQUEST_ALLOWED_ORIGINS",
+      "type": "plain",
+      "target": [
+        "production"
+      ],
+      "value": "https://www.makitchens.com.au"
+    },
+    {
+      "key": "ORDER_REQUEST_API_SECRET",
+      "type": "sensitive",
+      "target": [
+        "production"
+      ],
+      "value": "NOT_READ_OR_RECORDED"
+    }
+  ],
+  "productionTestOnlyFlagPresent": false,
+  "providerSettingsChanged": false,
+  "previewSettingsChanged": false,
+  "websitePR": 41,
+  "websiteMergeSha": "ef30a61ee4d7ed0e6a34c6f01762651458f004f5",
+  "deploymentId": "dpl_GNJxgPuNYXf58hkZwfPhGnPoKeNT",
+  "deploymentStateAtInitialRead": "BUILDING",
+  "publicCaptureEnabled": false,
+  "deploymentState": "READY",
+  "deploymentSha": "ef30a61ee4d7ed0e6a34c6f01762651458f004f5",
+  "productionReadProbeEvidence": "order-automation-live-production-read-probes-20261020.json",
+  "publicPrivateRevisionMatches": true,
+  "signedRecoveryPassed": true
+}
