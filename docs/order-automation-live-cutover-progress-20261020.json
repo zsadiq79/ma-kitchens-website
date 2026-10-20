@@ -4,7 +4,7 @@
     "atSydney": "2026-10-20T11:17:57+11:00",
     "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
   },
-  "phase": "EXISTING_DEPLOYMENTS_UPDATED_TO_47_PREPARING_SCHEMA_MIGRATION",
+  "phase": "MIGRATED_FINANCIAL_COMPARISON_AND_DISPLAY_REPAIRS_VERIFIED",
   "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
   "backup": {
@@ -99,8 +99,8 @@
   "productionSourceInstalled": true,
   "sourceInstallationOwnerReportedAtSydney": "2026-10-20T11:53:02+11:00",
   "sourceInstallationBasis": "Owner reported saving production OwnerOrderWorkspace.html, deleting other .gs files and replacing Code.gs with complete production candidate. Native editor bytes not independently retrieved.",
-  "productionSchemaMigrationPerformed": false,
-  "nextStep": "Run migrateOrderAutomationWorkspace once, then inspect its result and independently compare LIVE against the final paused baseline.",
+  "productionSchemaMigrationPerformed": true,
+  "nextStep": "Run prepareOrderAutomationMenuState, then activateOwnerOrderWorkspace if preparation completes without error; verify current LIVE private menu and trigger state.",
   "productionConfigured": true,
   "nativePreflightPassed": true,
   "nativePreflightEvidence": "order-automation-live-native-preflight-20261020.json",
@@ -116,5 +116,19 @@
       "urlPreserved": true
     }
   },
-  "legacyContractCheckEvidence": "order-automation-live-legacy-contract-checks-20261020.json"
+  "legacyContractCheckEvidence": "order-automation-live-legacy-contract-checks-20261020.json",
+  "migrationOwnerReportedAtSydney": "2026-10-20T12:03:34+11:00",
+  "migrationResult": {
+    "ok": true,
+    "changed": true,
+    "phase": "MIGRATED",
+    "recordsPreserved": true,
+    "message": "Schema migration verified. Owner workspace and public capture are not activated."
+  },
+  "nativeMigrationEvidence": "order-automation-live-native-migration-20261020.json",
+  "ownerWorkspaceActivated": false,
+  "publicCaptureEnabled": false,
+  "displayRepairEvidence": "order-automation-live-display-repairs-20261020.json",
+  "deliveryRepairRepeatChanges": 0,
+  "discountLabelRepairRepeatChanges": 0
 }

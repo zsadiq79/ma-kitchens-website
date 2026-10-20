@@ -1,0 +1,33 @@
+{
+  "phase": "MIGRATED",
+  "nativeUserEnteredCellsCompared": 7418,
+  "expectedUserEnteredChanges": 20,
+  "formulaAnchorsVerified": 9,
+  "snapshotHeadersAdded": 13,
+  "ledgerSchemasVerified": 7,
+  "unexpectedUserEnteredChanges": 0,
+  "unexpectedEffectiveValueChanges": 0,
+  "formulaErrorsInInspectedRanges": 0,
+  "orderCount": 58,
+  "itemRows": 216,
+  "customers": 50,
+  "activeOrderFinancialChanges": 0,
+  "existingIdentityStatusPaymentAndQuantityChanges": 0,
+  "expectedCancelledCorrections": [
+    {
+      "orderId": "ORD-000041",
+      "oldOrderTotal": 10,
+      "newOrderTotal": 0
+    },
+    {
+      "orderId": "ORD-000042",
+      "oldOrderTotal": 10,
+      "newOrderTotal": 0
+    }
+  ],
+  "derivedCancelledContributionAndCustomerSpendCorrected": true,
+  "ledgerRecordRowsInspected": 1,
+  "rehearsalRecordsImported": false,
+  "source": "Independent native cell comparison against final paused backup and exact reviewed source constants",
+  "allPopulatedOperationalRecordsWithinReadBounds": true
+}
