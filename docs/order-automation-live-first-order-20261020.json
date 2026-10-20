@@ -63,7 +63,10 @@
     "instruction": "Do not delete this order. Keep ORD-000059 for 22 October delivery as the owner test order.",
     "supersedesPriorCancellationPlan": true,
     "cancelOrDelete": false,
-    "preparationDeliveryIntentNotYetClarified": true,
-    "existingDoNotPrepareNotePreservedPendingClarification": true
-  }
+    "preparationDeliveryIntentNotYetClarified": false,
+    "existingDoNotPrepareNotePreservedPendingClarification": false,
+    "ownerExplicitlyRequestedExistingNoteUnchanged": true,
+    "latestInstruction": "Leave the note as it is."
+  },
+  "currentOrderStatus": "Confirmed"
 }

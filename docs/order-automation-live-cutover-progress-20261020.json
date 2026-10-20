@@ -4,7 +4,7 @@
     "atSydney": "2026-10-20T11:17:57+11:00",
     "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
   },
-  "phase": "ORDER_SYSTEM_LIVE_VERIFIED_FEEDBACK_RESTORED_MENU_GENERATOR_UPDATE_PENDING",
+  "phase": "LIVE_VERIFIED_FINAL_DELIVERY_FEE_PUBLICATION_PENDING",
   "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
   "backup": {
@@ -76,7 +76,7 @@
   "feedbackCurrentLiveEnabled": true,
   "feedbackTriggerPreserved": true,
   "feedbackTriggerCadenceMinutes": 5,
-  "feedbackRestoreRequiredAfterChecks": true,
+  "feedbackRestoreRequiredAfterChecks": false,
   "latestExecutionCompletedOwnerConfirmed": true,
   "finalPausedBackup": {
     "id": "1NnTXZP-ggscCGRMtzZxdmYpm-Tqm2_3nBpxJgeC7XnY",
@@ -100,7 +100,7 @@
   "sourceInstallationOwnerReportedAtSydney": "2026-10-20T11:53:02+11:00",
   "sourceInstallationBasis": "Owner reported saving production OwnerOrderWorkspace.html, deleting other .gs files and replacing Code.gs with complete production candidate. Native editor bytes not independently retrieved.",
   "productionSchemaMigrationPerformed": true,
-  "nextStep": "Owner installs tested matching Code.gs and MenuV2.html in original separate Menu V2 project, retaining its owner-only manifest, then updates the existing Version 21 deployment without changing URL.",
+  "nextStep": "Owner runs publishCurrentOrderingMenu in LIVE, then verify private/public revision, fee, deployment and final handover.",
   "productionConfigured": true,
   "nativePreflightPassed": true,
   "nativePreflightEvidence": "order-automation-live-native-preflight-20261020.json",
@@ -222,5 +222,12 @@
   "posterDeadlineConfigBefore": "17:00",
   "posterDeadlineConfigAfter": "20:00",
   "posterDeadlineDaysBeforeDelivery": 1,
-  "websiteCutoffUnchanged": "22:00"
+  "websiteCutoffUnchanged": "22:00",
+  "menuGeneratorOriginalVersion": 22,
+  "menuGeneratorNativeExportsPassed": true,
+  "finalNativePreviewPassed": true,
+  "finalNativePreviewEvidence": "order-automation-live-final-checkpoint-20261020.json",
+  "currentDeliveryFeeAud": 10,
+  "ownerDeliveryFeeSelectionAud": 10,
+  "publicDeliveryFeePublicationPending": true
 }

@@ -1,0 +1,74 @@
+{
+  "ownerExecutionAtSydney": "2026-10-20T13:23:48+11:00",
+  "nativePreview": {
+    "ok": true,
+    "environment": "PRODUCTION",
+    "phase": "ACTIVE",
+    "workbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "sheetCount": 33,
+    "orderColumns": 37,
+    "itemColumns": 30,
+    "formulaAnchors": 9,
+    "legacyState": "DRAFT",
+    "legacyOrderId": "",
+    "confirmationState": "",
+    "triggers": [
+      {
+        "handler": "orderRequestInboxOnOpen_",
+        "source": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+        "event": "ON_OPEN"
+      },
+      {
+        "handler": "showPackingSlipsMenu_",
+        "source": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+        "event": "ON_OPEN"
+      },
+      {
+        "handler": "runFeedbackSender",
+        "source": "",
+        "event": "CLOCK"
+      }
+    ],
+    "newLedgerCount": 0,
+    "writesIssued": false,
+    "externalActions": "EXISTING_SETTINGS_PRESERVED"
+  },
+  "independentFinalReads": {
+    "orders": 59,
+    "orderItems": 221,
+    "customers": 50,
+    "originalOrdersPreserved": 58,
+    "originalOrderFinancialChanges": {
+      "ORD-000041": "Cancelled total, delivery charge and contribution corrected to zero",
+      "ORD-000042": "Cancelled total, delivery charge and contribution corrected to zero"
+    },
+    "originalActiveOrderFinancialDifferences": 0,
+    "originalCustomerInputDifferences": 0,
+    "originalMenuInputDifferences": 0,
+    "formulaErrorsInReadRanges": 0,
+    "newOrder": "ORD-000059",
+    "newOrderStatus": "Confirmed",
+    "newOrderPaymentStatus": "Payment Requested",
+    "newOrderTotalAud": 77.5,
+    "noteUnchanged": true
+  },
+  "menuGenerator": {
+    "originalDeploymentVersionOwnerConfirmed": 22,
+    "rollbackVersion": 21,
+    "originalShortcutUnchanged": true,
+    "printedDeadlineOwnerConfirmed": "21 October, 8 PM",
+    "formatsOwnerAccepted": [
+      "PNG",
+      "JPG",
+      "WebP"
+    ]
+  },
+  "pricingDecision": {
+    "observedMenuConfigDeliveryFeeAud": 10,
+    "previousPublicMenuDeliveryFeeAud": 2.5,
+    "ownerSelectedNewDeliveryFeeAud": 10,
+    "existingAcceptedOrderPricesUnchanged": true,
+    "publicationPending": true
+  },
+  "nextStep": "Owner runs publishCurrentOrderingMenu in LIVE, then verify private/public revision, fee, deployment and final handover."
+}
