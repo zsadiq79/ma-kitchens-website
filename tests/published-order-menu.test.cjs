@@ -251,7 +251,7 @@ test('Menu photos normalize to the existing website library, without blocking or
   const record = sample(); record.meals[0].imageUrl = 'https://example.com/photo.jpg';
   assert.equal(m.readPublishedOrderMenu(record, now()).meals[0].imageUrl, '');
   assert(m.selectedOrderTarget(record, ['5'], now()));
-  assert.equal(m.readPublishedOrderMenu(snapshot, new Date('2026-10-17T02:00:00Z')).meals[0].imageUrl, '/menu-images/Dish-0030.png');
+  assert.equal(m.readPublishedOrderMenu(snapshot, new Date(snapshot.publishedAt)).meals[0].imageUrl, '/menu-images/Dish-0030.png');
 });
 test('Weekly publisher preserves valid photo mappings and safely omits missing photos', () => {
   const f = publisherFixture(); f.menu.meals[0].imageUrl = 'https://www.makitchens.com.au/menu-images/Dish-0041.jpg';

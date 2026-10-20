@@ -4,7 +4,7 @@
     "atSydney": "2026-10-20T11:17:57+11:00",
     "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
   },
-  "phase": "MIGRATED_FINANCIAL_COMPARISON_AND_DISPLAY_REPAIRS_VERIFIED",
+  "phase": "OWNER_WORKSPACE_OPENS_WEBSITE_PRODUCTION_SETTINGS_BLOCKED_PENDING_EXPLICIT_APPROVAL",
   "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
   "backup": {
@@ -100,7 +100,7 @@
   "sourceInstallationOwnerReportedAtSydney": "2026-10-20T11:53:02+11:00",
   "sourceInstallationBasis": "Owner reported saving production OwnerOrderWorkspace.html, deleting other .gs files and replacing Code.gs with complete production candidate. Native editor bytes not independently retrieved.",
   "productionSchemaMigrationPerformed": true,
-  "nextStep": "Run prepareOrderAutomationMenuState, then activateOwnerOrderWorkspace if preparation completes without error; verify current LIVE private menu and trigger state.",
+  "nextStep": "Obtain explicit approval for the exact new Production request settings, then configure them without changing existing provider variables. Secret is generated/saved in LIVE through a temporary owner-run helper and copied privately into Vercel by the owner.",
   "productionConfigured": true,
   "nativePreflightPassed": true,
   "nativePreflightEvidence": "order-automation-live-native-preflight-20261020.json",
@@ -126,9 +126,38 @@
     "message": "Schema migration verified. Owner workspace and public capture are not activated."
   },
   "nativeMigrationEvidence": "order-automation-live-native-migration-20261020.json",
-  "ownerWorkspaceActivated": false,
+  "ownerWorkspaceActivated": true,
   "publicCaptureEnabled": false,
   "displayRepairEvidence": "order-automation-live-display-repairs-20261020.json",
   "deliveryRepairRepeatChanges": 0,
-  "discountLabelRepairRepeatChanges": 0
+  "discountLabelRepairRepeatChanges": 0,
+  "privateMenuPrepared": true,
+  "privateMenuEvidence": "order-automation-live-private-menu-20261020.json",
+  "activationOwnerReportedAtSydney": "2026-10-20T12:13:20+11:00",
+  "activationResult": {
+    "ok": true,
+    "phase": "ACTIVE",
+    "retiredEntryTriggers": 2,
+    "recordsPreserved": true,
+    "captureEnabled": false
+  },
+  "ownerWorkspaceOpenedOwnerConfirmed": true,
+  "ownerWorkspaceOpenedAtSydney": "2026-10-20T12:16:30+11:00",
+  "productionWebsiteMerged": false,
+  "productionRequestUrlSaved": false,
+  "productionRequestAllowedOriginsSaved": false,
+  "productionRequestSecretSaved": false,
+  "automatedChecksPassed": 193,
+  "automatedChecksFailed": 0,
+  "liveMenuSnapshotPreparedOnReleaseBranch": true,
+  "automaticApprovalReviewRejection": {
+    "action": "Create Production ORDER_REQUEST_API_URL and ORDER_REQUEST_ALLOWED_ORIGINS in Vercel",
+    "reason": "Review treated the earlier restriction on production settings as active and said these exact variable changes were not authorized. No write occurred.",
+    "workaroundAttempted": false,
+    "approvalRequiredForExactVariables": [
+      "ORDER_REQUEST_API_URL",
+      "ORDER_REQUEST_ALLOWED_ORIGINS",
+      "ORDER_REQUEST_API_SECRET"
+    ]
+  }
 }

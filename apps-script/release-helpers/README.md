@@ -1,0 +1,9 @@
+# Temporary production request setup
+
+Prepared for the approved LIVE rollout. Installation of this helper and private Vercel secret entry still require the guided owner steps. Current public capture remains disabled. The exact Production Vercel settings are awaiting explicit approval after automatic review rejected their creation.
+
+ProductionRequestSetup.gs (and its identical .txt copy) is a temporary editor-only helper for the original LIVE Control Tower project. It uses the reviewed production binding, owner check, phase check and shared lock. It creates a signing secret only if absent, verifies persistence, and logs only status and length. Existing suitable secrets are retained; malformed values stop without replacement. It does not enable requests, change provider settings or send messages. Five tests cover creation, repetition, malformed values, wrong context and enabled capture.
+
+After the guided run, the owner privately copies ORDER_REQUEST_API_SECRET from LIVE Script Properties into the same key in Vercel's Production environment. Never paste the value into chat, logs, source code, reports, or Git. Configure only the Production target. The companion URL is the existing LIVE A Version 47 deployment and the allowed origin is https://www.makitchens.com.au. Preserve all existing provider variables and all preview-scoped values. Remove the temporary helper after setup; it does not need a public deployment version change.
+
+The release's public JSON is now derived from native LIVE Order Menu State and matches revision 761d25a410c79bd30809f161e42008d87a2455c7cf82a7873a866e5ebd784ce7, 14 dishes, minimum five and 250 cents delivery. It contains no customer records, private menu-line IDs, cook IDs or cook costs. The source Apps Script and production website are versioned separately. Do not merge or enable capture before configuration and deployment checks pass.

@@ -1,0 +1,18 @@
+{
+  "ownerActivation": {
+    "atSydney": "2026-10-20T12:13:20+11:00",
+    "ok": true,
+    "phase": "ACTIVE",
+    "retiredEntryTriggers": 2,
+    "recordsPreserved": true,
+    "captureEnabled": false
+  },
+  "ownerWorkspaceOpens": {
+    "ownerConfirmedAtSydney": "2026-10-20T12:16:30+11:00",
+    "opens": true
+  },
+  "privateMenuEvidence": "order-automation-live-private-menu-20261020.json",
+  "feedbackSendingEnabled": false,
+  "publicCaptureEnabled": false,
+  "websiteProductionSettingsPending": true
+}
