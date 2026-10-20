@@ -1,0 +1,19 @@
+{
+  "projectName": "Ma Kitchens Menu V2",
+  "scriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
+  "editorUrl": "https://script.google.com/home/projects/1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf/edit",
+  "source": "Owner supplied current Code.gs as Pasted text(20261019-212703).txt, 20 October 2026",
+  "codeSha256": "19fbf51903d677d82ee1074f0c4ae2192b8bfc2d5ccc5153a5cecef3d927fc86",
+  "visibleFiles": [
+    "Code.gs",
+    "MenuV2.html"
+  ],
+  "htmlSupplied": true,
+  "manifestSupplied": true,
+  "deploymentMapping": "Owner selected original shortcut deployment and reported Version 21; deployed source bytes not independently retrieved",
+  "productionModified": false,
+  "htmlSha256": "580bdb7d74c0d9f012e10f8a4e2ce55897ad4864553987f7ea4e3b7b6ac67f99",
+  "manifestSha256": "0dfbef8ae3a3bff2cd92e52d3a5c9afa5fbd49d4b36e245ba3b1c7d5d8df475f",
+  "manifestProvenance": "Owner pasted original project manifest on 20 October 2026 at 11:13 Sydney; normalized JSON file, not a byte-for-byte native export",
+  "originalDeploymentVersionOwnerReported": 21
+}

@@ -1,0 +1,13 @@
+{
+  "environment": "PRODUCTION",
+  "menuCycleId": "MENU-2026-10-22",
+  "deliveryDate": "2026-10-22",
+  "menuRevision": "761d25a410c79bd30809f161e42008d87a2455c7cf82a7873a866e5ebd784ce7",
+  "dishCount": 14,
+  "minimumOrderItems": 5,
+  "deliveryFeeCents": 250,
+  "allItemIdentitiesPricesAndStockMatchWeeklyMenu": true,
+  "rehearsalMenuImported": false,
+  "publicCaptureEnabled": false,
+  "publishedToWebsite": false
+}

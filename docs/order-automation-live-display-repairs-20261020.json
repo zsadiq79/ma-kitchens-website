@@ -1,0 +1,77 @@
+{
+  "environment": "PRODUCTION",
+  "deliveryFormulaCount": 3998,
+  "discountLabelFormulaCount": 4998,
+  "remainingPredictedDeliveryRepairs": 0,
+  "remainingPredictedLabelRepairs": 0,
+  "formulaChangesVerifiedInOriginalSample": 496,
+  "activeOrderFinancialChanges": 0,
+  "unexpectedEffectiveChanges": 0,
+  "formulaErrors": 0,
+  "existingDiscountLabelsCorrected": 72,
+  "expectedCancelledFinancialCoordinates": [
+    [
+      "Customers",
+      41,
+      14
+    ],
+    [
+      "Customers",
+      42,
+      14
+    ],
+    [
+      "Orders",
+      42,
+      12
+    ],
+    [
+      "Orders",
+      42,
+      16
+    ],
+    [
+      "Orders",
+      42,
+      19
+    ],
+    [
+      "Orders",
+      43,
+      12
+    ],
+    [
+      "Orders",
+      43,
+      16
+    ],
+    [
+      "Orders",
+      43,
+      19
+    ]
+  ],
+  "orders": 58,
+  "itemRows": 216,
+  "customers": 50,
+  "evidence": "Read all 3998 delivery formulas and 4998 discount-label formulas. Exact source transformers predict zero remaining repairs. Owner-provided native reruns both report changedFormulaCount zero.",
+  "nativeFunctionResults": {
+    "repairOrderDeliveryChargeDisplay": {
+      "initialAtSydney": "2026-10-20T12:05:42+11:00",
+      "initialChangedFormulaCount": 3998,
+      "repeatAtSydney": "2026-10-20T12:11:40+11:00",
+      "repeatChangedFormulaCount": 0,
+      "ok": true,
+      "recordsPreserved": true
+    },
+    "repairOrderDiscountLabelDisplay": {
+      "initialAtSydney": "2026-10-20T12:06:26+11:00",
+      "initialChangedFormulaCount": 4998,
+      "repeatAtSydney": "2026-10-20T12:11:05+11:00",
+      "repeatChangedFormulaCount": 0,
+      "ok": true,
+      "recordsPreserved": true
+    }
+  },
+  "nativeRepeatSafetyVerified": true
+}

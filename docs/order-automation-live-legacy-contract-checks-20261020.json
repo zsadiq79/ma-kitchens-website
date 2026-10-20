@@ -1,0 +1,57 @@
+{
+  "scope": "Checks after both existing LIVE deployments updated to Version 47, before schema migration",
+  "deploymentVersionsOwnerConfirmed": {
+    "LIVE_A": {
+      "previousRollbackVersion": 46,
+      "newVersion": 47,
+      "urlPreserved": true
+    },
+    "LIVE_B": {
+      "previousRollbackVersion": 33,
+      "newVersion": 47,
+      "urlPreserved": true
+    }
+  },
+  "checks": [
+    {
+      "name": "Production feedback read with randomly generated nonexistent token",
+      "httpStatus": 410,
+      "response": {
+        "error": "INVALID_LINK"
+      },
+      "requestId": "fff35531283c43569255636451472648",
+      "elapsedMs": 11841,
+      "serverTiming": "route;dur=4519, upstream;dur=4519, apps_script;dur=2407, lock;dur=70, sheet_reads;dur=904, sheet_writes;dur=0",
+      "expectedResult": true,
+      "usedExistingCustomerLink": false,
+      "randomTokenRetained": false
+    },
+    {
+      "name": "Direct LIVE B Routific authentication boundary with deliberately invalid credential and empty event",
+      "httpStatus": 200,
+      "applicationStatus": 401,
+      "message": "Unauthorized Control Tower request.",
+      "expectedResult": true,
+      "elapsedMs": 11798
+    },
+    {
+      "name": "Apex website Routific unsigned POST",
+      "httpStatus": 308,
+      "interpretation": "Canonical redirect; not an authenticated backend test"
+    },
+    {
+      "name": "Canonical www website Routific unsigned POST",
+      "httpStatus": 401,
+      "response": {
+        "error": "Missing signature"
+      },
+      "expectedResult": true,
+      "elapsedMs": 8083
+    }
+  ],
+  "limits": [
+    "No real customer link, feedback submission, provider send, dispatch or document-generation action was issued",
+    "Live B authentication rejection verifies its closed boundary, not a fresh authenticated provider event",
+    "Deployed version number and preserved URLs are owner-confirmed; immutable source bytes not independently retrieved"
+  ]
+}

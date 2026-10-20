@@ -1,0 +1,163 @@
+{
+  "authorization": {
+    "ownerStatement": "begin",
+    "atSydney": "2026-10-20T11:17:57+11:00",
+    "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
+  },
+  "phase": "OWNER_WORKSPACE_OPENS_WEBSITE_PRODUCTION_SETTINGS_BLOCKED_PENDING_EXPLICIT_APPROVAL",
+  "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+  "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
+  "backup": {
+    "success": true,
+    "id": "1wTYROqgz4JPHCePno-dgqb3dhVvY9vEt8v2WN3JcdDs",
+    "title": "Ma Kitchens LIVE CUTOVER BACKUP 20 Oct 2026 1118 Sydney",
+    "mimeType": "application/vnd.google-apps.spreadsheet",
+    "url": "https://docs.google.com/spreadsheets/d/1wTYROqgz4JPHCePno-dgqb3dhVvY9vEt8v2WN3JcdDs/edit?usp=drivesdk",
+    "made_private": false
+  },
+  "backupPrivacy": {
+    "shared": false,
+    "roles": [
+      "owner"
+    ]
+  },
+  "nativeChecks": {
+    "sheetCount": 26,
+    "orders": 58,
+    "lastOrderId": "ORD-000058",
+    "itemRows": 216,
+    "customers": 50,
+    "comparedUserEnteredCells": 7418,
+    "differenceCount": 0,
+    "legacyState": "DRAFT",
+    "livePricing": {
+      "discountPercent": 0,
+      "minimumItems": 5,
+      "deliveryFeeAud": 2.5,
+      "freeDeliveryThreshold": 0
+    }
+  },
+  "sourceChangesMade": true,
+  "productionDeploymentChangesMade": true,
+  "entryPauseAcknowledged": true,
+  "boundScriptCopyOwnerVerified": true,
+  "backupIsFinalPauseBaseline": true,
+  "requirementsBeforeSourceSave": [],
+  "privateRawEvidenceSaved": true,
+  "backupScriptId": "1UGSD2sYDXVteVyVOBEv_NK37nAZ9FHEVvyHZSePvHwqbIPjEWw9A_261",
+  "backupScriptUrl": "https://script.google.com/u/0/home/projects/1UGSD2sYDXVteVyVOBEv_NK37nAZ9FHEVvyHZSePvHwqbIPjEWw9A_261/edit",
+  "boundScriptEvidence": "Owner opened Extensions > Apps Script from the named fresh backup and supplied this distinct editor URL on 20 Oct 2026 at 11:35 Sydney. Source bytes and runtime binding not independently retrieved.",
+  "currentTriggersOwnerConfirmed": [
+    {
+      "handler": "orderEntryEdited",
+      "event": "ON_EDIT",
+      "deployment": "Head"
+    },
+    {
+      "handler": "orderEntryMenu",
+      "event": "ON_OPEN",
+      "deployment": "Head"
+    },
+    {
+      "handler": "showPackingSlipsMenu_",
+      "event": "ON_OPEN",
+      "deployment": "Head"
+    },
+    {
+      "handler": "runFeedbackSender",
+      "event": "CLOCK",
+      "deployment": "Head"
+    }
+  ],
+  "triggerConfirmationAtSydney": "2026-10-20T11:37:37+11:00",
+  "feedbackLastRunOwnerReported": "2026-10-20T11:34:42+11:00",
+  "entryPauseConfirmedAtSydney": "2026-10-20T11:45:45+11:00",
+  "feedbackOriginalLiveEnabled": true,
+  "feedbackCurrentLiveEnabled": false,
+  "feedbackTriggerPreserved": true,
+  "feedbackTriggerCadenceMinutes": 5,
+  "feedbackRestoreRequiredAfterChecks": true,
+  "latestExecutionCompletedOwnerConfirmed": true,
+  "finalPausedBackup": {
+    "id": "1NnTXZP-ggscCGRMtzZxdmYpm-Tqm2_3nBpxJgeC7XnY",
+    "title": "Ma Kitchens FINAL PAUSED BACKUP 20 Oct 2026 1146 Sydney",
+    "url": "https://docs.google.com/spreadsheets/d/1NnTXZP-ggscCGRMtzZxdmYpm-Tqm2_3nBpxJgeC7XnY/edit?usp=drivesdk",
+    "shared": false,
+    "permissionRoles": [
+      "owner"
+    ],
+    "comparedUserEnteredCells": 7418,
+    "differences": 0
+  },
+  "pauseBaseline": {
+    "orders": 58,
+    "lastOrderId": "ORD-000058",
+    "itemRows": 216,
+    "customers": 50,
+    "legacyState": "DRAFT"
+  },
+  "productionSourceInstalled": true,
+  "sourceInstallationOwnerReportedAtSydney": "2026-10-20T11:53:02+11:00",
+  "sourceInstallationBasis": "Owner reported saving production OwnerOrderWorkspace.html, deleting other .gs files and replacing Code.gs with complete production candidate. Native editor bytes not independently retrieved.",
+  "productionSchemaMigrationPerformed": true,
+  "nextStep": "Obtain explicit approval for the exact new Production request settings, then configure them without changing existing provider variables. Secret is generated/saved in LIVE through a temporary owner-run helper and copied privately into Vercel by the owner.",
+  "productionConfigured": true,
+  "nativePreflightPassed": true,
+  "nativePreflightEvidence": "order-automation-live-native-preflight-20261020.json",
+  "deploymentVersions": {
+    "LIVE_A": {
+      "previousRollbackVersion": 46,
+      "newVersion": 47,
+      "urlPreserved": true
+    },
+    "LIVE_B": {
+      "previousRollbackVersion": 33,
+      "newVersion": 47,
+      "urlPreserved": true
+    }
+  },
+  "legacyContractCheckEvidence": "order-automation-live-legacy-contract-checks-20261020.json",
+  "migrationOwnerReportedAtSydney": "2026-10-20T12:03:34+11:00",
+  "migrationResult": {
+    "ok": true,
+    "changed": true,
+    "phase": "MIGRATED",
+    "recordsPreserved": true,
+    "message": "Schema migration verified. Owner workspace and public capture are not activated."
+  },
+  "nativeMigrationEvidence": "order-automation-live-native-migration-20261020.json",
+  "ownerWorkspaceActivated": true,
+  "publicCaptureEnabled": false,
+  "displayRepairEvidence": "order-automation-live-display-repairs-20261020.json",
+  "deliveryRepairRepeatChanges": 0,
+  "discountLabelRepairRepeatChanges": 0,
+  "privateMenuPrepared": true,
+  "privateMenuEvidence": "order-automation-live-private-menu-20261020.json",
+  "activationOwnerReportedAtSydney": "2026-10-20T12:13:20+11:00",
+  "activationResult": {
+    "ok": true,
+    "phase": "ACTIVE",
+    "retiredEntryTriggers": 2,
+    "recordsPreserved": true,
+    "captureEnabled": false
+  },
+  "ownerWorkspaceOpenedOwnerConfirmed": true,
+  "ownerWorkspaceOpenedAtSydney": "2026-10-20T12:16:30+11:00",
+  "productionWebsiteMerged": false,
+  "productionRequestUrlSaved": false,
+  "productionRequestAllowedOriginsSaved": false,
+  "productionRequestSecretSaved": false,
+  "automatedChecksPassed": 193,
+  "automatedChecksFailed": 0,
+  "liveMenuSnapshotPreparedOnReleaseBranch": true,
+  "automaticApprovalReviewRejection": {
+    "action": "Create Production ORDER_REQUEST_API_URL and ORDER_REQUEST_ALLOWED_ORIGINS in Vercel",
+    "reason": "Review treated the earlier restriction on production settings as active and said these exact variable changes were not authorized. No write occurred.",
+    "workaroundAttempted": false,
+    "approvalRequiredForExactVariables": [
+      "ORDER_REQUEST_API_URL",
+      "ORDER_REQUEST_ALLOWED_ORIGINS",
+      "ORDER_REQUEST_API_SECRET"
+    ]
+  }
+}

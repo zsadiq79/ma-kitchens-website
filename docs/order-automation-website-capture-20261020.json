@@ -1,0 +1,90 @@
+{
+  "deploymentId": "dpl_6epSNkCeMBNcfqsmrGafbvaY5ZD4",
+  "commit": "debe342078310e2c689a7fe38a02fc4a93f1dd5d",
+  "origin": "https://ma-kitchens-website-dgpnyitpn-zsadiq79s-projects.vercel.app",
+  "checks": [
+    {
+      "stage": "retry_saved_request",
+      "status": 200,
+      "elapsedMs": 11456,
+      "response": {
+        "ok": true,
+        "reference": "1000"
+      }
+    },
+    {
+      "stage": "recover_by_capability",
+      "status": 200,
+      "elapsedMs": 10674,
+      "response": {
+        "ok": true,
+        "found": true,
+        "reference": "1000",
+        "status": "UNASSIGNED",
+        "publicTotalCents": 8000
+      }
+    },
+    {
+      "stage": "reject_changed_payload_same_key",
+      "status": 409,
+      "elapsedMs": 10832,
+      "response": {
+        "ok": false,
+        "error": "REQUEST_CONFLICT"
+      }
+    },
+    {
+      "stage": "fresh_capture_with_extended_wait",
+      "status": 200,
+      "elapsedMs": 19929,
+      "response": {
+        "ok": true,
+        "reference": "1001"
+      }
+    },
+    {
+      "stage": "retry_fresh_saved_request",
+      "status": 200,
+      "elapsedMs": 12537,
+      "response": {
+        "ok": true,
+        "reference": "1001"
+      }
+    }
+  ],
+  "productionChangesIssued": false,
+  "providerMessagesSent": false,
+  "browserInteractionVerified": false,
+  "whatsappMessageUsesOrderRef": true,
+  "passed": true,
+  "nativeReadback": {
+    "orderCount": 53,
+    "itemCount": 185,
+    "customerCount": 46,
+    "requestCount": 2,
+    "requestItemCount": 2,
+    "requestEventCount": 2,
+    "requests": [
+      {
+        "reference": "1000",
+        "status": "UNASSIGNED",
+        "customerId": "",
+        "linkedOrderId": "",
+        "publicTotalCents": 8000
+      },
+      {
+        "reference": "1001",
+        "status": "UNASSIGNED",
+        "customerId": "",
+        "linkedOrderId": "",
+        "publicTotalCents": 8000
+      }
+    ]
+  },
+  "automatedTestsPassed": 179,
+  "productionDeploymentUnchanged": {
+    "id": "dpl_8Wt9R8WEcLbFAddsxsfsRCZAjZvj",
+    "commit": "27ef64557f82361effbb90d7f75442b32df4096a",
+    "state": "READY"
+  }
+}

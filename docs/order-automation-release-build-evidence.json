@@ -1,0 +1,302 @@
+{
+  "dateSydney": "2026-10-20",
+  "tests": 179,
+  "passed": 179,
+  "failed": 0,
+  "originalTestBuildChanged": false,
+  "profiles": [
+    {
+      "profile": {
+        "folder": "production-rehearsal",
+        "environment": "REHEARSAL",
+        "spreadsheetId": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+        "scriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5"
+      },
+      "functions": 472,
+      "codeSha256": "ea4bf111d0447afb2ca5496cae69407fb12a3632ad1f3c1cbaf1d4c396d1389d",
+      "lines": 16657,
+      "nativeMigrationVerified": true,
+      "replacementInstallationConfirmed": true,
+      "nativeLatestOwnerRepairVerified": true,
+      "sourceHashIndependentlyFetched": false
+    },
+    {
+      "profile": {
+        "folder": "production-candidate",
+        "environment": "PRODUCTION",
+        "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+        "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
+      },
+      "functions": 472,
+      "codeSha256": "fb1c9abc7ebff102715b15ce51705bee60b90b274a7332e4a344da9d09cb2693",
+      "lines": 16657,
+      "nativeMigrationVerified": false,
+      "replacementInstallationConfirmed": false
+    }
+  ],
+  "productionRolloutApproved": false,
+  "googleInstallationCompleted": true,
+  "externalSideEffectsIssued": false,
+  "scope": "179 automated tests; rehearsal migration/rerun, schema and protection validation, manual and website acceptance, repeated saved-order checks, pricing/stock/cancellation, downstream previews and paused signed recovery passed. Latest prepared 472-function source was owner-installed and its new discount-label helper completed natively; all 4998 label formulas are corrected without errors, and original 52 order / 184 item financial records retain expected values. No production installation or provider sends were issued.",
+  "installationEnvironment": "REHEARSAL",
+  "nativeRehearsalSchemaMigrationVerified": true,
+  "productionInstallationCompleted": false,
+  "nativeEvidence": "docs/order-automation-rehearsal-native-migration-20261019.json",
+  "preparedCodeReplacementInstalled": true,
+  "rehearsalReplacementConfirmationBasis": "Owner installed the distinctly named source and successfully ran its new repair helper. Native formula readback passed.",
+  "nativeRehearsalRepairCheck": {
+    "ownerReportedAtSydney": "2026-10-19 18:23:47",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "changedFormulaCount": 0,
+    "recordsPreserved": true
+  },
+  "nativeMenuAndSavedReviewChecks": {
+    "menus": [
+      "Website Requests",
+      "Packing Slips"
+    ],
+    "orderId": "ORD-000053",
+    "state": "VERIFIED",
+    "total": 66,
+    "independentReadbackPassed": true
+  },
+  "rehearsalWebAppDeployed": true,
+  "rehearsalPublicHealthVerified": true,
+  "previewRehearsalBackendConfigured": true,
+  "previewSigningSecretSynchronizationPending": false,
+  "previewRedeploymentPending": false,
+  "previewSigningSecretOwnerCopyConfirmed": true,
+  "previewSigningCompatibilityVerified": true,
+  "previousInstalledBuild": {
+    "profile": {
+      "folder": "production-rehearsal",
+      "environment": "REHEARSAL",
+      "spreadsheetId": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+      "scriptId": "1bf4ZUVw5ugJt3PiDBpRTLG_bdfTkuzSEtB8vpfcPjkfLseESaD-e_Tf5"
+    },
+    "functions": 470,
+    "codeSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
+    "lines": 16632,
+    "nativeMigrationVerified": true,
+    "replacementInstallationConfirmed": true
+  },
+  "latestPreparedCodeInstalled": true,
+  "nativePausedPreflight": {
+    "ownerReportedAtSydney": "2026-10-20 06:56:35",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "phase": "PAUSED",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "sheetCount": 33,
+    "orderColumns": 37,
+    "itemColumns": 30,
+    "formulaAnchors": 9,
+    "legacyState": "CREATED",
+    "legacyOrderId": "ORD-000052",
+    "confirmationState": "UNCERTAIN",
+    "triggers": [
+      {
+        "handler": "orderRequestInboxOnOpen_",
+        "source": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+        "event": "ON_OPEN"
+      }
+    ],
+    "newLedgerCount": 0,
+    "writesIssued": false,
+    "externalActions": "BLOCKED"
+  },
+  "discountLabelRepair": {
+    "ownerReportedAtSydney": "2026-10-20 07:09:15",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "changedFormulaCount": 4996,
+    "recordsPreserved": true,
+    "nativeReadback": {
+      "formulaCount": 4998,
+      "oldFormatCount": 0,
+      "newFormatCount": 4998,
+      "formulaErrors": 0,
+      "examples": [
+        {
+          "row": 3,
+          "label": "Paid",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 187,
+          "label": "20% Off",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 188,
+          "label": "20% Off",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 2500,
+          "label": "",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 2501,
+          "label": "",
+          "hasCorrectedFormat": true
+        },
+        {
+          "row": 5000,
+          "label": "",
+          "hasCorrectedFormat": true
+        }
+      ],
+      "financialsCorrect": true,
+      "passed": true
+    },
+    "originalFinancialPreservation": {
+      "originalOrdersChecked": 52,
+      "originalItemsChecked": 184,
+      "unexpectedDifferences": []
+    },
+    "installedPreparedSourceHash": "ea4bf111d0447afb2ca5496cae69407fb12a3632ad1f3c1cbaf1d4c396d1389d",
+    "installedSourceHashIndependentlyFetched": false,
+    "installationEvidence": "Owner installed the distinctly named source and successfully ran its new repair helper. Native formula readback passed."
+  },
+  "livePreparationBackup": {
+    "sourceId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "backupId": "1iDPVdKHQKLnF3PGS40USwxXztU0RlRV7KL08TVKgSwM",
+    "backupTitle": "Ma Kitchens LIVE PREPARATION BACKUP 20 Oct 2026 0710 Sydney",
+    "backupUrl": "https://docs.google.com/spreadsheets/d/1iDPVdKHQKLnF3PGS40USwxXztU0RlRV7KL08TVKgSwM/edit?usp=drivesdk",
+    "private": true,
+    "permissionRoles": [
+      "owner"
+    ],
+    "sheetCount": 26,
+    "sampledNativeCellsCompared": 6782,
+    "userEnteredValueOrFormulaDifferences": [],
+    "sourceWritesIssued": false,
+    "orderCount": 58,
+    "lastOrderId": "ORD-000058",
+    "itemCount": 216,
+    "customerCount": 50,
+    "legacyState": "DRAFT",
+    "legacyOrderId": "",
+    "legacyConfirmationState": "",
+    "boundScriptCopyVerificationPending": false,
+    "finalCutoverBackupStillRequired": true,
+    "notForProductionDataReplacement": true,
+    "boundScriptCopyOwnerConfirmed": true,
+    "backupScriptId": "1dm5nrH-MmcbUmfh_e-SiBCBYT_1CDu08voldBNbK5bXwVSXPlA3pLmbh",
+    "backupScriptUrl": "https://script.google.com/u/0/home/projects/1dm5nrH-MmcbUmfh_e-SiBCBYT_1CDu08voldBNbK5bXwVSXPlA3pLmbh/edit",
+    "ownerReportedAtSydney": "2026-10-20 07:20:20",
+    "boundScriptConfirmationBasis": "Owner opened Apps Script from the named preparation backup, supplied this distinct editor URL, and reported the original separate .gs files. No backup source was modified or executed.",
+    "sourceInventoryComparisonPending": false,
+    "sourceHashComparisonPending": false,
+    "bindingIndependentlyRuntimeVerified": false,
+    "browserReadAttempt": {
+      "result": "The requested private editor redirected to the public Google Developers Apps Script page. No editor file list or code was retrieved.",
+      "postRedirectUrl": "https://developers.google.com/apps-script/",
+      "sourceModified": false
+    },
+    "expectedOriginalFiles": [
+      "Code.gs",
+      "FeedbackDryRun.gs",
+      "FeedbackInteraction.gs",
+      "FeedbackLegacyBridge.gs",
+      "FeedbackProductionConfig.gs",
+      "FeedbackSender.gs",
+      "FeedbackWeb.gs",
+      "FeedbackWebSender.gs",
+      "PackingSlips.gs",
+      "PermanentWhatsAppLog.gs",
+      "Routific.gs",
+      "RoutificWebhook.gs"
+    ],
+    "visibleSourceFiles": [
+      "Code.gs",
+      "Routific.gs",
+      "RoutificWebhook.gs",
+      "FeedbackDryRun.gs",
+      "FeedbackSender.gs",
+      "FeedbackInteraction.gs",
+      "PackingSlips.gs",
+      "PermanentWhatsAppLog.gs",
+      "FeedbackWeb.gs",
+      "FeedbackLegacyBridge.gs",
+      "FeedbackWebSender.gs",
+      "FeedbackProductionConfig.gs",
+      "OrderingMenuPublisher.gs"
+    ],
+    "visibleSourceFileCount": 13,
+    "originalModuleNamesMatched": 12,
+    "additionalKnownModule": "OrderingMenuPublisher.gs",
+    "publisherAlreadyIncludedInReviewedCandidate": true,
+    "inventoryEvidence": {
+      "attachment": "image(20261019-202532).png",
+      "ownerProvidedAtSydney": "2026-10-20 07:26:05",
+      "visuallyInspected": true,
+      "scope": "File names only. Source contents and hidden manifest are not verified by this screenshot."
+    },
+    "currentLiveSourceOwnerConfirmation": {
+      "ownerReportedAtSydney": "2026-10-20 07:29:37",
+      "changedSinceSuppliedSource": false,
+      "includes": "Code.gs and other .gs files in original LIVE, separate from rehearsal changes.",
+      "basis": "Direct owner response: no. Original 12 modules were supplied in the handoff and OrderingMenuPublisher.gs was separately supplied in this conversation.",
+      "independentEditorOrDeployedSourceHashVerified": false
+    },
+    "sourceCompatibilityOwnerConfirmed": true,
+    "sourceHashIndependentlyRetrieved": false,
+    "remainingSourceEvidenceLimitation": "Compatibility is based on supplied original source, native backup provenance, visible inventory and owner confirmation, not an independently retrieved current editor/version hash."
+  },
+  "liveSourceCompatibilityOwnerConfirmed": true,
+  "metaPreflight": {
+    "ownerReportedAtSydney": "2026-10-20 07:33:22",
+    "callbackUrl": "https://www.makitchens.com.au/api/whatsapp-events",
+    "messagesSubscribed": true,
+    "matchesReviewedWebsiteHandler": true,
+    "productionMain": "27ef64557f82361effbb90d7f75442b32df4096a",
+    "productionDeployment": "dpl_8Wt9R8WEcLbFAddsxsfsRCZAjZvj",
+    "productionState": "READY",
+    "boundaryProbe": {
+      "method": "GET",
+      "verificationTokenSupplied": false,
+      "httpStatus": 403,
+      "response": "Verification failed",
+      "providerMessageSubmitted": false
+    },
+    "appConfigurationOwnerConfirmed": true,
+    "phoneOrWabaCallbackOverrideIndependentlyQueried": false,
+    "actualInboundProviderDeliveryTestedInThisStep": false,
+    "productionChangesIssued": false,
+    "recentFailedExecutionReviewPending": true,
+    "productionRequestConfiguration": {
+      "missingProductionKeys": [
+        "ORDER_REQUEST_API_URL",
+        "ORDER_REQUEST_API_SECRET",
+        "ORDER_REQUEST_ALLOWED_ORIGINS"
+      ],
+      "requiredCanonicalOrigin": "https://www.makitchens.com.au",
+      "previewIsolationFlag": "ORDER_AUTOMATION_TEST_ONLY",
+      "previewIsolationProductionTargetPresent": false,
+      "metadataOnlyNoSecretValuesPrinted": true,
+      "productionChangesIssued": false
+    }
+  },
+  "recentFailedExecutionReviewPending": true,
+  "releaseReviewDocuments": [
+    "docs/ORDER_AUTOMATION_RELEASE_REVIEW_20261020.md",
+    "docs/ORDER_AUTOMATION_ROLLOUT_REVIEW_20261020.md",
+    "docs/ORDER_AUTOMATION_ROLLBACK_REVIEW_20261020.md"
+  ],
+  "productionRequestConfigurationPending": {
+    "missingProductionKeys": [
+      "ORDER_REQUEST_API_URL",
+      "ORDER_REQUEST_API_SECRET",
+      "ORDER_REQUEST_ALLOWED_ORIGINS"
+    ],
+    "requiredCanonicalOrigin": "https://www.makitchens.com.au",
+    "previewIsolationFlag": "ORDER_AUTOMATION_TEST_ONLY",
+    "previewIsolationProductionTargetPresent": false,
+    "metadataOnlyNoSecretValuesPrinted": true,
+    "productionChangesIssued": false
+  }
+}

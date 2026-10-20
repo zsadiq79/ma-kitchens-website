@@ -1,0 +1,410 @@
+{
+  "profile": {
+    "folder": "production-candidate",
+    "environment": "PRODUCTION",
+    "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
+  },
+  "codeSha256": "fb1c9abc7ebff102715b15ce51705bee60b90b274a7332e4a344da9d09cb2693",
+  "functions": 472,
+  "lines": 16657,
+  "originalModules": [
+    {
+      "name": "Code.gs",
+      "sha256": "ff1db725f7796de0ea6ce38b7a0ccda66a84e36d6d14e863ca79a4a9d4bae26d"
+    },
+    {
+      "name": "FeedbackDryRun.gs",
+      "sha256": "cb53b0dc1b81045bc64f23ea6aedb7f41939f68297665f99b05db7225c149ad6"
+    },
+    {
+      "name": "FeedbackInteraction.gs",
+      "sha256": "2d769a30a5b020fc585872852efe3e86428c4559f762d2ba3375c703849d77e2"
+    },
+    {
+      "name": "FeedbackLegacyBridge.gs",
+      "sha256": "6ae54b5cfe4f9c44ea4f71ba44247c9921da6049257fbd430fda3dce436eb9db"
+    },
+    {
+      "name": "FeedbackProductionConfig.gs",
+      "sha256": "5d05b1f9f7235c73ef8e3b911792f46b000137d4457843d762cbe459a947360b"
+    },
+    {
+      "name": "FeedbackSender.gs",
+      "sha256": "5456869bc9aba0d12ed7287006b6ad745d4ff0ce1e01c7f3d2303400537669f2"
+    },
+    {
+      "name": "FeedbackWeb.gs",
+      "sha256": "115e501520be46a5ad91afecfd73c3508c6b87857fa2a0a13fbe1783dce118e3"
+    },
+    {
+      "name": "FeedbackWebSender.gs",
+      "sha256": "acfec7e5e01599ed1eea5cc0cc9d125b583dfaac4ff8cd7ef6fbb384ed7ec173"
+    },
+    {
+      "name": "PackingSlips.gs",
+      "sha256": "701b3c920fa8a816bfac3e06dd863eac828b5b30e20ed00554e3eb8fc9d8ab4c"
+    },
+    {
+      "name": "PermanentWhatsAppLog.gs",
+      "sha256": "0bf6986731bbdb21fe24e2213ccae27ff82011d8940c5875f7dae513319f1d39"
+    },
+    {
+      "name": "Routific.gs",
+      "sha256": "8865dac24b36292126751732d4d8f26af7815548b901576d5f533c7b76b69ea3"
+    },
+    {
+      "name": "RoutificWebhook.gs",
+      "sha256": "5b12cb6ca92d6ac513a5c48a8ed09664ceb966608d839abc017fabe7365ef28c"
+    }
+  ],
+  "sharedModules": [
+    {
+      "name": "OrderEngine.gs",
+      "sha256": "53cc41fb69e71c8fbe2b7e4cbef499af0ffb0fd39f0b299e514044f57d97af3a"
+    },
+    {
+      "name": "OrderRequests.gs",
+      "sha256": "557ac776f95ed58900f0962aaf0c4564904e5d28fbece73828c14b8d884fcec1"
+    },
+    {
+      "name": "OwnerOrders.gs",
+      "sha256": "a4db7a14880f5dddd88f7bffbe775178584f916584658c7fc9a32723113cfb58"
+    },
+    {
+      "name": "OwnerCustomers.gs",
+      "sha256": "09a5996cb55b973b27670c18460be48cea16654f03f03d520c16156289a0c9b9"
+    },
+    {
+      "name": "OwnerOrderSetup.gs",
+      "sha256": "81fb673e900d16ed30d54ee8c250cca58c2d3dfabedcb24bdf8db0f237b348c0"
+    },
+    {
+      "name": "OrderingMenuPublisher.gs",
+      "sha256": "3d9a7e49ebe03a0216a57e6b0eaf8e65e11692f4556f546a19869007ddda583b"
+    },
+    {
+      "name": "OrderReleaseSupport.gs",
+      "sha256": "5bb8fac506643a85d875e7c393b6d05fbb0980ef0a197de72d44122d8183f405"
+    },
+    {
+      "name": "OrderReleaseCommerce.gs",
+      "sha256": "b10a41d4bb891c880bc4272429d05b017ea175293fa69a2411a8c39379ce388b"
+    }
+  ],
+  "adapterSource": {
+    "name": "IntegrationTestGuards.gs",
+    "sha256": "bc3886b4428540bbc9613c98f9b333fcca665d6ead44d67bd0517481705a68b9",
+    "functions": [
+      "mkIntegrationLegacySnapshots_",
+      "mkIntegrationEnrichMenu_"
+    ],
+    "note": "Only these two reviewed adapters are extracted and renamed; no TEST service boundary is included."
+  },
+  "changes": [
+    {
+      "file": "Code.gs",
+      "function": "doGet"
+    },
+    {
+      "file": "Code.gs",
+      "function": "doPost"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeBook_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntrySetup"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryNewDraft"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeNewDraft_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryLoadCustomer"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryReview"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryResendConfirmation"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryMenu"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryEdited"
+    },
+    {
+      "file": "Code.gs",
+      "function": "buildActiveMenu_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "nextOrderId_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeMeta_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeCheckLocked_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryRecoverSubmission"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeCommitRequests_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "orderEntryPlaceOrder"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeAddressSetup_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeItemSetup_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "placeOrder_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeCustomerForCommit_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "createControlTowerOrder_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "calculateCartQuote_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "validateCartAvailability_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "clearOrderInputCells_"
+    },
+    {
+      "file": "Code.gs",
+      "function": "clearOrderItemInputCells_"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "collectPackingSlipData_"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "cleanDeliveryNote_"
+    },
+    {
+      "file": "PermanentWhatsAppLog.gs",
+      "function": "whatsappLogStatusRank_"
+    },
+    {
+      "file": "FeedbackWeb.gs",
+      "function": "fwOrder_"
+    },
+    {
+      "file": "FeedbackWeb.gs",
+      "function": "fwPrimeWebReads_"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "saveFeedbackProductionConfig"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "saveProductionFeedbackSigningKey"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkWhatsAppHandler"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "requireVerifiedWhatsAppForwarding"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "enableProductionFeedbackBackend"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "openProductionFeedback016"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkFeedback026"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "prepareWebsiteFeedbackSender"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkPreparedFeedbackSettings"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "sendFeedback026Only"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "diagnoseFeedback026Conflict"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "checkRecording026"
+    },
+    {
+      "file": "FeedbackProductionConfig.gs",
+      "function": "enableWebsiteFeedbackLive"
+    },
+    {
+      "file": "Routific.gs",
+      "function": "sendConfirmedOrdersToRoutific"
+    },
+    {
+      "file": "FeedbackSender.gs",
+      "function": "runFeedbackSender"
+    },
+    {
+      "file": "FeedbackSender.gs",
+      "function": "enableFeedbackLive"
+    },
+    {
+      "file": "FeedbackSender.gs",
+      "function": "installFeedbackAutomation"
+    },
+    {
+      "file": "FeedbackWebSender.gs",
+      "function": "runFeedbackWebSender_"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "generatePackingSlips"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "setupPackingSlips"
+    },
+    {
+      "file": "PackingSlips.gs",
+      "function": "rebuildPackingSlipsTemplate"
+    },
+    {
+      "file": "Code.gs",
+      "function": "oeSendConfirmation_"
+    },
+    {
+      "file": "OwnerOrders.gs",
+      "function": "mkOwnerBook_"
+    },
+    {
+      "file": "OwnerOrders.gs",
+      "function": "ownerOrderAccept"
+    },
+    {
+      "file": "OwnerOrders.gs",
+      "function": "ownerOrderReview"
+    },
+    {
+      "file": "OrderRequests.gs",
+      "function": "orderRequestMarkReceived"
+    },
+    {
+      "file": "OwnerCustomers.gs",
+      "function": "ownerOrderSaveCustomer"
+    },
+    {
+      "file": "OwnerOrders.gs",
+      "function": "ownerOrderRecover"
+    },
+    {
+      "file": "OwnerOrders.gs",
+      "function": "mkOwnerReconcile_"
+    },
+    {
+      "file": "OwnerOrderSetup.gs",
+      "function": "setupOwnerOrderWorkspace"
+    },
+    {
+      "file": "OwnerOrderSetup.gs",
+      "function": "mkOwnerRowFormulaRequests_"
+    },
+    {
+      "file": "OrderRequests.gs",
+      "function": "setupOrderRequestWorkspace"
+    },
+    {
+      "file": "OrderRequests.gs",
+      "function": "orderRequestOwner_"
+    },
+    {
+      "file": "OrderRequests.gs",
+      "function": "orderRequestInboxOnOpen_"
+    },
+    {
+      "file": "OrderRequests.gs",
+      "function": "orderRequestCapture_"
+    },
+    {
+      "file": "OrderRequests.gs",
+      "function": "orderRequestRecover_"
+    },
+    {
+      "file": "OrderingMenuPublisher.gs",
+      "function": "mkOrderPublishOwner_"
+    },
+    {
+      "file": "OrderingMenuPublisher.gs",
+      "function": "configureOrderingPublisherProduction"
+    },
+    {
+      "file": "OrderingMenuPublisher.gs",
+      "function": "saveOrderingPublisherSettings"
+    },
+    {
+      "file": "OrderingMenuPublisher.gs",
+      "function": "publishCurrentOrderingMenu"
+    },
+    {
+      "file": "OrderingMenuPublisher.gs",
+      "function": "withdrawPublishedOrderingMenu"
+    },
+    {
+      "file": "OrderingMenuPublisher.gs",
+      "function": "mkOrderWriteSnapshot_"
+    }
+  ],
+  "installationApproved": false,
+  "nativeMigrationVerified": false,
+  "productionRolloutApproved": false,
+  "knownGates": [
+    "Native fresh-copy migration and downstream rehearsal remain required.",
+    "Current LIVE editor source backup/confirmation and upstream Meta settings remain required.",
+    "No provider sends, route dispatch or document operations are authorized by preparation."
+  ]
+}

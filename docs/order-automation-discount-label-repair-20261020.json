@@ -1,0 +1,55 @@
+{
+  "ownerReportedAtSydney": "2026-10-20 07:09:15",
+  "ok": true,
+  "environment": "REHEARSAL",
+  "changedFormulaCount": 4996,
+  "recordsPreserved": true,
+  "nativeReadback": {
+    "formulaCount": 4998,
+    "oldFormatCount": 0,
+    "newFormatCount": 4998,
+    "formulaErrors": 0,
+    "examples": [
+      {
+        "row": 3,
+        "label": "Paid",
+        "hasCorrectedFormat": true
+      },
+      {
+        "row": 187,
+        "label": "20% Off",
+        "hasCorrectedFormat": true
+      },
+      {
+        "row": 188,
+        "label": "20% Off",
+        "hasCorrectedFormat": true
+      },
+      {
+        "row": 2500,
+        "label": "",
+        "hasCorrectedFormat": true
+      },
+      {
+        "row": 2501,
+        "label": "",
+        "hasCorrectedFormat": true
+      },
+      {
+        "row": 5000,
+        "label": "",
+        "hasCorrectedFormat": true
+      }
+    ],
+    "financialsCorrect": true,
+    "passed": true
+  },
+  "originalFinancialPreservation": {
+    "originalOrdersChecked": 52,
+    "originalItemsChecked": 184,
+    "unexpectedDifferences": []
+  },
+  "installedPreparedSourceHash": "ea4bf111d0447afb2ca5496cae69407fb12a3632ad1f3c1cbaf1d4c396d1389d",
+  "installedSourceHashIndependentlyFetched": false,
+  "installationEvidence": "Owner installed the distinctly named source and successfully ran its new repair helper. Native formula readback passed."
+}

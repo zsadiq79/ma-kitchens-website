@@ -1,0 +1,614 @@
+{
+  "dateSydney": "2026-10-19",
+  "configuration": {
+    "ownerReportedAtSydney": "17:12:28",
+    "environment": "REHEARSAL",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "externalActions": "BLOCKED",
+    "triggerCount": 0
+  },
+  "preflight": {
+    "sydneyTime": "2026-10-19 17:14:30",
+    "phase": "LEGACY",
+    "sheetCount": 26,
+    "orderColumns": 31,
+    "itemColumns": 23,
+    "formulaAnchors": 9,
+    "legacyState": "CREATED",
+    "legacyOrderId": "ORD-000052",
+    "confirmationState": "UNCERTAIN",
+    "newLedgerCount": 7,
+    "writesIssued": false
+  },
+  "migration": {
+    "sydneyTime": "2026-10-19 17:19:40",
+    "phase": "MIGRATED",
+    "recordsPreserved": true,
+    "ownerWorkspaceActive": false,
+    "publicCaptureActive": false
+  },
+  "nativeReadbackAt": "2026-10-19T06:21:43.248Z",
+  "nativeChecks": {
+    "passed": true,
+    "sheetCount": 33,
+    "orderColumns": 37,
+    "itemColumns": 30,
+    "orderCount": 52,
+    "itemRows": 184,
+    "customerCount": 45,
+    "customerMappingsMatchCurrentLive": true,
+    "allOperationalAndLedgerHeadersMatch": true,
+    "snapshotFormulaAnchorsMatch": 9,
+    "newLedgerRecordCounts": {
+      "Owner Order Reviews": 0,
+      "Order Operation Journal": 0,
+      "Owner Customer Operations": 0,
+      "Order Requests": 0,
+      "Order Request Items": 0,
+      "Order Request Events": 0,
+      "Order Menu State": 0
+    },
+    "unexpectedFinancialDifferences": 0,
+    "existingPaymentStatusQuantityPayoutAndItemInputsPreserved": true,
+    "expectedCancellationFixes": {
+      "orderCount": 2,
+      "derivedContributionAdjusted": true,
+      "orderTotalReductionPerCancelledOrder": 10
+    },
+    "legacy": {
+      "state": "CREATED",
+      "orderId": "ORD-000052",
+      "confirmationState": "UNCERTAIN"
+    }
+  },
+  "protectionEvidence": "Owner-reported script reconciliation validated native protected ranges. Metadata connector does not expose protected ranges.",
+  "idempotenceNativeCheck": {
+    "status": "PASSED",
+    "ownerReportedPreviewAtSydney": "2026-10-19 17:25:05",
+    "reportedPhase": "MIGRATED",
+    "sheetCount": 33,
+    "newLedgerCount": 0,
+    "previewWritesIssued": false,
+    "financialRecordDifferencesAfterRerun": 0,
+    "basis": "Owner followed rerun/preview sequence; independent native comparison against the post-migration checkpoint confirms unchanged 52 order and 184 item financial records. This is not a measured API write-call count."
+  },
+  "ownerWorkspaceActivated": true,
+  "publicCaptureActivated": false,
+  "providerActionsIssued": false,
+  "productionWritesIssued": false,
+  "productionRolloutApproved": false,
+  "privateMenuPreparation": {
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "checkedAt": "2026-10-19T06:29:30.126Z",
+    "ownerReportedPreviewAtSydney": "2026-10-19 17:25:05",
+    "ownerReportedMenuPreparationCompletedAtSydney": "2026-10-19 17:27:04",
+    "sheetCount": 33,
+    "orderCount": 52,
+    "itemRows": 184,
+    "financialChangesSinceMigration": [],
+    "menuStatus": "ACTIVE",
+    "menuCycleId": "MENU-2026-10-22",
+    "deliveryDate": "2026-10-22",
+    "menuRevision": "f2d81367cf41f8ecefac52edfbcea3ae06e02f34d2c514a366583cba5ede1c0b",
+    "dishCount": 14,
+    "minimumOrderItems": 5,
+    "deliveryFeeCents": 1000,
+    "authoritativeMenuMismatches": [],
+    "websitePublicationIssued": false,
+    "publicCaptureActivated": false,
+    "ownerWorkspaceActivated": false,
+    "externalProviderActionsIssued": false,
+    "revisionAndIdentityChecks": {
+      "revisionMatches": true,
+      "publicIdsMatch": true,
+      "uniqueMenuLineIds": true,
+      "uniquePublicIds": true
+    },
+    "passed": true
+  },
+  "activation": {
+    "ownerReportedAtSydney": "2026-10-19 17:31:19",
+    "phase": "ACTIVE",
+    "retiredEntryTriggers": 0,
+    "recordsPreserved": true,
+    "captureEnabled": false,
+    "ownerUiOpenedSuccessfullyAtSydney": "2026-10-19 17:33:28",
+    "ownerConfirmedBanner": "PRODUCTION REHEARSAL",
+    "legacyScreenHiddenVerifiedIndependently": true,
+    "customerCountBeforeManualTest": 45,
+    "samplePhoneAlreadyInCustomers": false
+  },
+  "manualCustomerTest": {
+    "verifiedAt": "2026-10-19T06:45:14.643Z",
+    "customerId": "CUST-000046",
+    "customerCount": 46,
+    "originalCustomerIdentitiesPreserved": 45,
+    "checks": {
+      "newCustomerId": true,
+      "name": true,
+      "phone": true,
+      "postcode": true,
+      "address": true,
+      "consent": true,
+      "numericIntakePhone": true,
+      "intakeConsentFalse": true,
+      "oldIdentitiesPreserved": true,
+      "newTimestampAfterPriorNumeric": true
+    },
+    "operationReady": true,
+    "intakeRowsCreatedForAttempt": 1,
+    "plannedOrder": {
+      "deliveryDate": "2026-10-22",
+      "dishName": "Crazy Haleem",
+      "quantity": 5,
+      "discountPercent": 20,
+      "foodSubtotalCents": 5600,
+      "deliveryFeeCents": 1000,
+      "totalCents": 6600,
+      "cookPayoutCents": 5000,
+      "reviewCompleted": true,
+      "acceptanceCompleted": true
+    }
+  },
+  "manualOrderTest": {
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "verifiedAt": "2026-10-19T07:00:21.813Z",
+    "orderId": "ORD-000053",
+    "orderRow": 54,
+    "itemRows": [
+      187
+    ],
+    "customerId": "CUST-000046",
+    "reviewId": "REV-5183aec7-7e31-4790-946d-7833198fc1ca",
+    "operationId": "OWN-REV-5183aec7-7e31-4790-946d-7833198fc1ca",
+    "checks": {
+      "singleOperationalOrder": true,
+      "singleOperationalItem": true,
+      "customerId": true,
+      "deliveryDate": true,
+      "customerIdentitySnapshot": true,
+      "addressAndInstructionsSnapshot": true,
+      "reviewVerified": true,
+      "journalRecorded": true,
+      "operationIdentity": true,
+      "priceAndCookSnapshots": true,
+      "itemIdentitySnapshot": true,
+      "effectiveLineValues": true,
+      "orderFinancials": true,
+      "orderFormulaChecks": true,
+      "pricingRulesSnapshot": true,
+      "pendingAndPaymentRequested": true,
+      "noManualConfirmationMarked": true,
+      "stockReducedCorrectly": true,
+      "originalFinancialRowsPreserved": true
+    },
+    "financials": {
+      "foodSubtotal": 56,
+      "deliveryFee": 10,
+      "total": 66,
+      "cookPayout": 50,
+      "contribution": 16,
+      "totalQuantity": 5,
+      "discountPercent": 20
+    },
+    "menuStock": {
+      "menuLineId": "ML-20261022-M0058",
+      "before": 50,
+      "committed": 5,
+      "after": 45
+    },
+    "orderCount": 53,
+    "itemCount": 185,
+    "originalOrderCount": 52,
+    "originalItemCount": 184,
+    "repeatedSavedOrderChecksCompleted": true,
+    "providerActionsIssued": false,
+    "productionWritesIssued": false
+  },
+  "repeatedSavedOrderCheck": {
+    "orderId": "ORD-000053",
+    "reviewState": "VERIFIED",
+    "orderMatches": 1,
+    "itemMatches": 1,
+    "orderCount": 53,
+    "itemCount": 185,
+    "reviewUpdatedAt": "2026-10-19T07:02:01.330Z",
+    "ownerFollowedRepeatedCheckInstruction": true,
+    "verifiedAt": "2026-10-19T07:04:19.661Z",
+    "ownerReportedResult": "ORD-000053 \u00b7 VERIFIED",
+    "verificationBasis": "Owner reported the same verified result after the requested repeated check. Independent native reads show one matching order, one matching item, one review and one journal operation; the review has a fresh check timestamp."
+  },
+  "confirmedOrderDownstream": {
+    "verifiedAt": "2026-10-19T07:04:19.661Z",
+    "orderId": "ORD-000053",
+    "status": "Confirmed",
+    "payment": "Payment Requested",
+    "financials": {
+      "total": 66,
+      "food": 56,
+      "fee": 10,
+      "payout": 50,
+      "contribution": 16
+    },
+    "cook": {
+      "controlDate": 46317,
+      "displayedDate": "Thu 22 Oct 2026",
+      "totalServings": 5,
+      "ordersPlaced": 1,
+      "dishRows": [
+        {
+          "row": 7,
+          "kitchen": "FOODIE CLUB",
+          "dish": "Crazy Haleem",
+          "quantity": 5,
+          "capacity": 50,
+          "remaining": 45
+        }
+      ],
+      "kitchens": [
+        {
+          "row": 5,
+          "kitchen": "FOODIE CLUB",
+          "quantity": 5,
+          "messageContainsExpectedDish": true,
+          "messageContainsCorrectDate": true
+        }
+      ]
+    },
+    "delivery": {
+      "controlDate": 46317,
+      "displayedDate": "22/10/2026",
+      "rows": [
+        {
+          "row": 11,
+          "orderId": "ORD-000053",
+          "customerMatches": true,
+          "addressMatches": true,
+          "window": "4\u201310 PM",
+          "notesMatch": true
+        }
+      ],
+      "formulaAnchorPreserved": true
+    },
+    "packing": {
+      "controlDate": 46317,
+      "displayedDate": "22-Oct-2026",
+      "previewRefreshPending": true
+    },
+    "errors": [],
+    "productionWritesIssued": false,
+    "providerActionsIssued": false,
+    "checks": {
+      "statusConfirmed": true,
+      "paymentUnchanged": true,
+      "orderTotalUnchanged": true,
+      "cookPayoutUnchanged": true,
+      "cookTotal": true,
+      "cookOrderCount": true,
+      "cookDish": true,
+      "cookKitchen": true,
+      "delivery": true,
+      "dates": true,
+      "noFormulaErrors": true
+    }
+  },
+  "packingCancellationRestoration": {
+    "verifiedAt": "2026-10-19T07:18:08.316Z",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "orderId": "ORD-000053",
+    "packingPreviewVerified": true,
+    "packing": {
+      "bag": "Bag 1",
+      "packs": 5,
+      "status": "Confirmed",
+      "suburb": "Greenacre",
+      "privateAddressOrPhoneDisplayed": false
+    },
+    "issue": {
+      "severity": "Medium",
+      "totalAlreadyZero": true,
+      "cancelledDeliveryFeeBeforeFix": 10
+    },
+    "chargeFormulaCount": 3998,
+    "fixAppliedThrough": "Native Sheets connector in rehearsal. Updated source repair helper and all future writers are prepared; new Apps Script source installation is pending.",
+    "standardDelivery": {
+      "status": "Confirmed",
+      "total": 66,
+      "deliveryFee": 10,
+      "freeDeliveryDiscount": 0,
+      "cookPayout": 50,
+      "threshold": 0,
+      "oldCancelledFees": [
+        0,
+        0
+      ],
+      "remaining": 45
+    },
+    "qualifyingFreeDelivery": {
+      "status": "Confirmed",
+      "total": 56,
+      "foodSubtotal": 56,
+      "deliveryFee": 10,
+      "freeDeliveryDiscount": 10,
+      "cookPayout": 50,
+      "contribution": 6,
+      "threshold": 50,
+      "remaining": 45
+    },
+    "cancelledAfterFix": {
+      "status": "Cancelled",
+      "total": 0,
+      "foodSubtotal": 0,
+      "deliveryFee": 0,
+      "freeDeliveryDiscount": 0,
+      "cookPayout": 0,
+      "contribution": 0,
+      "threshold": 50,
+      "remaining": 50,
+      "itemSubtotal": 0,
+      "itemCookPayout": 0,
+      "cookTotalServings": 0,
+      "cookOrderCount": 0,
+      "deliveryPreviewMessage": "No eligible confirmed orders for selected date"
+    },
+    "restored": {
+      "row": 54,
+      "id": "ORD-000053",
+      "status": "Confirmed",
+      "payment": "Payment Requested",
+      "total": 66,
+      "foodSubtotal": 56,
+      "deliveryFee": 10,
+      "freeDeliveryDiscount": 0,
+      "cookPayout": 50,
+      "contribution": 16,
+      "quantity": 5
+    },
+    "checks": {
+      "syntheticConfirmed": true,
+      "syntheticPaymentUnchanged": true,
+      "syntheticFinancialsRestored": true,
+      "thresholdRestored": true,
+      "stockRestored": true,
+      "allChargeFormulasVerified": true,
+      "validationPreserved": true,
+      "orderSnapshotsPreserved": true,
+      "itemSnapshotsPreserved": true,
+      "originalItemsPreserved": true,
+      "expectedHistoricalDisplayCorrectionOnly": true,
+      "cookRestored": true,
+      "deliveryRestored": true,
+      "packingPreviewStillCorrect": true,
+      "noDuplicateOrder": true
+    },
+    "expectedHistoricalDisplayCorrections": [
+      {
+        "orderId": "ORD-000041",
+        "row": 42,
+        "keys": [
+          "deliveryFee"
+        ],
+        "before": {
+          "deliveryFee": 10
+        },
+        "after": {
+          "deliveryFee": 0
+        }
+      },
+      {
+        "orderId": "ORD-000042",
+        "row": 43,
+        "keys": [
+          "deliveryFee"
+        ],
+        "before": {
+          "deliveryFee": 10
+        },
+        "after": {
+          "deliveryFee": 0
+        }
+      }
+    ],
+    "unexpectedHistoricalItemChanges": [],
+    "orderCount": 53,
+    "itemCount": 185,
+    "newCodeInstallationConfirmed": false,
+    "providerActionsIssued": false,
+    "productionWritesIssued": false
+  },
+  "rehearsalCodeReplacement": {
+    "prepared": true,
+    "installationConfirmed": true,
+    "previousInstalledBuildSha256": "454c7a06c1a002a1555cc166a348af7a8229fc27a145dd809aef4933659989d4",
+    "preparedBuildSha256": "ab7d72ee4ee0fd1aaf9fa64cf2aa57d7e2621c359d6c061b22b71c2151d1134a",
+    "requiredSteps": [],
+    "confirmationBasis": "Owner reported saved, then executed the new repair helper successfully in the designated rehearsal project.",
+    "editorSourceIndependentlyFetched": false,
+    "nativeRepairCheck": {
+      "ownerReportedAtSydney": "2026-10-19 18:23:47",
+      "ok": true,
+      "environment": "REHEARSAL",
+      "changedFormulaCount": 0,
+      "recordsPreserved": true
+    },
+    "menusVerified": {
+      "ownerReportedAtSydney": "2026-10-19 18:27:05",
+      "menus": [
+        "Website Requests",
+        "Packing Slips"
+      ]
+    },
+    "savedReviewReopen": {
+      "orderId": "ORD-000053",
+      "status": "Confirmed",
+      "total": 66,
+      "cookPayout": 50,
+      "reviewState": "VERIFIED",
+      "reviewUpdatedAt": "2026-10-19T07:28:46.817Z",
+      "reviewOrderId": "ORD-000053",
+      "itemOrderId": "ORD-000053",
+      "ownerReportedMenusPresent": [
+        "Website Requests",
+        "Packing Slips"
+      ],
+      "ownerReportedAtSydney": "2026-10-19 18:29:01",
+      "independentReadbackPassed": true
+    }
+  },
+  "websitePreConnectionCheck": {
+    "checkedAt": "2026-10-19T07:31:48.700Z",
+    "previewBranch": "codex/order-request-capture-preview",
+    "menuRevision": "f2d81367cf41f8ecefac52edfbcea3ae06e02f34d2c514a366583cba5ede1c0b",
+    "dishCount": 14,
+    "deliveryDate": "2026-10-22",
+    "apiUrlBranchScoped": true,
+    "apiSecretBranchScoped": true,
+    "backendMatchesOldTest": false,
+    "rehearsalEndpointPending": false,
+    "providerActionsIssued": false,
+    "productionWritesIssued": false,
+    "endpointConfiguredAt": "2026-10-19T07:45:15.802Z",
+    "matchingSigningSecretPending": false,
+    "redeploymentPending": false
+  },
+  "rehearsalWebApp": {
+    "checkedAt": "2026-10-19T07:45:15.802Z",
+    "url": "https://script.google.com/macros/s/AKfycbzm4aBFH6yKiqsul7Ts6nsRtzlAJRfMQLQoK3VUbv28GMokknU5Hm7hqIfB2JfwCm87xA/exec",
+    "httpStatus": 200,
+    "response": {
+      "ok": true,
+      "environment": "REHEARSAL",
+      "externalActions": "BLOCKED"
+    },
+    "captureEnabled": true,
+    "captureGateProbePending": false,
+    "captureGateProbe": {
+      "httpStatus": 200,
+      "response": {
+        "ok": false,
+        "error": "ORDER_REQUEST_NOT_READY"
+      },
+      "payload": "Empty JSON; no valid request signature or operational order was submitted."
+    },
+    "previewConfiguration": {
+      "projectId": "prj_XY2JKlYycxkX7uIWhPQxE8lccVJV",
+      "branch": "codex/order-request-capture-preview",
+      "key": "ORDER_REQUEST_API_URL",
+      "target": [
+        "preview"
+      ],
+      "readbackVerified": true,
+      "matchingSigningSecretPending": false,
+      "redeploymentPending": false,
+      "signingSecretOwnerCopy": {
+        "ownerReportedSavedAtSydney": "2026-10-20 06:04:17",
+        "vercelUpdatedAt": "2026-10-19T19:04:00.004Z",
+        "scopeVerified": {
+          "target": [
+            "preview"
+          ],
+          "gitBranch": "codex/order-request-capture-preview",
+          "type": "sensitive"
+        },
+        "secretValueReadOrPrinted": false,
+        "signedCompatibilityVerified": true,
+        "redeploymentPath": "Existing GitHub integration; documentation commit triggers a fresh preview build.",
+        "productionChangesIssued": false
+      },
+      "signatureCompatibilityVerified": true
+    },
+    "providerActionsIssued": false,
+    "productionChangesIssued": false,
+    "captureEnabledOwnerReportedAtSydney": "2026-10-20 06:21:05",
+    "websiteCaptureVerification": {
+      "deploymentId": "dpl_6epSNkCeMBNcfqsmrGafbvaY5ZD4",
+      "commit": "debe342078310e2c689a7fe38a02fc4a93f1dd5d",
+      "origin": "https://ma-kitchens-website-dgpnyitpn-zsadiq79s-projects.vercel.app",
+      "checks": [
+        {
+          "stage": "retry_saved_request",
+          "status": 200,
+          "elapsedMs": 11456,
+          "response": {
+            "ok": true,
+            "reference": "1000"
+          }
+        },
+        {
+          "stage": "recover_by_capability",
+          "status": 200,
+          "elapsedMs": 10674,
+          "response": {
+            "ok": true,
+            "found": true,
+            "reference": "1000",
+            "status": "UNASSIGNED",
+            "publicTotalCents": 8000
+          }
+        },
+        {
+          "stage": "reject_changed_payload_same_key",
+          "status": 409,
+          "elapsedMs": 10832,
+          "response": {
+            "ok": false,
+            "error": "REQUEST_CONFLICT"
+          }
+        },
+        {
+          "stage": "fresh_capture_with_extended_wait",
+          "status": 200,
+          "elapsedMs": 19929,
+          "response": {
+            "ok": true,
+            "reference": "1001"
+          }
+        },
+        {
+          "stage": "retry_fresh_saved_request",
+          "status": 200,
+          "elapsedMs": 12537,
+          "response": {
+            "ok": true,
+            "reference": "1001"
+          }
+        }
+      ],
+      "productionChangesIssued": false,
+      "providerMessagesSent": false,
+      "browserInteractionVerified": false,
+      "whatsappMessageUsesOrderRef": true,
+      "passed": true,
+      "nativeReadback": {
+        "orderCount": 53,
+        "itemCount": 185,
+        "customerCount": 46,
+        "requestCount": 2,
+        "requestItemCount": 2,
+        "requestEventCount": 2,
+        "requests": [
+          {
+            "reference": "1000",
+            "status": "UNASSIGNED",
+            "customerId": "",
+            "linkedOrderId": "",
+            "publicTotalCents": 8000
+          },
+          {
+            "reference": "1001",
+            "status": "UNASSIGNED",
+            "customerId": "",
+            "linkedOrderId": "",
+            "publicTotalCents": 8000
+          }
+        ]
+      },
+      "automatedTestsPassed": 179,
+      "productionDeploymentUnchanged": {
+        "id": "dpl_8Wt9R8WEcLbFAddsxsfsRCZAjZvj",
+        "commit": "27ef64557f82361effbb90d7f75442b32df4096a",
+        "state": "READY"
+      }
+    }
+  }
+}

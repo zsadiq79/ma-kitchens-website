@@ -1,0 +1,1543 @@
+{
+  "provenance": "Read-only native LIVE menu/config fixture, 20 October 2026 08:27 Sydney. Only generator-consumed public menu/config fields retained. No customers, orders, cook IDs, names or payouts.",
+  "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+  "timeZone": "Australia/Sydney",
+  "sheets": {
+    "Weekly Menu": [
+      [
+        {
+          "value": "Menu Cycle ID",
+          "display": "Menu Cycle ID"
+        },
+        {
+          "value": "Delivery Date",
+          "display": "Delivery Date"
+        },
+        {
+          "value": "Item Code",
+          "display": "Item Code"
+        },
+        {
+          "value": "Dish Name",
+          "display": "Dish Name"
+        },
+        {
+          "value": "Menu Kitchen Name",
+          "display": "Menu Kitchen Name"
+        },
+        {
+          "value": "Customer Price",
+          "display": "Customer Price"
+        },
+        {
+          "value": "Dietary Tags",
+          "display": "Dietary Tags"
+        },
+        {
+          "value": "Menu Description",
+          "display": "Menu Description"
+        },
+        {
+          "value": "Image URL",
+          "display": "Image URL"
+        },
+        {
+          "value": "Cook Section Order",
+          "display": "Cook Section Order"
+        },
+        {
+          "value": "Dish Display Order",
+          "display": "Dish Display Order"
+        },
+        {
+          "value": "Menu Status",
+          "display": "Menu Status"
+        },
+        {
+          "value": "Menu Card Readiness",
+          "display": "Menu Card Readiness"
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0058",
+          "display": "M0058",
+          "format": ""
+        },
+        {
+          "value": "Crazy Haleem",
+          "display": "Crazy Haleem",
+          "format": ""
+        },
+        {
+          "value": "FOODIE CLUB",
+          "display": "FOODIE CLUB",
+          "format": ""
+        },
+        {
+          "value": 14,
+          "display": "$14.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Beef and lentils slow-cooked to perfection. Garnished with crispy fried onions and traditional lawazamat",
+          "display": "Beef and lentils slow-cooked to perfection. Garnished with crispy fried onions and traditional lawazamat",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0030.png",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0030.png",
+          "format": ""
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0059",
+          "display": "M0059",
+          "format": ""
+        },
+        {
+          "value": "Qeema Dillema",
+          "display": "Qeema Dillema",
+          "format": ""
+        },
+        {
+          "value": "FOODIE CLUB",
+          "display": "FOODIE CLUB",
+          "format": ""
+        },
+        {
+          "value": 14,
+          "display": "$14.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Lean beef mince slow-cooked with potatoes and capsicum along with aromatic spices for a satisfying kick",
+          "display": "Lean beef mince slow-cooked with potatoes and capsicum along with aromatic spices for a satisfying kick",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0059.jpg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0059.jpg",
+          "format": ""
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0060",
+          "display": "M0060",
+          "format": ""
+        },
+        {
+          "value": "Stir Fried Veggies",
+          "display": "Stir Fried Veggies",
+          "format": ""
+        },
+        {
+          "value": "FOODIE CLUB",
+          "display": "FOODIE CLUB",
+          "format": ""
+        },
+        {
+          "value": 11,
+          "display": "$11.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Premium stir fried vegetables including broccoli, cauliflower, baby corn, carrots and capsicum",
+          "display": "Premium stir fried vegetables including broccoli, cauliflower, baby corn, carrots and capsicum",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0002.jpg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0002.jpg",
+          "format": ""
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": 3,
+          "display": "3",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0061",
+          "display": "M0061",
+          "format": ""
+        },
+        {
+          "value": "Chicken Shashlik with White Rice",
+          "display": "Chicken Shashlik with White Rice",
+          "format": ""
+        },
+        {
+          "value": "FOODIE CLUB",
+          "display": "FOODIE CLUB",
+          "format": ""
+        },
+        {
+          "value": 15,
+          "display": "$15.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Tender marinated chicken and crisp vegetables tossed in a tangy, tomato gravy served over white rice",
+          "display": "Tender marinated chicken and crisp vegetables tossed in a tangy, tomato gravy served over white rice",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0061.jpg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0061.jpg",
+          "format": ""
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": 4,
+          "display": "4",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0062",
+          "display": "M0062",
+          "format": ""
+        },
+        {
+          "value": "Thaylay Wali Chaat",
+          "display": "Thaylay Wali Chaat",
+          "format": ""
+        },
+        {
+          "value": "FOODIE CLUB",
+          "display": "FOODIE CLUB",
+          "format": ""
+        },
+        {
+          "value": 8,
+          "display": "$8.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Go back to home recipe of chana chat including chickpeas, potatoes, tomatoes and onions topped with crunchy paapri",
+          "display": "Go back to home recipe of chana chat including chickpeas, potatoes, tomatoes and onions topped with crunchy paapri",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0062.jpg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0062.jpg",
+          "format": ""
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": 5,
+          "display": "5",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Removed",
+          "display": "Removed",
+          "format": ""
+        },
+        {
+          "value": "NOT PUBLISHED",
+          "display": "NOT PUBLISHED",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0063",
+          "display": "M0063",
+          "format": ""
+        },
+        {
+          "value": "Cr\u00e8me Criminal",
+          "display": "Cr\u00e8me Criminal",
+          "format": ""
+        },
+        {
+          "value": "FOODIE CLUB",
+          "display": "FOODIE CLUB",
+          "format": ""
+        },
+        {
+          "value": 10,
+          "display": "$10.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Smooth pudding with a layer of caramel sauce. Criminally comforting",
+          "display": "Smooth pudding with a layer of caramel sauce. Criminally comforting",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0016.jpg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0016.jpg",
+          "format": ""
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": 6,
+          "display": "6",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0049",
+          "display": "M0049",
+          "format": ""
+        },
+        {
+          "value": "Achari Kabuli Biryani",
+          "display": "Achari Kabuli Biryani",
+          "format": ""
+        },
+        {
+          "value": "ZAUQ KITCHEN",
+          "display": "ZAUQ KITCHEN",
+          "format": ""
+        },
+        {
+          "value": 15,
+          "display": "$15.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Spicy aromatic rice layered with tangy achari spiced chickpeas served w/ fresh Turkish salad",
+          "display": "Spicy aromatic rice layered with tangy achari spiced chickpeas served w/ fresh Turkish salad",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0049.jpeg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0049.jpeg",
+          "format": ""
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0050",
+          "display": "M0050",
+          "format": ""
+        },
+        {
+          "value": "Highway Balochi karhai",
+          "display": "Highway Balochi karhai",
+          "format": ""
+        },
+        {
+          "value": "ZAUQ KITCHEN",
+          "display": "ZAUQ KITCHEN",
+          "format": ""
+        },
+        {
+          "value": 17,
+          "display": "$17.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Tender chicken cooked in a unique balochi spice blend with fresh green chilies and ginger",
+          "display": "Tender chicken cooked in a unique balochi spice blend with fresh green chilies and ginger",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0050.jpeg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0050.jpeg",
+          "format": ""
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0051",
+          "display": "M0051",
+          "format": ""
+        },
+        {
+          "value": "Desi Phalliya Alo",
+          "display": "Desi Phalliya Alo",
+          "format": ""
+        },
+        {
+          "value": "ZAUQ KITCHEN",
+          "display": "ZAUQ KITCHEN",
+          "format": ""
+        },
+        {
+          "value": 11,
+          "display": "$11.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Tender green beans with potatoes tempered with spices",
+          "display": "Tender green beans with potatoes tempered with spices",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0051.jpeg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0051.jpeg",
+          "format": ""
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": 3,
+          "display": "3",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0052",
+          "display": "M0052",
+          "format": ""
+        },
+        {
+          "value": "Tawa Beef Kebab w/ Vegetables",
+          "display": "Tawa Beef Kebab w/ Vegetables",
+          "format": ""
+        },
+        {
+          "value": "ZAUQ KITCHEN",
+          "display": "ZAUQ KITCHEN",
+          "format": ""
+        },
+        {
+          "value": 15,
+          "display": "$15.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Juicy mouthwatering beef kebab tossed with crisp vegetables",
+          "display": "Juicy mouthwatering beef kebab tossed with crisp vegetables",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0052.jpeg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0052.jpeg",
+          "format": ""
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": 4,
+          "display": "4",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0053",
+          "display": "M0053",
+          "format": ""
+        },
+        {
+          "value": "Dahi Phulkiya Chaat",
+          "display": "Dahi Phulkiya Chaat",
+          "format": ""
+        },
+        {
+          "value": "ZAUQ KITCHEN",
+          "display": "ZAUQ KITCHEN",
+          "format": ""
+        },
+        {
+          "value": 7,
+          "display": "$7.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Besan dumplings soaked in spiced , seasoned yoghurt and other condiments",
+          "display": "Besan dumplings soaked in spiced , seasoned yoghurt and other condiments",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0053.jpeg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0053.jpeg",
+          "format": ""
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": 5,
+          "display": "5",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0054",
+          "display": "M0054",
+          "format": ""
+        },
+        {
+          "value": "Fudge Brownie Trifle",
+          "display": "Fudge Brownie Trifle",
+          "format": ""
+        },
+        {
+          "value": "ZAUQ KITCHEN",
+          "display": "ZAUQ KITCHEN",
+          "format": ""
+        },
+        {
+          "value": 11,
+          "display": "$11.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Rich brownie layered with smooth cream,custard and chocolate sauce",
+          "display": "Rich brownie layered with smooth cream,custard and chocolate sauce",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0054.jpeg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0054.jpeg",
+          "format": ""
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": 6,
+          "display": "6",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0055",
+          "display": "M0055",
+          "format": ""
+        },
+        {
+          "value": "Beef Palao",
+          "display": "Beef Palao",
+          "format": ""
+        },
+        {
+          "value": "DASTARKHWAAN",
+          "display": "DASTARKHWAAN",
+          "format": ""
+        },
+        {
+          "value": 17,
+          "display": "$17.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Rice pilaf cooked in beef broth with tender pieces of beef",
+          "display": "Rice pilaf cooked in beef broth with tender pieces of beef",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0055.jpeg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0055.jpeg",
+          "format": ""
+        },
+        {
+          "value": 3,
+          "display": "3",
+          "format": "NUMBER"
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0056",
+          "display": "M0056",
+          "format": ""
+        },
+        {
+          "value": "Bhindi",
+          "display": "Bhindi",
+          "format": ""
+        },
+        {
+          "value": "DASTARKHWAAN",
+          "display": "DASTARKHWAAN",
+          "format": ""
+        },
+        {
+          "value": 14,
+          "display": "$14.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Okra cooked in mildly spicy masala",
+          "display": "Okra cooked in mildly spicy masala",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0056.jpg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0056.jpg",
+          "format": ""
+        },
+        {
+          "value": 3,
+          "display": "3",
+          "format": "NUMBER"
+        },
+        {
+          "value": 2,
+          "display": "2",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "MENU-2026-10-22",
+          "display": "MENU-2026-10-22",
+          "format": ""
+        },
+        {
+          "value": 46317,
+          "display": "22-Oct-2026",
+          "format": "DATE"
+        },
+        {
+          "value": "M0057",
+          "display": "M0057",
+          "format": ""
+        },
+        {
+          "value": "Daal Maash",
+          "display": "Daal Maash",
+          "format": ""
+        },
+        {
+          "value": "DASTARKHWAAN",
+          "display": "DASTARKHWAAN",
+          "format": ""
+        },
+        {
+          "value": 12,
+          "display": "$12.00",
+          "format": "CURRENCY"
+        },
+        {
+          "value": "Halal",
+          "display": "Halal",
+          "format": ""
+        },
+        {
+          "value": "Split white urad lentil cooked with aromatic spices, ginger, garlic, and tomatoes",
+          "display": "Split white urad lentil cooked with aromatic spices, ginger, garlic, and tomatoes",
+          "format": ""
+        },
+        {
+          "value": "https://www.makitchens.com.au/menu-images/Dish-0035.jpg",
+          "display": "https://www.makitchens.com.au/menu-images/Dish-0035.jpg",
+          "format": ""
+        },
+        {
+          "value": 3,
+          "display": "3",
+          "format": "NUMBER"
+        },
+        {
+          "value": 3,
+          "display": "3",
+          "format": "NUMBER"
+        },
+        {
+          "value": "Available",
+          "display": "Available",
+          "format": ""
+        },
+        {
+          "value": "READY",
+          "display": "READY",
+          "format": ""
+        }
+      ]
+    ],
+    "Dishes": [
+      [
+        {
+          "value": "Item Code",
+          "display": "Item Code"
+        },
+        {
+          "value": "Portion / Pack",
+          "display": "Portion / Pack"
+        },
+        {
+          "value": "Dish Category",
+          "display": "Dish Category"
+        }
+      ],
+      [
+        {
+          "value": "M0049",
+          "display": "M0049",
+          "format": ""
+        },
+        {
+          "value": "1000 ml",
+          "display": "1000 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0050",
+          "display": "M0050",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0051",
+          "display": "M0051",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0052",
+          "display": "M0052",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0053",
+          "display": "M0053",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0054",
+          "display": "M0054",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Dessert",
+          "display": "Dessert",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0055",
+          "display": "M0055",
+          "format": ""
+        },
+        {
+          "value": "1000 ml",
+          "display": "1000 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0056",
+          "display": "M0056",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0057",
+          "display": "M0057",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0058",
+          "display": "M0058",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0059",
+          "display": "M0059",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0060",
+          "display": "M0060",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0061",
+          "display": "M0061",
+          "format": ""
+        },
+        {
+          "value": "1000 ml",
+          "display": "1000 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0062",
+          "display": "M0062",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Main",
+          "display": "Main",
+          "format": "NUMBER"
+        }
+      ],
+      [
+        {
+          "value": "M0063",
+          "display": "M0063",
+          "format": ""
+        },
+        {
+          "value": "500 ml",
+          "display": "500 ml",
+          "format": ""
+        },
+        {
+          "value": "Dessert",
+          "display": "Dessert",
+          "format": "NUMBER"
+        }
+      ]
+    ],
+    "Menu Config": [
+      [
+        {
+          "value": "Setting",
+          "display": "Setting"
+        },
+        {
+          "value": "Value",
+          "display": "Value"
+        }
+      ],
+      [
+        {
+          "value": "Brand Name",
+          "display": "Brand Name",
+          "format": ""
+        },
+        {
+          "value": "Ma Kitchens",
+          "display": "Ma Kitchens",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Menu Title",
+          "display": "Menu Title",
+          "format": ""
+        },
+        {
+          "value": "Weekly Menu",
+          "display": "Weekly Menu",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Tagline",
+          "display": "Tagline",
+          "format": ""
+        },
+        {
+          "value": "Home cooked food by local cooks, delivered to you.",
+          "display": "Home cooked food by local cooks, delivered to you.",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "WhatsApp Display Number",
+          "display": "WhatsApp Display Number",
+          "format": ""
+        },
+        {
+          "value": "0420 246 023",
+          "display": "0420 246 023",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "WhatsApp International Number",
+          "display": "WhatsApp International Number",
+          "format": ""
+        },
+        {
+          "value": "+61420246023",
+          "display": "+61420246023",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Website",
+          "display": "Website",
+          "format": ""
+        },
+        {
+          "value": "makitchens.com.au",
+          "display": "makitchens.com.au",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Currency",
+          "display": "Currency",
+          "format": ""
+        },
+        {
+          "value": "AUD",
+          "display": "AUD",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Time Zone",
+          "display": "Time Zone",
+          "format": ""
+        },
+        {
+          "value": "Australia/Sydney",
+          "display": "Australia/Sydney",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Standard Discount %",
+          "display": "Standard Discount %",
+          "format": ""
+        },
+        {
+          "value": 0,
+          "display": "0",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Minimum Order Items",
+          "display": "Minimum Order Items",
+          "format": ""
+        },
+        {
+          "value": 5,
+          "display": "5",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Delivery Fee",
+          "display": "Delivery Fee",
+          "format": ""
+        },
+        {
+          "value": 2.5,
+          "display": "2.5",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Free Delivery Threshold",
+          "display": "Free Delivery Threshold",
+          "format": ""
+        },
+        {
+          "value": 0,
+          "display": "0",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Free Delivery Threshold Basis",
+          "display": "Free Delivery Threshold Basis",
+          "format": ""
+        },
+        {
+          "value": "Pre-discount food value",
+          "display": "Pre-discount food value",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Default Deadline Days Before Delivery",
+          "display": "Default Deadline Days Before Delivery",
+          "format": ""
+        },
+        {
+          "value": 1,
+          "display": "1",
+          "format": ""
+        }
+      ],
+      [
+        {
+          "value": "Default Deadline Time",
+          "display": "Default Deadline Time",
+          "format": ""
+        },
+        {
+          "value": 0.7083333333333334,
+          "display": "17:00",
+          "format": "TIME"
+        }
+      ],
+      [
+        {
+          "value": "WhatsApp Channel Link",
+          "display": "WhatsApp Channel Link",
+          "format": ""
+        },
+        {
+          "value": "https://whatsapp.com/channel/0029Vb6Ct1GF1YlbaAkXCs1C",
+          "display": "https://whatsapp.com/channel/0029Vb6Ct1GF1YlbaAkXCs1C",
+          "format": ""
+        }
+      ]
+    ]
+  }
+}

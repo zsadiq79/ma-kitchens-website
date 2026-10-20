@@ -1,0 +1,103 @@
+{
+  "deploymentId": "dpl_6epSNkCeMBNcfqsmrGafbvaY5ZD4",
+  "commit": "debe342078310e2c689a7fe38a02fc4a93f1dd5d",
+  "origin": "https://ma-kitchens-website-dgpnyitpn-zsadiq79s-projects.vercel.app",
+  "checks": [
+    {
+      "stage": "recover_accepted_request_while_paused",
+      "httpStatus": 200,
+      "elapsedMs": 11984,
+      "response": {
+        "ok": true,
+        "found": true,
+        "reference": "1002",
+        "status": "ACCEPTED",
+        "publicTotalCents": 8000
+      },
+      "cacheControl": "no-store"
+    },
+    {
+      "stage": "recover_unassigned_request_while_paused",
+      "httpStatus": 200,
+      "elapsedMs": 11445,
+      "response": {
+        "ok": true,
+        "found": true,
+        "reference": "1001",
+        "status": "UNASSIGNED",
+        "publicTotalCents": 8000
+      },
+      "cacheControl": "no-store"
+    },
+    {
+      "stage": "new_request_blocked_while_paused",
+      "httpStatus": 503,
+      "elapsedMs": 8471,
+      "response": {
+        "ok": false,
+        "error": "ORDER_REQUEST_NOT_READY"
+      },
+      "cacheControl": "no-store"
+    }
+  ],
+  "productionChangesIssued": false,
+  "providerMessagesSent": false,
+  "browserInteractionVerified": false,
+  "passed": true,
+  "ownerReportedPauseCompletedAtSydney": "2026-10-20 06:51:51",
+  "nativeReadback": {
+    "orderCount": 54,
+    "itemCount": 186,
+    "requestCount": 3,
+    "requestItemCount": 3,
+    "requestEventCount": 6,
+    "acceptedOrderUnchanged": true,
+    "requestStates": [
+      {
+        "reference": "1000",
+        "status": "UNASSIGNED",
+        "orderId": ""
+      },
+      {
+        "reference": "1001",
+        "status": "UNASSIGNED",
+        "orderId": ""
+      },
+      {
+        "reference": "1002",
+        "status": "ACCEPTED",
+        "orderId": "ORD-000054"
+      }
+    ]
+  },
+  "phasePropertyNativeLogPending": false,
+  "savedOrderRecheck": {
+    "orderId": "ORD-000054",
+    "state": "VERIFIED",
+    "nativeUpdatedAt": "2026-10-19T19:50:38.986Z"
+  },
+  "ownerNativePreflight": {
+    "ownerReportedAtSydney": "2026-10-20 06:56:35",
+    "ok": true,
+    "environment": "REHEARSAL",
+    "phase": "PAUSED",
+    "workbook": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+    "sheetCount": 33,
+    "orderColumns": 37,
+    "itemColumns": 30,
+    "formulaAnchors": 9,
+    "legacyState": "CREATED",
+    "legacyOrderId": "ORD-000052",
+    "confirmationState": "UNCERTAIN",
+    "triggers": [
+      {
+        "handler": "orderRequestInboxOnOpen_",
+        "source": "1aMJuPNJM2vVEeSlMZx8LIdkwSCKqd-_FojZelZ87RSs",
+        "event": "ON_OPEN"
+      }
+    ],
+    "newLedgerCount": 0,
+    "writesIssued": false,
+    "externalActions": "BLOCKED"
+  }
+}

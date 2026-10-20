@@ -1,0 +1,109 @@
+{
+  "checkedAt": "2026-10-20 Australia/Sydney",
+  "status": "COMPATIBILITY_GATE_PASSED_REVIEWED_SOURCE_SCHEMA_OWNER_NATIVE_ACCEPTANCE",
+  "userShortcut": "https://script.google.com/macros/s/AKfycbz4Tvl9vwHRhgBww_b90WK51KARl2By14i7kxuAy95iOb4QKOHOiUf_czmwYNBypwVbSQ/exec",
+  "userRequiredOutputs": [
+    "PNG",
+    "WebP",
+    "JPEG"
+  ],
+  "consolidatedSourceContainsImageGenerator": false,
+  "distinction": "OrderingMenuPublisher publishes ordering-menu JSON; it does not render/download menu artwork.",
+  "historicalHandoff": {
+    "filename": "Ma_Kitchens_Weekly_Menu_System_Full_Handoff.txt",
+    "dated": "2026-09-24",
+    "describedHost": "Separate Slides-bound Apps Script",
+    "currentShortcutProjectMappingVerified": false
+  },
+  "httpObservation": {
+    "result": "Redirected to Google Accounts sign-in",
+    "generatorHtmlRetrieved": false,
+    "availabilityOrCompatibilityConclusion": false
+  },
+  "nativeSchemaComparison": [
+    {
+      "tab": "Weekly Menu",
+      "liveSheetId": 654691835,
+      "rehearsalSheetId": 654691835,
+      "headers": [
+        "Menu Line ID",
+        "Menu Cycle ID",
+        "Delivery Date",
+        "Item Code",
+        "Dish Name",
+        "Cook ID",
+        "Menu Kitchen Name",
+        "Cuisine",
+        "Customer Price",
+        "Dietary Tags",
+        "Menu Description",
+        "Image URL",
+        "Average Rating",
+        "Rating Count",
+        "Rating Display",
+        "Cook Section Order",
+        "Dish Display Order",
+        "Available Servings",
+        "Ordered Qty",
+        "Remaining Servings",
+        "Menu Status",
+        "Availability Status",
+        "Featured?",
+        "Weekly Note",
+        "Menu Card Sort Key",
+        "Menu Card Readiness"
+      ],
+      "headersMatch": true,
+      "row2FormulaAnchorsCompared": 18,
+      "row2FormulaAnchorsMatch": true
+    },
+    {
+      "tab": "Dishes",
+      "liveSheetId": 1276477490,
+      "rehearsalSheetId": 1276477490,
+      "headers": [
+        "Item Code",
+        "Cook ID",
+        "Menu Kitchen Name",
+        "Dish Name",
+        "Cuisine",
+        "Cook Pay / Serving",
+        "Customer Price",
+        "Gross Margin / Serving",
+        "Portion / Pack",
+        "Dietary Tags",
+        "Menu Description",
+        "Status",
+        "Allergens / Notes",
+        "Image URL",
+        "Average Rating",
+        "Rating Count",
+        "Dish Category"
+      ],
+      "headersMatch": true,
+      "row2FormulaAnchorsCompared": 5,
+      "row2FormulaAnchorsMatch": true,
+      "headersInspected": 17
+    }
+  ],
+  "checkedMigrationBehavior": "Adds order/item snapshots and private ledgers; does not rename, reorder or rewrite Weekly Menu or Dishes columns.",
+  "pending": [
+    "Production installation and deployment require explicit approval",
+    "Re-read LIVE settings/records and create a fresh cutover backup in the approved window",
+    "Apply selected 8 PM poster setting only within approved configuration scope; preserve website enforcement unless explicitly changed",
+    "Verify working original generator shortcut again after any approved LIVE upgrade"
+  ],
+  "productionModified": false,
+  "currentProject": {
+    "name": "Ma Kitchens Menu V2",
+    "scriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
+    "suppliedServerSourceSha256": "19fbf51903d677d82ee1074f0c4ae2192b8bfc2d5ccc5153a5cecef3d927fc86",
+    "htmlSupplied": true,
+    "deployedSourceIndependentlyVerified": false,
+    "manifestSupplied": true,
+    "originalDeploymentVersionOwnerReported": 21
+  },
+  "sourceReview": "ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md",
+  "nativeAcceptanceEvidence": "order-automation-menu-generator-native-acceptance-20261020.json",
+  "currentShortcutProjectMappingOwnerConfirmed": true
+}

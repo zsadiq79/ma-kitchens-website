@@ -1,0 +1,4521 @@
+{
+  "scope": "Static function inventory and boundary checks. Individual runtime coverage varies; this is not end-to-end certification.",
+  "codeSha256": "b08d7db7b2a42e5e9d917500c0e0dc7ffc0c9a47d7d18b1da352c9d7267ce29d",
+  "functionCount": 428,
+  "moduleFunctionCounts": {
+    "Code.gs": 117,
+    "FeedbackDryRun.gs": 3,
+    "FeedbackInteraction.gs": 32,
+    "FeedbackLegacyBridge.gs": 5,
+    "FeedbackProductionConfig.gs": 13,
+    "FeedbackSender.gs": 21,
+    "FeedbackWeb.gs": 49,
+    "FeedbackWebSender.gs": 8,
+    "PackingSlips.gs": 31,
+    "PermanentWhatsAppLog.gs": 11,
+    "Routific.gs": 6,
+    "RoutificWebhook.gs": 17,
+    "OrderEngine.gs": 7,
+    "OrderRequests.gs": 31,
+    "OwnerOrders.gs": 31,
+    "OwnerCustomers.gs": 4,
+    "OwnerOrderSetup.gs": 4,
+    "OrderingMenuPublisher.gs": 16,
+    "IntegrationTestGuards.gs": 17,
+    "IntegrationDispatcher.gs": 5
+  },
+  "unresolvedCustomCalls": [],
+  "publicHandlers": [
+    {
+      "name": "doGet",
+      "module": "IntegrationDispatcher.gs",
+      "startLine": 16046,
+      "endLine": 16049,
+      "calls": [
+        "mkIntegrationRequireTest_",
+        "orderRequestJson_"
+      ]
+    },
+    {
+      "name": "doPost",
+      "module": "IntegrationDispatcher.gs",
+      "startLine": 16050,
+      "endLine": 16058,
+      "calls": [
+        "mkIntegrationRequireTest_",
+        "handleOrderRequestApi_",
+        "orderRequestJson_"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "mkIntegrationLegacyDoGet_",
+      "module": "Code.gs",
+      "startLine": 44,
+      "endLine": 62,
+      "calls": []
+    },
+    {
+      "name": "mkIntegrationLegacyDoPost_",
+      "module": "Code.gs",
+      "startLine": 72,
+      "endLine": 110,
+      "calls": [
+        "handleMenuApiRequest_",
+        "handleFeedbackWebApiRequest_",
+        "fwObject_",
+        "fwConfig_",
+        "handleRoutificWebhook_",
+        "fwProps_",
+        "processIncomingMessageOnce_",
+        "recordWhatsAppStatus_",
+        "updateWhatsAppLogFromStatus_"
+      ]
+    },
+    {
+      "name": "recordWhatsAppStatus_",
+      "module": "Code.gs",
+      "startLine": 119,
+      "endLine": 211,
+      "calls": []
+    },
+    {
+      "name": "getRecentWhatsAppStatuses",
+      "module": "Code.gs",
+      "startLine": 214,
+      "endLine": 252,
+      "calls": []
+    },
+    {
+      "name": "processIncomingMessageOnce_",
+      "module": "Code.gs",
+      "startLine": 259,
+      "endLine": 306,
+      "calls": [
+        "handleIncomingWhatsAppMessage_"
+      ]
+    },
+    {
+      "name": "handleIncomingWhatsAppMessage_",
+      "module": "Code.gs",
+      "startLine": 313,
+      "endLine": 423,
+      "calls": [
+        "handleFeedbackTemplateReply_",
+        "handleFeedbackTextReply_",
+        "startNewOrder_",
+        "handleCheckoutTextReply_",
+        "handleFeedbackInteractiveReply_",
+        "handleMenuListReply_",
+        "handleButtonReply_"
+      ]
+    },
+    {
+      "name": "startNewOrder_",
+      "module": "Code.gs",
+      "startLine": 430,
+      "endLine": 451,
+      "calls": [
+        "buildActiveMenu_",
+        "sendTextMessage_",
+        "resetCart_",
+        "sendKitchenList_"
+      ]
+    },
+    {
+      "name": "sendMealList_",
+      "module": "Code.gs",
+      "startLine": 458,
+      "endLine": 464,
+      "calls": [
+        "sendKitchenList_",
+        "buildActiveMenu_"
+      ]
+    },
+    {
+      "name": "getMenuKitchens_",
+      "module": "Code.gs",
+      "startLine": 467,
+      "endLine": 491,
+      "calls": []
+    },
+    {
+      "name": "sendKitchenList_",
+      "module": "Code.gs",
+      "startLine": 494,
+      "endLine": 625,
+      "calls": [
+        "buildActiveMenu_",
+        "sendTextMessage_",
+        "getMenuKitchens_",
+        "truncateText_",
+        "getOrderingRules_",
+        "formatPercent_",
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "sendKitchenDishList_",
+      "module": "Code.gs",
+      "startLine": 628,
+      "endLine": 776,
+      "calls": [
+        "buildActiveMenu_",
+        "getMenuKitchens_",
+        "sendTextMessage_",
+        "truncateText_",
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "handleMenuListReply_",
+      "module": "Code.gs",
+      "startLine": 779,
+      "endLine": 874,
+      "calls": [
+        "buildActiveMenu_",
+        "sendTextMessage_",
+        "ensureCartForMenu_",
+        "sendKitchenDishList_",
+        "sendKitchenList_",
+        "handleMealSelection_"
+      ]
+    },
+    {
+      "name": "handleMealSelection_",
+      "module": "Code.gs",
+      "startLine": 881,
+      "endLine": 907,
+      "calls": [
+        "buildActiveMenu_",
+        "sendTextMessage_",
+        "ensureCartForMenu_",
+        "sendQuantityPrompt_"
+      ]
+    },
+    {
+      "name": "sendQuantityPrompt_",
+      "module": "Code.gs",
+      "startLine": 913,
+      "endLine": 971,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "handleButtonReply_",
+      "module": "Code.gs",
+      "startLine": 978,
+      "endLine": 1082,
+      "calls": [
+        "buildActiveMenu_",
+        "sendTextMessage_",
+        "ensureCartForMenu_",
+        "addItemToCart_",
+        "sendCartNextAction_",
+        "sendMealList_",
+        "sendCheckoutReview_",
+        "beginCheckout_",
+        "beginCheckoutForCustomer_",
+        "beginOrderForSomeoneElse_",
+        "useSavedAddress_",
+        "promptForDeliveryAddress_",
+        "placeOrder_",
+        "clearCart_"
+      ]
+    },
+    {
+      "name": "sendCartNextAction_",
+      "module": "Code.gs",
+      "startLine": 1089,
+      "endLine": 1234,
+      "calls": [
+        "buildCartSummary_",
+        "calculateCartQuote_",
+        "formatMoney_",
+        "formatPercent_",
+        "roundMoney_",
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "sendCheckoutReview_",
+      "module": "Code.gs",
+      "startLine": 1241,
+      "endLine": 1340,
+      "calls": [
+        "getCart_",
+        "sendTextMessage_",
+        "buildActiveMenu_",
+        "clearCart_",
+        "calculateCartQuote_",
+        "sendKitchenList_",
+        "buildCartSummary_",
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "beginCheckout_",
+      "module": "Code.gs",
+      "startLine": 1346,
+      "endLine": 1396,
+      "calls": [
+        "getCart_",
+        "sendTextMessage_",
+        "isOwnerRecipient_",
+        "sendWhatsAppPayload_",
+        "beginCheckoutForCustomer_"
+      ]
+    },
+    {
+      "name": "beginOrderForSomeoneElse_",
+      "module": "Code.gs",
+      "startLine": 1399,
+      "endLine": 1430,
+      "calls": [
+        "isOwnerRecipient_",
+        "getCart_",
+        "sendTextMessage_",
+        "saveCart_"
+      ]
+    },
+    {
+      "name": "beginCheckoutForCustomer_",
+      "module": "Code.gs",
+      "startLine": 1433,
+      "endLine": 1470,
+      "calls": [
+        "getCart_",
+        "sendTextMessage_",
+        "normalisePhoneDigits_",
+        "findCustomerByPhone_",
+        "saveCart_",
+        "sendSavedAddressChoice_",
+        "promptForDeliveryAddress_"
+      ]
+    },
+    {
+      "name": "sendSavedAddressChoice_",
+      "module": "Code.gs",
+      "startLine": 1472,
+      "endLine": 1508,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "promptForDeliveryAddress_",
+      "module": "Code.gs",
+      "startLine": 1511,
+      "endLine": 1530,
+      "calls": [
+        "getCart_",
+        "sendTextMessage_",
+        "saveCart_"
+      ]
+    },
+    {
+      "name": "useSavedAddress_",
+      "module": "Code.gs",
+      "startLine": 1533,
+      "endLine": 1550,
+      "calls": [
+        "getCart_",
+        "promptForDeliveryAddress_",
+        "extractPostcode_",
+        "saveCart_",
+        "continueAfterAddress_"
+      ]
+    },
+    {
+      "name": "handleCheckoutTextReply_",
+      "module": "Code.gs",
+      "startLine": 1553,
+      "endLine": 1670,
+      "calls": [
+        "getCart_",
+        "isOwnerRecipient_",
+        "normalisePhoneDigits_",
+        "isValidAustralianMobile_",
+        "sendTextMessage_",
+        "saveCart_",
+        "beginCheckoutForCustomer_",
+        "extractPostcode_",
+        "continueAfterAddress_",
+        "truncateText_",
+        "sendFinalConfirmation_"
+      ]
+    },
+    {
+      "name": "continueAfterAddress_",
+      "module": "Code.gs",
+      "startLine": 1673,
+      "endLine": 1702,
+      "calls": [
+        "getCart_",
+        "findCustomerByPhone_",
+        "getOrderCustomerPhone_",
+        "saveCart_",
+        "sendTextMessage_",
+        "sendFinalConfirmation_"
+      ]
+    },
+    {
+      "name": "sendFinalConfirmation_",
+      "module": "Code.gs",
+      "startLine": 1705,
+      "endLine": 1864,
+      "calls": [
+        "getCart_",
+        "promptForDeliveryAddress_",
+        "buildActiveMenu_",
+        "clearCart_",
+        "sendTextMessage_",
+        "validateCartAvailability_",
+        "calculateCartQuote_",
+        "sendKitchenList_",
+        "getOrderCustomerPhone_",
+        "findCustomerByPhone_",
+        "saveCart_",
+        "formatMoney_",
+        "formatPercent_",
+        "buildCartSummary_",
+        "formatPhoneForDisplay_",
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "placeOrder_",
+      "module": "Code.gs",
+      "startLine": 1866,
+      "endLine": 2018,
+      "calls": [
+        "getCart_",
+        "sendTextMessage_",
+        "beginCheckout_",
+        "buildActiveMenu_",
+        "clearCart_",
+        "validateCartAvailability_",
+        "getOrderCustomerPhone_",
+        "findCustomerByPhone_",
+        "createWhatsAppCustomerIntake_",
+        "extractPostcode_",
+        "updateCustomerDefaultAddress_",
+        "calculateCartQuote_",
+        "createControlTowerOrder_",
+        "formatPhoneForDisplay_",
+        "buildCartSummary_",
+        "formatMoney_"
+      ]
+    },
+    {
+      "name": "validateCartAvailability_",
+      "module": "Code.gs",
+      "startLine": 2020,
+      "endLine": 2048,
+      "calls": []
+    },
+    {
+      "name": "calculateCartQuote_",
+      "module": "Code.gs",
+      "startLine": 2051,
+      "endLine": 2150,
+      "calls": [
+        "roundMoney_",
+        "validateOrderingRulesObject_",
+        "getOrderingRules_"
+      ]
+    },
+    {
+      "name": "getOrderingRules_",
+      "module": "Code.gs",
+      "startLine": 2156,
+      "endLine": 2282,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "parseConfigNumber_",
+        "roundMoney_"
+      ]
+    },
+    {
+      "name": "validateOrderingRulesObject_",
+      "module": "Code.gs",
+      "startLine": 2285,
+      "endLine": 2339,
+      "calls": [
+        "roundMoney_"
+      ]
+    },
+    {
+      "name": "parseConfigNumber_",
+      "module": "Code.gs",
+      "startLine": 2342,
+      "endLine": 2363,
+      "calls": []
+    },
+    {
+      "name": "formatPercent_",
+      "module": "Code.gs",
+      "startLine": 2366,
+      "endLine": 2376,
+      "calls": []
+    },
+    {
+      "name": "findCustomerByPhone_",
+      "module": "Code.gs",
+      "startLine": 2379,
+      "endLine": 2440,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "normalisePhoneDigits_"
+      ]
+    },
+    {
+      "name": "createWhatsAppCustomerIntake_",
+      "module": "Code.gs",
+      "startLine": 2443,
+      "endLine": 2483,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "normalisePhoneDigits_"
+      ]
+    },
+    {
+      "name": "updateCustomerDefaultAddress_",
+      "module": "Code.gs",
+      "startLine": 2486,
+      "endLine": 2519,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "isLaunchOfferEligible_",
+      "module": "Code.gs",
+      "startLine": 2522,
+      "endLine": 2571,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "createControlTowerOrder_",
+      "module": "Code.gs",
+      "startLine": 2574,
+      "endLine": 2757,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "mkIntegrationAssertNoPending_",
+        "nextOrderId_",
+        "mkEmptyRows_",
+        "mkTable_",
+        "parseYmdDate_",
+        "mkIntegrationLegacySnapshots_",
+        "mkIntegrationBatch_",
+        "clearOrderInputCells_",
+        "clearOrderItemInputCells_"
+      ]
+    },
+    {
+      "name": "clearOrderInputCells_",
+      "module": "Code.gs",
+      "startLine": 2760,
+      "endLine": 2768,
+      "calls": []
+    },
+    {
+      "name": "clearOrderItemInputCells_",
+      "module": "Code.gs",
+      "startLine": 2771,
+      "endLine": 2779,
+      "calls": []
+    },
+    {
+      "name": "nextOrderId_",
+      "module": "Code.gs",
+      "startLine": 2781,
+      "endLine": 2781,
+      "calls": [
+        "mkIntegrationNextOrderId_"
+      ]
+    },
+    {
+      "name": "firstEmptyRowInColumn_",
+      "module": "Code.gs",
+      "startLine": 2784,
+      "endLine": 2799,
+      "calls": []
+    },
+    {
+      "name": "extractPostcode_",
+      "module": "Code.gs",
+      "startLine": 2802,
+      "endLine": 2807,
+      "calls": []
+    },
+    {
+      "name": "isOwnerRecipient_",
+      "module": "Code.gs",
+      "startLine": 2810,
+      "endLine": 2812,
+      "calls": [
+        "normalisePhoneDigits_"
+      ]
+    },
+    {
+      "name": "getOrderCustomerPhone_",
+      "module": "Code.gs",
+      "startLine": 2815,
+      "endLine": 2827,
+      "calls": [
+        "getCart_",
+        "isOwnerRecipient_",
+        "normalisePhoneDigits_"
+      ]
+    },
+    {
+      "name": "isValidAustralianMobile_",
+      "module": "Code.gs",
+      "startLine": 2830,
+      "endLine": 2833,
+      "calls": [
+        "normalisePhoneDigits_"
+      ]
+    },
+    {
+      "name": "formatPhoneForDisplay_",
+      "module": "Code.gs",
+      "startLine": 2836,
+      "endLine": 2847,
+      "calls": [
+        "normalisePhoneDigits_"
+      ]
+    },
+    {
+      "name": "normalisePhoneDigits_",
+      "module": "Code.gs",
+      "startLine": 2850,
+      "endLine": 2858,
+      "calls": []
+    },
+    {
+      "name": "parseYmdDate_",
+      "module": "Code.gs",
+      "startLine": 2861,
+      "endLine": 2875,
+      "calls": []
+    },
+    {
+      "name": "roundMoney_",
+      "module": "Code.gs",
+      "startLine": 2878,
+      "endLine": 2880,
+      "calls": []
+    },
+    {
+      "name": "formatMoney_",
+      "module": "Code.gs",
+      "startLine": 2883,
+      "endLine": 2885,
+      "calls": [
+        "roundMoney_"
+      ]
+    },
+    {
+      "name": "cartPropertyKey_",
+      "module": "Code.gs",
+      "startLine": 2892,
+      "endLine": 2898,
+      "calls": []
+    },
+    {
+      "name": "resetCart_",
+      "module": "Code.gs",
+      "startLine": 2901,
+      "endLine": 2914,
+      "calls": [
+        "getOrderingRules_",
+        "saveCart_"
+      ]
+    },
+    {
+      "name": "ensureCartForMenu_",
+      "module": "Code.gs",
+      "startLine": 2917,
+      "endLine": 2932,
+      "calls": [
+        "getCart_",
+        "resetCart_"
+      ]
+    },
+    {
+      "name": "getCart_",
+      "module": "Code.gs",
+      "startLine": 2935,
+      "endLine": 2978,
+      "calls": [
+        "cartPropertyKey_",
+        "clearCart_",
+        "getOrderingRules_",
+        "saveCart_",
+        "validateOrderingRulesObject_"
+      ]
+    },
+    {
+      "name": "saveCart_",
+      "module": "Code.gs",
+      "startLine": 2981,
+      "endLine": 2990,
+      "calls": [
+        "cartPropertyKey_"
+      ]
+    },
+    {
+      "name": "addItemToCart_",
+      "module": "Code.gs",
+      "startLine": 2993,
+      "endLine": 3032,
+      "calls": [
+        "getCart_",
+        "getOrderingRules_",
+        "saveCart_"
+      ]
+    },
+    {
+      "name": "clearCart_",
+      "module": "Code.gs",
+      "startLine": 3035,
+      "endLine": 3041,
+      "calls": [
+        "cartPropertyKey_"
+      ]
+    },
+    {
+      "name": "buildCartSummary_",
+      "module": "Code.gs",
+      "startLine": 3044,
+      "endLine": 3085,
+      "calls": []
+    },
+    {
+      "name": "sendTextMessage_",
+      "module": "Code.gs",
+      "startLine": 3092,
+      "endLine": 3104,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "sendWhatsAppPayload_",
+      "module": "Code.gs",
+      "startLine": 3111,
+      "endLine": 3189,
+      "calls": [
+        "mkIntegrationFetch_"
+      ]
+    },
+    {
+      "name": "handleMenuApiRequest_",
+      "module": "Code.gs",
+      "startLine": 3196,
+      "endLine": 3285,
+      "calls": [
+        "jsonResponse_",
+        "buildActiveMenu_"
+      ]
+    },
+    {
+      "name": "mkIntegrationOriginalMenu_",
+      "module": "Code.gs",
+      "startLine": 3292,
+      "endLine": 3675,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "orderRequestBeforeCutoff_"
+      ]
+    },
+    {
+      "name": "truncateText_",
+      "module": "Code.gs",
+      "startLine": 3682,
+      "endLine": 3698,
+      "calls": []
+    },
+    {
+      "name": "jsonResponse_",
+      "module": "Code.gs",
+      "startLine": 3701,
+      "endLine": 3709,
+      "calls": []
+    },
+    {
+      "name": "authorizeControlTowerAccess",
+      "module": "Code.gs",
+      "startLine": 3716,
+      "endLine": 3720,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "testSendWhatsApp",
+      "module": "Code.gs",
+      "startLine": 3727,
+      "endLine": 3745,
+      "calls": [
+        "sendTextMessage_"
+      ]
+    },
+    {
+      "name": "testSendMealList",
+      "module": "Code.gs",
+      "startLine": 3752,
+      "endLine": 3767,
+      "calls": [
+        "startNewOrder_"
+      ]
+    },
+    {
+      "name": "testSendOrderFlow",
+      "module": "Code.gs",
+      "startLine": 3774,
+      "endLine": 3845,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "testSendStaticOrderFlow",
+      "module": "Code.gs",
+      "startLine": 3852,
+      "endLine": 3900,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "setNewWhatsAppPhoneNumberId",
+      "module": "Code.gs",
+      "startLine": 3902,
+      "endLine": 3912,
+      "calls": []
+    },
+    {
+      "name": "oeBook_",
+      "module": "Code.gs",
+      "startLine": 3921,
+      "endLine": 3928,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "oeSheet_",
+      "module": "Code.gs",
+      "startLine": 3929,
+      "endLine": 3929,
+      "calls": []
+    },
+    {
+      "name": "oeLock_",
+      "module": "Code.gs",
+      "startLine": 3930,
+      "endLine": 3930,
+      "calls": []
+    },
+    {
+      "name": "oeCell_",
+      "module": "Code.gs",
+      "startLine": 3931,
+      "endLine": 3934,
+      "calls": []
+    },
+    {
+      "name": "oeFormula_",
+      "module": "Code.gs",
+      "startLine": 3935,
+      "endLine": 3935,
+      "calls": [
+        "oeCell_"
+      ]
+    },
+    {
+      "name": "oeBatch_",
+      "module": "Code.gs",
+      "startLine": 3936,
+      "endLine": 3936,
+      "calls": [
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "oeMeta_",
+      "module": "Code.gs",
+      "startLine": 3937,
+      "endLine": 3940,
+      "calls": [
+        "mkOwnerFreshValues_"
+      ]
+    },
+    {
+      "name": "oeStatus_",
+      "module": "Code.gs",
+      "startLine": 3941,
+      "endLine": 3941,
+      "calls": [
+        "oeBatch_",
+        "oeCell_"
+      ]
+    },
+    {
+      "name": "oeDraft_",
+      "module": "Code.gs",
+      "startLine": 3942,
+      "endLine": 3946,
+      "calls": [
+        "oeDate_"
+      ]
+    },
+    {
+      "name": "oeHash_",
+      "module": "Code.gs",
+      "startLine": 3947,
+      "endLine": 3947,
+      "calls": []
+    },
+    {
+      "name": "oeSerial_",
+      "module": "Code.gs",
+      "startLine": 3948,
+      "endLine": 3951,
+      "calls": []
+    },
+    {
+      "name": "oeDeliverySerial_",
+      "module": "Code.gs",
+      "startLine": 3952,
+      "endLine": 3952,
+      "calls": []
+    },
+    {
+      "name": "oeLabel_",
+      "module": "Code.gs",
+      "startLine": 3953,
+      "endLine": 3953,
+      "calls": []
+    },
+    {
+      "name": "oeMenuLookup_",
+      "module": "Code.gs",
+      "startLine": 3954,
+      "endLine": 3956,
+      "calls": [
+        "oeLabel_"
+      ]
+    },
+    {
+      "name": "oeAddress_",
+      "module": "Code.gs",
+      "startLine": 3957,
+      "endLine": 3961,
+      "calls": []
+    },
+    {
+      "name": "oeCart_",
+      "module": "Code.gs",
+      "startLine": 3962,
+      "endLine": 3984,
+      "calls": [
+        "normalisePhoneDigits_",
+        "oeLabel_",
+        "oeAddress_",
+        "validateCartAvailability_"
+      ]
+    },
+    {
+      "name": "oeQuote_",
+      "module": "Code.gs",
+      "startLine": 3985,
+      "endLine": 3989,
+      "calls": [
+        "calculateCartQuote_"
+      ]
+    },
+    {
+      "name": "oeConfirmation_",
+      "module": "Code.gs",
+      "startLine": 3990,
+      "endLine": 3995,
+      "calls": [
+        "formatPhoneForDisplay_",
+        "buildCartSummary_",
+        "formatMoney_"
+      ]
+    },
+    {
+      "name": "orderEntryMenu",
+      "module": "Code.gs",
+      "startLine": 3996,
+      "endLine": 3996,
+      "calls": [
+        "orderRequestInboxOnOpen_"
+      ]
+    },
+    {
+      "name": "orderEntrySetup",
+      "module": "Code.gs",
+      "startLine": 3997,
+      "endLine": 4032,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeLock_",
+        "oeMeta_",
+        "oeAddressSetup_",
+        "oeItemSetup_",
+        "oeCell_",
+        "oeFormula_",
+        "buildActiveMenu_",
+        "oeDeliverySerial_",
+        "oeBatch_",
+        "mkIntegrationNewTrigger_",
+        "oeStatus_"
+      ]
+    },
+    {
+      "name": "oeAddressSetup_",
+      "module": "Code.gs",
+      "startLine": 4033,
+      "endLine": 4050,
+      "calls": [
+        "oeCell_",
+        "oeFormula_",
+        "oeBatch_"
+      ]
+    },
+    {
+      "name": "oeCustomers_",
+      "module": "Code.gs",
+      "startLine": 4051,
+      "endLine": 4055,
+      "calls": [
+        "formatPhoneForDisplay_"
+      ]
+    },
+    {
+      "name": "oeItemSetup_",
+      "module": "Code.gs",
+      "startLine": 4056,
+      "endLine": 4068,
+      "calls": [
+        "oeCell_",
+        "oeFormula_",
+        "oeBatch_"
+      ]
+    },
+    {
+      "name": "oeFindCustomer_",
+      "module": "Code.gs",
+      "startLine": 4069,
+      "endLine": 4077,
+      "calls": [
+        "normalisePhoneDigits_"
+      ]
+    },
+    {
+      "name": "orderEntryNewDraft",
+      "module": "Code.gs",
+      "startLine": 4078,
+      "endLine": 4080,
+      "calls": [
+        "oeNewDraft_"
+      ]
+    },
+    {
+      "name": "oeNewDraft_",
+      "module": "Code.gs",
+      "startLine": 4081,
+      "endLine": 4103,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeMeta_",
+        "oeLock_",
+        "buildActiveMenu_",
+        "getOrderingRules_",
+        "oeCustomers_",
+        "oeCell_",
+        "oeDeliverySerial_",
+        "formatPhoneForDisplay_",
+        "oeLabel_",
+        "oeBatch_",
+        "oeStatus_"
+      ]
+    },
+    {
+      "name": "orderEntryLoadCustomer",
+      "module": "Code.gs",
+      "startLine": 4104,
+      "endLine": 4117,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeLock_",
+        "oeMeta_",
+        "oeCustomers_",
+        "oeCustomerAddressFields_",
+        "formatPhoneForDisplay_",
+        "oeCell_",
+        "oeBatch_",
+        "oeStatus_"
+      ]
+    },
+    {
+      "name": "oePrepare_",
+      "module": "Code.gs",
+      "startLine": 4118,
+      "endLine": 4128,
+      "calls": [
+        "oeDraft_",
+        "oeMeta_",
+        "oeMenuForDate_",
+        "oeCart_",
+        "oeQuote_",
+        "oeFindCustomer_",
+        "oeCustomers_",
+        "oeHash_"
+      ]
+    },
+    {
+      "name": "orderEntryReview",
+      "module": "Code.gs",
+      "startLine": 4129,
+      "endLine": 4139,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeLock_",
+        "oePrepare_",
+        "oeCell_",
+        "oeConfirmation_",
+        "oeMenuLookup_",
+        "oeBatch_",
+        "oeStatus_",
+        "formatMoney_"
+      ]
+    },
+    {
+      "name": "oeCustomerForCommit_",
+      "module": "Code.gs",
+      "startLine": 4140,
+      "endLine": 4146,
+      "calls": []
+    },
+    {
+      "name": "oeEmptyRows_",
+      "module": "Code.gs",
+      "startLine": 4147,
+      "endLine": 4150,
+      "calls": []
+    },
+    {
+      "name": "oeCommitRequests_",
+      "module": "Code.gs",
+      "startLine": 4151,
+      "endLine": 4161,
+      "calls": [
+        "oeDeliverySerial_",
+        "oeSerial_",
+        "oeCell_",
+        "oeConfirmation_"
+      ]
+    },
+    {
+      "name": "orderEntryPlaceOrder",
+      "module": "Code.gs",
+      "startLine": 4162,
+      "endLine": 4187,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeLock_",
+        "mkIntegrationAssertNoPending_",
+        "oeMeta_",
+        "oeCheckLocked_",
+        "oePrepare_",
+        "mkOwnerFreshValues_",
+        "mkEmptyRows_",
+        "mkTable_",
+        "oeCustomerForCommit_",
+        "nextOrderId_",
+        "oeHash_",
+        "oeDraft_",
+        "oeCommitRequests_",
+        "oeBatch_",
+        "oeCell_",
+        "oeStatus_"
+      ]
+    },
+    {
+      "name": "oeCheckLocked_",
+      "module": "Code.gs",
+      "startLine": 4188,
+      "endLine": 4206,
+      "calls": [
+        "oeMeta_",
+        "mkOwnerFreshValues_",
+        "oeStatus_",
+        "oeBatch_",
+        "oeCell_"
+      ]
+    },
+    {
+      "name": "orderEntryCheckOrder",
+      "module": "Code.gs",
+      "startLine": 4207,
+      "endLine": 4207,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeLock_",
+        "oeCheckLocked_"
+      ]
+    },
+    {
+      "name": "orderEntryRecoverSubmission",
+      "module": "Code.gs",
+      "startLine": 4208,
+      "endLine": 4221,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeLock_",
+        "oeMeta_",
+        "mkOwnerFreshValues_",
+        "oeCheckLocked_",
+        "oeBatch_",
+        "oeCell_",
+        "oeStatus_"
+      ]
+    },
+    {
+      "name": "oeSendConfirmation_",
+      "module": "Code.gs",
+      "startLine": 4222,
+      "endLine": 4243,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "oeLock_",
+        "oeCheckLocked_",
+        "oeMeta_",
+        "oeStatus_",
+        "oeBatch_",
+        "oeCell_",
+        "oeSendText_"
+      ]
+    },
+    {
+      "name": "oeSendText_",
+      "module": "Code.gs",
+      "startLine": 4244,
+      "endLine": 4253,
+      "calls": [
+        "mkIntegrationFetch_"
+      ]
+    },
+    {
+      "name": "orderEntryResendConfirmation",
+      "module": "Code.gs",
+      "startLine": 4254,
+      "endLine": 4269,
+      "calls": [
+        "oeBook_",
+        "oeSheet_",
+        "oeMeta_",
+        "oeLock_",
+        "oeBatch_",
+        "oeCell_",
+        "oeSendConfirmation_"
+      ]
+    },
+    {
+      "name": "oeMenuForDate_",
+      "module": "Code.gs",
+      "startLine": 4272,
+      "endLine": 4643,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "oeDate_",
+      "module": "Code.gs",
+      "startLine": 4645,
+      "endLine": 4651,
+      "calls": []
+    },
+    {
+      "name": "oeControls_",
+      "module": "Code.gs",
+      "startLine": 4652,
+      "endLine": 4664,
+      "calls": [
+        "oeCell_"
+      ]
+    },
+    {
+      "name": "oeQuantityRules_",
+      "module": "Code.gs",
+      "startLine": 4665,
+      "endLine": 4672,
+      "calls": []
+    },
+    {
+      "name": "oeChangeDate_",
+      "module": "Code.gs",
+      "startLine": 4673,
+      "endLine": 4688,
+      "calls": [
+        "oeLock_",
+        "oeMeta_",
+        "oeDate_",
+        "oeMenuForDate_",
+        "oeCell_",
+        "oeMenuLookup_",
+        "oeBatch_",
+        "oeStatus_",
+        "oeQuantityRules_"
+      ]
+    },
+    {
+      "name": "orderEntryEdited",
+      "module": "Code.gs",
+      "startLine": 4689,
+      "endLine": 4689,
+      "calls": [
+        "mkIntegrationRequireTest_"
+      ]
+    },
+    {
+      "name": "oeCustomerAddressFields_",
+      "module": "Code.gs",
+      "startLine": 4691,
+      "endLine": 4696,
+      "calls": []
+    },
+    {
+      "name": "feedbackDryRunForOrder_",
+      "module": "FeedbackDryRun.gs",
+      "startLine": 4703,
+      "endLine": 4715,
+      "calls": [
+        "fwError_",
+        "fwOrderId_",
+        "fwBook_",
+        "fwTable_",
+        "feedbackSenderDecision_",
+        "resolveFeedbackCandidate_",
+        "feedbackIsLiveEnabled_",
+        "fwProps_"
+      ]
+    },
+    {
+      "name": "testFeedbackDryRun_ORD000002",
+      "module": "FeedbackDryRun.gs",
+      "startLine": 4716,
+      "endLine": 4716,
+      "calls": [
+        "feedbackDryRunForOrder_"
+      ]
+    },
+    {
+      "name": "getNextDay10am_",
+      "module": "FeedbackDryRun.gs",
+      "startLine": 4718,
+      "endLine": 4718,
+      "calls": [
+        "feedbackNextDay10am_"
+      ]
+    },
+    {
+      "name": "feedbackReasonDiagnostic_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 4738,
+      "endLine": 4750,
+      "calls": [
+        "fwProps_",
+        "fwTime_"
+      ]
+    },
+    {
+      "name": "getRecentFeedbackReasonDiagnostics",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 4753,
+      "endLine": 4760,
+      "calls": [
+        "fwProps_",
+        "fwTime_"
+      ]
+    },
+    {
+      "name": "clearFeedbackReasonDiagnostics",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 4763,
+      "endLine": 4779,
+      "calls": []
+    },
+    {
+      "name": "handleFeedbackTemplateReply_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 4787,
+      "endLine": 4856,
+      "calls": [
+        "feedbackInteractionVerifyOrderAccess_",
+        "sendTextMessage_",
+        "feedbackInteractionClearPendingCommentState_",
+        "feedbackInteractionSetDeliveryFeedbackStatus_",
+        "feedbackInteractionGetOrderItems_",
+        "feedbackInteractionSendNextDish_"
+      ]
+    },
+    {
+      "name": "handleFeedbackInteractiveReply_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 4859,
+      "endLine": 4903,
+      "calls": [
+        "feedbackInteractionHandleDishRating_",
+        "feedbackInteractionHandleDishReason_",
+        "feedbackInteractionHandleDeliveryRating_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionSendNextDish_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 4910,
+      "endLine": 5023,
+      "calls": [
+        "feedbackInteractionVerifyOrderAccess_",
+        "feedbackInteractionGetOrderItems_",
+        "feedbackInteractionGetCompletedItemCodes_",
+        "feedbackInteractionSendDeliveryRating_",
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionHandleDishRating_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5026,
+      "endLine": 5101,
+      "calls": [
+        "feedbackInteractionVerifyOrderAccess_",
+        "feedbackInteractionGetOrderItems_",
+        "feedbackInteractionSaveFeedback_",
+        "feedbackInteractionSendNextDish_",
+        "feedbackInteractionSendReasonList_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionSendReasonList_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5104,
+      "endLine": 5177,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionHandleDishReason_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5180,
+      "endLine": 5369,
+      "calls": [
+        "feedbackReasonDiagnostic_",
+        "feedbackInteractionVerifyOrderAccess_",
+        "feedbackInteractionGetOrderItems_",
+        "feedbackInteractionSaveFeedback_",
+        "feedbackInteractionSetPendingCommentState_",
+        "sendTextMessage_",
+        "feedbackInteractionSendNextDish_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionSendDeliveryRating_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5376,
+      "endLine": 5435,
+      "calls": [
+        "feedbackInteractionHasFeedbackItem_",
+        "feedbackInteractionComplete_",
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionHandleDeliveryRating_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5438,
+      "endLine": 5509,
+      "calls": [
+        "feedbackInteractionVerifyOrderAccess_",
+        "feedbackInteractionSaveFeedback_",
+        "feedbackInteractionSetDeliveryFeedbackStatus_",
+        "feedbackInteractionSetPendingCommentState_",
+        "sendTextMessage_",
+        "feedbackInteractionOfferFinalComment_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionComplete_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5512,
+      "endLine": 5523,
+      "calls": [
+        "feedbackInteractionSetDeliveryFeedbackStatus_",
+        "feedbackInteractionOfferFinalComment_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionOfferFinalComment_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5526,
+      "endLine": 5541,
+      "calls": [
+        "feedbackInteractionSetPendingCommentState_",
+        "sendTextMessage_"
+      ]
+    },
+    {
+      "name": "handleFeedbackTextReply_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5556,
+      "endLine": 5666,
+      "calls": [
+        "feedbackInteractionGetPendingCommentState_",
+        "feedbackInteractionClearPendingCommentState_",
+        "feedbackInteractionAppendComment_",
+        "feedbackInteractionSendNextDish_",
+        "feedbackInteractionOfferFinalComment_",
+        "sendTextMessage_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionSetPendingCommentState_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5669,
+      "endLine": 5704,
+      "calls": []
+    },
+    {
+      "name": "feedbackInteractionGetPendingCommentState_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5707,
+      "endLine": 5753,
+      "calls": []
+    },
+    {
+      "name": "feedbackInteractionClearPendingCommentState_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5756,
+      "endLine": 5773,
+      "calls": []
+    },
+    {
+      "name": "feedbackInteractionAppendComment_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5776,
+      "endLine": 5776,
+      "calls": [
+        "fwLegacyComment_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionVerifyOrderAccess_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5783,
+      "endLine": 5794,
+      "calls": [
+        "fwBook_",
+        "fwOrder_",
+        "fwOrderId_",
+        "fwTable_",
+        "feedbackInteractionNormalisePhone_",
+        "fwSchema_",
+        "fwState_",
+        "fwCompleted_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionGetOrderItems_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5797,
+      "endLine": 5797,
+      "calls": [
+        "fwOrder_",
+        "fwBook_",
+        "fwOrderId_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionSaveFeedback_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5804,
+      "endLine": 5804,
+      "calls": [
+        "fwLegacySave_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionGetCompletedItemCodes_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5806,
+      "endLine": 5806,
+      "calls": [
+        "fwLegacyCodes_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionHasFeedbackItem_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5809,
+      "endLine": 5809,
+      "calls": [
+        "fwLegacyCodes_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionSetDeliveryFeedbackStatus_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5812,
+      "endLine": 5812,
+      "calls": [
+        "fwLegacyStatus_"
+      ]
+    },
+    {
+      "name": "feedbackInteractionReadSheet_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5819,
+      "endLine": 5836,
+      "calls": []
+    },
+    {
+      "name": "feedbackInteractionRequireHeader_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5839,
+      "endLine": 5847,
+      "calls": []
+    },
+    {
+      "name": "feedbackInteractionOptionalHeader_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5850,
+      "endLine": 5858,
+      "calls": []
+    },
+    {
+      "name": "feedbackInteractionNormalisePhone_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5861,
+      "endLine": 5873,
+      "calls": []
+    },
+    {
+      "name": "feedbackInteractionNextFeedbackId_",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5876,
+      "endLine": 5879,
+      "calls": []
+    },
+    {
+      "name": "testFeedbackInteractionConfiguration",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5886,
+      "endLine": 5945,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "feedbackInteractionReadSheet_"
+      ]
+    },
+    {
+      "name": "testFeedbackInteractionDryRun_ORD000002",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 5953,
+      "endLine": 6119,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "feedbackInteractionReadSheet_",
+        "feedbackInteractionRequireHeader_",
+        "feedbackInteractionNormalisePhone_",
+        "feedbackInteractionGetOrderItems_",
+        "feedbackInteractionVerifyOrderAccess_"
+      ]
+    },
+    {
+      "name": "testFeedbackInteractionFindOwnerOrders",
+      "module": "FeedbackInteraction.gs",
+      "startLine": 6129,
+      "endLine": 6342,
+      "calls": [
+        "feedbackInteractionNormalisePhone_",
+        "mkIntegrationOpenBook_",
+        "feedbackInteractionReadSheet_",
+        "feedbackInteractionRequireHeader_",
+        "feedbackInteractionGetOrderItems_"
+      ]
+    },
+    {
+      "name": "fwLegacyDraft_",
+      "module": "FeedbackLegacyBridge.gs",
+      "startLine": 6349,
+      "endLine": 6358,
+      "calls": [
+        "fwPayload_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwLegacySave_",
+      "module": "FeedbackLegacyBridge.gs",
+      "startLine": 6359,
+      "endLine": 6390,
+      "calls": [
+        "fwEnabled_",
+        "fwOrderId_",
+        "fwError_",
+        "fwString_",
+        "fwLock_",
+        "fwBook_",
+        "fwSchema_",
+        "fwOrder_",
+        "fwState_",
+        "fwCompleted_",
+        "feedbackV2Eligibility_",
+        "fwLegacyDraft_",
+        "fwCommit_",
+        "fwPayload_",
+        "fwBatch_",
+        "fwCapacity_",
+        "fwUpdate_"
+      ]
+    },
+    {
+      "name": "fwLegacyCodes_",
+      "module": "FeedbackLegacyBridge.gs",
+      "startLine": 6391,
+      "endLine": 6397,
+      "calls": [
+        "fwBook_",
+        "fwSchema_",
+        "fwOrder_",
+        "fwState_",
+        "fwLegacyDraft_"
+      ]
+    },
+    {
+      "name": "fwLegacyStatus_",
+      "module": "FeedbackLegacyBridge.gs",
+      "startLine": 6398,
+      "endLine": 6420,
+      "calls": [
+        "fwEnabled_",
+        "fwOrderId_",
+        "fwError_",
+        "fwLock_",
+        "fwBook_",
+        "fwSchema_",
+        "fwOrder_",
+        "fwState_",
+        "fwLegacyDraft_",
+        "fwPayload_",
+        "fwBatch_",
+        "fwCapacity_",
+        "fwUpdate_",
+        "fwCell_",
+        "fwCompleted_"
+      ]
+    },
+    {
+      "name": "fwLegacyComment_",
+      "module": "FeedbackLegacyBridge.gs",
+      "startLine": 6421,
+      "endLine": 6446,
+      "calls": [
+        "fwEnabled_",
+        "fwOrderId_",
+        "fwString_",
+        "fwLock_",
+        "fwBook_",
+        "fwSchema_",
+        "fwOrder_",
+        "fwState_",
+        "fwError_",
+        "fwLimit_",
+        "fwCapacity_",
+        "fwCell_",
+        "fwLegacyDraft_",
+        "fwUpdate_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "saveFeedbackProductionConfig",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6450,
+      "endLine": 6483,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "saveProductionFeedbackSigningKey",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6485,
+      "endLine": 6539,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "checkWhatsAppHandler",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6541,
+      "endLine": 6553,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "requireVerifiedWhatsAppForwarding",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6555,
+      "endLine": 6576,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "enableProductionFeedbackBackend",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6578,
+      "endLine": 6603,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "openProductionFeedback016",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6605,
+      "endLine": 6623,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "checkFeedback026",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6625,
+      "endLine": 6631,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "feedbackDryRunForOrder_"
+      ]
+    },
+    {
+      "name": "prepareWebsiteFeedbackSender",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6633,
+      "endLine": 6657,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "fwProps_",
+        "fwEnabled_",
+        "fwWebTemplateContract_",
+        "feedbackIsLiveEnabled_",
+        "buildFeedbackQueueSnapshot_"
+      ]
+    },
+    {
+      "name": "checkPreparedFeedbackSettings",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6659,
+      "endLine": 6670,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "sendFeedback026Only",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6672,
+      "endLine": 6802,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "fwProps_",
+        "fwEnabled_",
+        "fwLock_",
+        "fwBook_",
+        "fwOrder_",
+        "feedbackSenderDecision_",
+        "resolveFeedbackCandidate_",
+        "fwWebTemplateContract_",
+        "fwCreateLinkLocked_",
+        "fwSchema_",
+        "fwSendWebMessage_",
+        "fwAcceptWebMessage_"
+      ]
+    },
+    {
+      "name": "diagnoseFeedback026Conflict",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6804,
+      "endLine": 6834,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "fwProps_",
+        "fwLock_",
+        "fwBook_",
+        "fwState_",
+        "fwSchema_",
+        "fwTable_",
+        "whatsappLogNormalisePhone_"
+      ]
+    },
+    {
+      "name": "checkRecording026",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6835,
+      "endLine": 6877,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "fwProps_",
+        "fwFreshSenderState_",
+        "fwBook_",
+        "fwAcceptWebMessage_"
+      ]
+    },
+    {
+      "name": "enableWebsiteFeedbackLive",
+      "module": "FeedbackProductionConfig.gs",
+      "startLine": 6879,
+      "endLine": 6899,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "fwProps_",
+        "fwEnabled_",
+        "fwWebTemplateContract_"
+      ]
+    },
+    {
+      "name": "sendCustomerFeedbackTemplate_",
+      "module": "FeedbackSender.gs",
+      "startLine": 6919,
+      "endLine": 7004,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "previewOwnerFeedbackJourney",
+      "module": "FeedbackSender.gs",
+      "startLine": 7014,
+      "endLine": 7094,
+      "calls": [
+        "sendWhatsAppPayload_",
+        "feedbackIsLiveEnabled_"
+      ]
+    },
+    {
+      "name": "findFeedbackCandidates_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7100,
+      "endLine": 7107,
+      "calls": [
+        "fwWithReads_",
+        "fwBook_",
+        "fwTable_",
+        "feedbackSenderDecision_"
+      ]
+    },
+    {
+      "name": "resolveFeedbackCandidate_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7114,
+      "endLine": 7351,
+      "calls": [
+        "fwBook_",
+        "feedbackHeaderMap_",
+        "feedbackRequireColumn_",
+        "feedbackNormalisePhoneDigits_",
+        "feedbackFirstName_"
+      ]
+    },
+    {
+      "name": "buildFeedbackQueueSnapshot_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7358,
+      "endLine": 7368,
+      "calls": [
+        "findFeedbackCandidates_",
+        "resolveFeedbackCandidate_"
+      ]
+    },
+    {
+      "name": "runFeedbackSender",
+      "module": "FeedbackSender.gs",
+      "startLine": 7375,
+      "endLine": 7627,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "fwProps_",
+        "runFeedbackWebSender_",
+        "feedbackIsLiveEnabled_",
+        "fwBook_",
+        "feedbackHeaderMap_",
+        "feedbackRequireColumn_",
+        "findFeedbackCandidates_",
+        "resolveFeedbackCandidate_",
+        "sendCustomerFeedbackTemplate_",
+        "registerWhatsAppOutbound_"
+      ]
+    },
+    {
+      "name": "installFeedbackAutomation",
+      "module": "FeedbackSender.gs",
+      "startLine": 7634,
+      "endLine": 7664,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "removeFeedbackAutomation_",
+        "mkIntegrationNewTrigger_",
+        "feedbackIsLiveEnabled_"
+      ]
+    },
+    {
+      "name": "removeFeedbackAutomation",
+      "module": "FeedbackSender.gs",
+      "startLine": 7667,
+      "endLine": 7687,
+      "calls": [
+        "removeFeedbackAutomation_",
+        "feedbackIsLiveEnabled_"
+      ]
+    },
+    {
+      "name": "removeFeedbackAutomation_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7690,
+      "endLine": 7710,
+      "calls": []
+    },
+    {
+      "name": "enableFeedbackLive",
+      "module": "FeedbackSender.gs",
+      "startLine": 7713,
+      "endLine": 7738,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "disableFeedbackLive",
+      "module": "FeedbackSender.gs",
+      "startLine": 7741,
+      "endLine": 7764,
+      "calls": []
+    },
+    {
+      "name": "checkFeedbackAutomationStatus",
+      "module": "FeedbackSender.gs",
+      "startLine": 7771,
+      "endLine": 7802,
+      "calls": [
+        "feedbackIsLiveEnabled_",
+        "findFeedbackCandidates_"
+      ]
+    },
+    {
+      "name": "testFindFeedbackCandidates",
+      "module": "FeedbackSender.gs",
+      "startLine": 7805,
+      "endLine": 7818,
+      "calls": [
+        "findFeedbackCandidates_"
+      ]
+    },
+    {
+      "name": "testFeedbackQueueResolution",
+      "module": "FeedbackSender.gs",
+      "startLine": 7821,
+      "endLine": 7834,
+      "calls": [
+        "buildFeedbackQueueSnapshot_"
+      ]
+    },
+    {
+      "name": "testFeedbackSenderSafetySwitch",
+      "module": "FeedbackSender.gs",
+      "startLine": 7837,
+      "endLine": 7857,
+      "calls": [
+        "feedbackIsLiveEnabled_"
+      ]
+    },
+    {
+      "name": "feedbackIsLiveEnabled_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7864,
+      "endLine": 7872,
+      "calls": []
+    },
+    {
+      "name": "feedbackHeaderMap_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7875,
+      "endLine": 7887,
+      "calls": []
+    },
+    {
+      "name": "feedbackRequireColumn_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7890,
+      "endLine": 7905,
+      "calls": []
+    },
+    {
+      "name": "feedbackNormalisePhoneDigits_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7908,
+      "endLine": 7925,
+      "calls": []
+    },
+    {
+      "name": "feedbackFirstName_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7928,
+      "endLine": 7939,
+      "calls": []
+    },
+    {
+      "name": "feedbackNextDay10am_",
+      "module": "FeedbackSender.gs",
+      "startLine": 7942,
+      "endLine": 7944,
+      "calls": [
+        "fwTime_"
+      ]
+    },
+    {
+      "name": "fwError_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7960,
+      "endLine": 7960,
+      "calls": []
+    },
+    {
+      "name": "fwProps_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7961,
+      "endLine": 7961,
+      "calls": []
+    },
+    {
+      "name": "fwConfig_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7962,
+      "endLine": 7962,
+      "calls": [
+        "fwProps_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwEnabled_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7963,
+      "endLine": 7963,
+      "calls": [
+        "fwProps_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwTimed_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7966,
+      "endLine": 7978,
+      "calls": []
+    },
+    {
+      "name": "fwWithReads_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7982,
+      "endLine": 7986,
+      "calls": []
+    },
+    {
+      "name": "fwBook_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7987,
+      "endLine": 7994,
+      "calls": [
+        "fwConfig_",
+        "fwError_",
+        "fwTimed_",
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "fwTimezone_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 7995,
+      "endLine": 8001,
+      "calls": [
+        "fwBook_",
+        "fwTimed_"
+      ]
+    },
+    {
+      "name": "fwLock_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8002,
+      "endLine": 8007,
+      "calls": [
+        "fwWithReads_",
+        "fwTimed_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwObject_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8008,
+      "endLine": 8008,
+      "calls": []
+    },
+    {
+      "name": "fwKeys_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8009,
+      "endLine": 8011,
+      "calls": [
+        "fwObject_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwString_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8012,
+      "endLine": 8015,
+      "calls": [
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwToken_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8016,
+      "endLine": 8016,
+      "calls": [
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwOrderId_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8017,
+      "endLine": 8017,
+      "calls": [
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwHash_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8018,
+      "endLine": 8020,
+      "calls": []
+    },
+    {
+      "name": "fwNewToken_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8021,
+      "endLine": 8027,
+      "calls": [
+        "fwConfig_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwTime_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8028,
+      "endLine": 8032,
+      "calls": []
+    },
+    {
+      "name": "fwTable_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8033,
+      "endLine": 8046,
+      "calls": [
+        "fwError_",
+        "fwTimed_"
+      ]
+    },
+    {
+      "name": "fwWebGrid_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8049,
+      "endLine": 8102,
+      "calls": [
+        "fwTimed_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwPrimeWebReads_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8103,
+      "endLine": 8143,
+      "calls": [
+        "fwError_",
+        "fwHash_",
+        "fwToken_",
+        "fwWebGrid_",
+        "fwSchema_",
+        "fwOrderId_",
+        "fwState_",
+        "fwTable_",
+        "fwTimed_"
+      ]
+    },
+    {
+      "name": "fwFeedback_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8144,
+      "endLine": 8150,
+      "calls": [
+        "fwError_",
+        "fwTable_"
+      ]
+    },
+    {
+      "name": "fwSchema_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8151,
+      "endLine": 8157,
+      "calls": [
+        "fwFeedback_",
+        "fwError_",
+        "fwTable_"
+      ]
+    },
+    {
+      "name": "fwExtended_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8158,
+      "endLine": 8165,
+      "calls": [
+        "fwTimezone_"
+      ]
+    },
+    {
+      "name": "fwUpdate_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8166,
+      "endLine": 8168,
+      "calls": []
+    },
+    {
+      "name": "fwCell_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8169,
+      "endLine": 8171,
+      "calls": [
+        "fwExtended_"
+      ]
+    },
+    {
+      "name": "fwAppend_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8172,
+      "endLine": 8172,
+      "calls": []
+    },
+    {
+      "name": "fwBatch_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8173,
+      "endLine": 8179,
+      "calls": [
+        "fwTimed_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "fwCapacity_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8180,
+      "endLine": 8185,
+      "calls": []
+    },
+    {
+      "name": "fwState_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8186,
+      "endLine": 8194,
+      "calls": [
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwCompleted_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8195,
+      "endLine": 8199,
+      "calls": [
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwOrder_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8200,
+      "endLine": 8231,
+      "calls": [
+        "fwTable_",
+        "fwError_",
+        "fwTime_",
+        "fwString_",
+        "fwTimezone_"
+      ]
+    },
+    {
+      "name": "feedbackV2Eligibility_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8232,
+      "endLine": 8236,
+      "calls": []
+    },
+    {
+      "name": "fwContext_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8237,
+      "endLine": 8251,
+      "calls": [
+        "fwHash_",
+        "fwToken_",
+        "fwError_",
+        "fwTime_",
+        "fwState_",
+        "fwOrderId_",
+        "fwOrder_",
+        "fwCompleted_",
+        "feedbackV2Eligibility_"
+      ]
+    },
+    {
+      "name": "fwRevision_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8252,
+      "endLine": 8252,
+      "calls": [
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwPayload_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8253,
+      "endLine": 8265,
+      "calls": [
+        "fwKeys_",
+        "fwError_",
+        "fwString_"
+      ]
+    },
+    {
+      "name": "fwLimit_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8266,
+      "endLine": 8271,
+      "calls": [
+        "fwTime_"
+      ]
+    },
+    {
+      "name": "fwPublic_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8272,
+      "endLine": 8276,
+      "calls": [
+        "fwPayload_"
+      ]
+    },
+    {
+      "name": "handleFeedbackWebApiRequest_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8277,
+      "endLine": 8316,
+      "calls": [
+        "fwError_",
+        "fwKeys_",
+        "fwConfig_",
+        "fwProps_",
+        "fwRevision_",
+        "fwEnabled_",
+        "fwLock_",
+        "fwRequest_"
+      ]
+    },
+    {
+      "name": "fwRequest_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8317,
+      "endLine": 8367,
+      "calls": [
+        "fwBook_",
+        "fwPrimeWebReads_",
+        "fwSchema_",
+        "fwContext_",
+        "fwLimit_",
+        "fwUpdate_",
+        "fwBatch_",
+        "fwPublic_",
+        "fwString_",
+        "fwError_",
+        "fwRevision_",
+        "fwCommit_",
+        "fwPayload_"
+      ]
+    },
+    {
+      "name": "fwCommit_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8368,
+      "endLine": 8391,
+      "calls": [
+        "fwError_",
+        "fwCompleted_",
+        "fwCapacity_",
+        "fwAppend_",
+        "fwUpdate_",
+        "fwCell_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "feedbackV2SubmitLegacy_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8392,
+      "endLine": 8402,
+      "calls": [
+        "fwEnabled_",
+        "fwOrderId_",
+        "fwLock_",
+        "fwBook_",
+        "fwSchema_",
+        "fwOrder_",
+        "fwState_",
+        "fwCompleted_",
+        "feedbackV2Eligibility_",
+        "fwError_",
+        "fwCommit_",
+        "fwPayload_"
+      ]
+    },
+    {
+      "name": "fwCreateLinkLocked_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8403,
+      "endLine": 8420,
+      "calls": [
+        "fwOrder_",
+        "fwState_",
+        "feedbackV2Eligibility_",
+        "fwCompleted_",
+        "fwError_",
+        "fwProps_",
+        "fwConfig_",
+        "fwNewToken_",
+        "fwHash_",
+        "fwCapacity_",
+        "fwUpdate_",
+        "fwAppend_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "getOrCreateFeedbackWebLink_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8421,
+      "endLine": 8425,
+      "calls": [
+        "fwEnabled_",
+        "fwOrderId_",
+        "fwLock_",
+        "fwBook_",
+        "fwCreateLinkLocked_",
+        "fwSchema_"
+      ]
+    },
+    {
+      "name": "createFeedbackWebLinkForOrder",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8426,
+      "endLine": 8426,
+      "calls": [
+        "getOrCreateFeedbackWebLink_"
+      ]
+    },
+    {
+      "name": "feedbackV2RevokeOrderLinks",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8427,
+      "endLine": 8435,
+      "calls": [
+        "fwOrderId_",
+        "fwLock_",
+        "fwBook_",
+        "fwSchema_",
+        "fwState_",
+        "fwUpdate_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "feedbackV2Setup",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8436,
+      "endLine": 8456,
+      "calls": [
+        "fwLock_",
+        "fwBook_",
+        "fwFeedback_",
+        "fwSourceSchema_",
+        "fwError_",
+        "fwCapacity_",
+        "fwCell_",
+        "fwTable_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "feedbackV2ExpandRatingRanges",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8457,
+      "endLine": 8476,
+      "calls": [
+        "fwObject_",
+        "fwError_",
+        "fwLock_",
+        "fwBook_",
+        "fwTable_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "fwSourceSchema_",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8478,
+      "endLine": 8486,
+      "calls": [
+        "fwTable_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "feedbackV2RatingFormulaAudit",
+      "module": "FeedbackWeb.gs",
+      "startLine": 8487,
+      "endLine": 8495,
+      "calls": [
+        "fwBook_",
+        "fwTable_"
+      ]
+    },
+    {
+      "name": "feedbackSenderDecision_",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8502,
+      "endLine": 8524,
+      "calls": [
+        "fwBook_",
+        "fwTable_",
+        "feedbackNextDay10am_",
+        "fwFeedback_",
+        "fwOrder_",
+        "feedbackV2Eligibility_"
+      ]
+    },
+    {
+      "name": "fwWebTemplateContract_",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8525,
+      "endLine": 8533,
+      "calls": [
+        "fwProps_",
+        "fwConfig_",
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwPrepareWebMessage_",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8534,
+      "endLine": 8553,
+      "calls": [
+        "fwEnabled_",
+        "fwProps_",
+        "feedbackIsLiveEnabled_",
+        "fwError_",
+        "fwWebTemplateContract_",
+        "fwLock_",
+        "fwBook_",
+        "fwSchema_",
+        "fwOrder_",
+        "feedbackSenderDecision_",
+        "resolveFeedbackCandidate_",
+        "fwCreateLinkLocked_"
+      ]
+    },
+    {
+      "name": "fwSendWebMessage_",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8554,
+      "endLine": 8565,
+      "calls": [
+        "fwProps_",
+        "fwConfig_",
+        "fwError_",
+        "mkIntegrationFetch_",
+        "fwString_"
+      ]
+    },
+    {
+      "name": "fwFreshSenderState_",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8566,
+      "endLine": 8578,
+      "calls": [
+        "fwError_"
+      ]
+    },
+    {
+      "name": "fwAcceptWebMessage_",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8579,
+      "endLine": 8608,
+      "calls": [
+        "fwString_",
+        "fwError_",
+        "fwLock_",
+        "fwBook_",
+        "fwSchema_",
+        "fwFreshSenderState_",
+        "fwTable_",
+        "whatsappLogNormalisePhone_",
+        "fwOrder_",
+        "fwTime_",
+        "fwUpdate_",
+        "fwCell_",
+        "fwCompleted_",
+        "fwAppend_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "runFeedbackWebSender_",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8609,
+      "endLine": 8623,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "feedbackIsLiveEnabled_",
+        "fwProps_",
+        "fwEnabled_",
+        "buildFeedbackQueueSnapshot_",
+        "fwPrepareWebMessage_",
+        "fwSendWebMessage_",
+        "fwAcceptWebMessage_"
+      ]
+    },
+    {
+      "name": "feedbackV2ReconcileAcceptedMessage",
+      "module": "FeedbackWebSender.gs",
+      "startLine": 8624,
+      "endLine": 8632,
+      "calls": [
+        "fwEnabled_",
+        "fwOrderId_",
+        "fwString_",
+        "fwError_",
+        "fwTime_",
+        "fwAcceptWebMessage_"
+      ]
+    },
+    {
+      "name": "setupPackingSlips",
+      "module": "PackingSlips.gs",
+      "startLine": 8693,
+      "endLine": 8727,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "getPackingSlipsSpreadsheet_",
+        "setupPackingSlipsStatusArea_",
+        "parseFlexibleDate_",
+        "ensurePackingSlipTemplate_",
+        "installPackingSlipOpenTrigger_"
+      ]
+    },
+    {
+      "name": "showPackingSlipsMenu_",
+      "module": "PackingSlips.gs",
+      "startLine": 8735,
+      "endLine": 8743,
+      "calls": []
+    },
+    {
+      "name": "refreshPackingSlipsPreview",
+      "module": "PackingSlips.gs",
+      "startLine": 8749,
+      "endLine": 8805,
+      "calls": [
+        "getPackingSlipsSpreadsheet_",
+        "collectPackingSlipData_"
+      ]
+    },
+    {
+      "name": "generatePackingSlips",
+      "module": "PackingSlips.gs",
+      "startLine": 8814,
+      "endLine": 8923,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "getPackingSlipsSpreadsheet_",
+        "collectPackingSlipData_",
+        "getSelectedPackingSlipDate_",
+        "dateKey_",
+        "getOrCreateOutputDocument_",
+        "ensurePackingSlipTemplate_",
+        "getFirstTable_",
+        "applyA4PageSettings_",
+        "clearSlipCell_",
+        "fillSlipCell_"
+      ]
+    },
+    {
+      "name": "rebuildPackingSlipsTemplate",
+      "module": "PackingSlips.gs",
+      "startLine": 8931,
+      "endLine": 8939,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "buildPackingSlipTemplate_"
+      ]
+    },
+    {
+      "name": "collectPackingSlipData_",
+      "module": "PackingSlips.gs",
+      "startLine": 8947,
+      "endLine": 9112,
+      "calls": [
+        "getPackingSlipsSpreadsheet_",
+        "getSelectedPackingSlipDate_",
+        "dateKey_",
+        "headerIndex_",
+        "optionalHeaderIndex_",
+        "parseFlexibleDate_",
+        "firstName_",
+        "deriveSuburb_",
+        "cleanDeliveryNote_"
+      ]
+    },
+    {
+      "name": "getSelectedPackingSlipDate_",
+      "module": "PackingSlips.gs",
+      "startLine": 9115,
+      "endLine": 9134,
+      "calls": [
+        "getPackingSlipsSpreadsheet_",
+        "parseFlexibleDate_"
+      ]
+    },
+    {
+      "name": "deriveSuburb_",
+      "module": "PackingSlips.gs",
+      "startLine": 9154,
+      "endLine": 9221,
+      "calls": []
+    },
+    {
+      "name": "firstName_",
+      "module": "PackingSlips.gs",
+      "startLine": 9224,
+      "endLine": 9233,
+      "calls": []
+    },
+    {
+      "name": "cleanDeliveryNote_",
+      "module": "PackingSlips.gs",
+      "startLine": 9236,
+      "endLine": 9252,
+      "calls": []
+    },
+    {
+      "name": "ensurePackingSlipTemplate_",
+      "module": "PackingSlips.gs",
+      "startLine": 9264,
+      "endLine": 9299,
+      "calls": [
+        "mkIntegrationDocumentOpen_",
+        "mkIntegrationDocumentCreate_",
+        "getFirstTableOrNull_",
+        "buildPackingSlipTemplate_"
+      ]
+    },
+    {
+      "name": "buildPackingSlipTemplate_",
+      "module": "PackingSlips.gs",
+      "startLine": 9305,
+      "endLine": 9374,
+      "calls": [
+        "mkIntegrationDocumentOpen_",
+        "mkIntegrationDocumentCreate_",
+        "getFirstTableOrNull_",
+        "applyA4PageSettings_",
+        "configureTemplateCell_"
+      ]
+    },
+    {
+      "name": "configureTemplateCell_",
+      "module": "PackingSlips.gs",
+      "startLine": 9377,
+      "endLine": 9484,
+      "calls": [
+        "appendSlipParagraph_"
+      ]
+    },
+    {
+      "name": "appendSlipParagraph_",
+      "module": "PackingSlips.gs",
+      "startLine": 9487,
+      "endLine": 9507,
+      "calls": []
+    },
+    {
+      "name": "fillSlipCell_",
+      "module": "PackingSlips.gs",
+      "startLine": 9510,
+      "endLine": 9578,
+      "calls": [
+        "replaceCellToken_",
+        "formatQty_",
+        "setExactTokenParagraph_"
+      ]
+    },
+    {
+      "name": "clearSlipCell_",
+      "module": "PackingSlips.gs",
+      "startLine": 9581,
+      "endLine": 9584,
+      "calls": []
+    },
+    {
+      "name": "replaceCellToken_",
+      "module": "PackingSlips.gs",
+      "startLine": 9587,
+      "endLine": 9599,
+      "calls": [
+        "safeReplacement_"
+      ]
+    },
+    {
+      "name": "setExactTokenParagraph_",
+      "module": "PackingSlips.gs",
+      "startLine": 9602,
+      "endLine": 9651,
+      "calls": []
+    },
+    {
+      "name": "getFirstTable_",
+      "module": "PackingSlips.gs",
+      "startLine": 9654,
+      "endLine": 9664,
+      "calls": [
+        "getFirstTableOrNull_"
+      ]
+    },
+    {
+      "name": "getFirstTableOrNull_",
+      "module": "PackingSlips.gs",
+      "startLine": 9667,
+      "endLine": 9684,
+      "calls": []
+    },
+    {
+      "name": "getOrCreateOutputDocument_",
+      "module": "PackingSlips.gs",
+      "startLine": 9692,
+      "endLine": 9728,
+      "calls": [
+        "mkIntegrationDocumentOpen_",
+        "mkIntegrationDriveFile_",
+        "mkIntegrationDocumentCreate_"
+      ]
+    },
+    {
+      "name": "setupPackingSlipsStatusArea_",
+      "module": "PackingSlips.gs",
+      "startLine": 9736,
+      "endLine": 9751,
+      "calls": []
+    },
+    {
+      "name": "installPackingSlipOpenTrigger_",
+      "module": "PackingSlips.gs",
+      "startLine": 9754,
+      "endLine": 9772,
+      "calls": [
+        "getPackingSlipsSpreadsheet_",
+        "mkIntegrationNewTrigger_"
+      ]
+    },
+    {
+      "name": "getPackingSlipsSpreadsheet_",
+      "module": "PackingSlips.gs",
+      "startLine": 9780,
+      "endLine": 9784,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "applyA4PageSettings_",
+      "module": "PackingSlips.gs",
+      "startLine": 9787,
+      "endLine": 9797,
+      "calls": []
+    },
+    {
+      "name": "headerIndex_",
+      "module": "PackingSlips.gs",
+      "startLine": 9800,
+      "endLine": 9812,
+      "calls": []
+    },
+    {
+      "name": "optionalHeaderIndex_",
+      "module": "PackingSlips.gs",
+      "startLine": 9815,
+      "endLine": 9820,
+      "calls": []
+    },
+    {
+      "name": "parseFlexibleDate_",
+      "module": "PackingSlips.gs",
+      "startLine": 9823,
+      "endLine": 9883,
+      "calls": []
+    },
+    {
+      "name": "dateKey_",
+      "module": "PackingSlips.gs",
+      "startLine": 9886,
+      "endLine": 9892,
+      "calls": []
+    },
+    {
+      "name": "formatQty_",
+      "module": "PackingSlips.gs",
+      "startLine": 9895,
+      "endLine": 9901,
+      "calls": []
+    },
+    {
+      "name": "safeReplacement_",
+      "module": "PackingSlips.gs",
+      "startLine": 9904,
+      "endLine": 9909,
+      "calls": []
+    },
+    {
+      "name": "registerWhatsAppOutbound_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 9965,
+      "endLine": 9979,
+      "calls": [
+        "fwString_",
+        "fwOrderId_",
+        "fwError_",
+        "fwLock_",
+        "fwBook_",
+        "fwTable_",
+        "whatsappLogNormalisePhone_",
+        "fwCell_",
+        "fwBatch_",
+        "fwAppend_"
+      ]
+    },
+    {
+      "name": "updateWhatsAppLogFromStatus_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 9987,
+      "endLine": 10018,
+      "calls": [
+        "fwObject_",
+        "whatsappLogStatusDate_",
+        "fwLock_",
+        "fwBook_",
+        "fwTable_",
+        "fwError_",
+        "whatsappLogNormalisePhone_",
+        "fwTime_",
+        "whatsappLogDisplayStatus_",
+        "whatsappLogStatusRank_",
+        "fwCell_",
+        "fwAppend_",
+        "fwProps_",
+        "fwSchema_",
+        "fwUpdate_",
+        "fwBatch_"
+      ]
+    },
+    {
+      "name": "getWhatsAppLogForOrder",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10025,
+      "endLine": 10086,
+      "calls": [
+        "whatsappLogGetSheet_"
+      ]
+    },
+    {
+      "name": "checkWhatsAppLogSetup",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10089,
+      "endLine": 10125,
+      "calls": [
+        "whatsappLogGetSheet_"
+      ]
+    },
+    {
+      "name": "whatsappLogGetSheet_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10132,
+      "endLine": 10170,
+      "calls": [
+        "fwBook_"
+      ]
+    },
+    {
+      "name": "whatsappLogFindRowByMessageId_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10173,
+      "endLine": 10208,
+      "calls": []
+    },
+    {
+      "name": "whatsappLogStatusDate_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10211,
+      "endLine": 10217,
+      "calls": []
+    },
+    {
+      "name": "whatsappLogDisplayStatus_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10220,
+      "endLine": 10235,
+      "calls": []
+    },
+    {
+      "name": "whatsappLogStatusRank_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10238,
+      "endLine": 10259,
+      "calls": []
+    },
+    {
+      "name": "whatsappLogNormalisePhone_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10262,
+      "endLine": 10272,
+      "calls": []
+    },
+    {
+      "name": "whatsappLogErrorDetails_",
+      "module": "PermanentWhatsAppLog.gs",
+      "startLine": 10275,
+      "endLine": 10312,
+      "calls": []
+    },
+    {
+      "name": "testRoutificConnection",
+      "module": "Routific.gs",
+      "startLine": 10343,
+      "endLine": 10401,
+      "calls": [
+        "mkIntegrationFetch_"
+      ]
+    },
+    {
+      "name": "sendConfirmedOrdersToRoutific",
+      "module": "Routific.gs",
+      "startLine": 10427,
+      "endLine": 11422,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "mkIntegrationActiveBook_",
+        "parseMaKitchensDeliveryWindow_",
+        "findNextAvailableDeliveryRow_",
+        "mkIntegrationFetch_",
+        "shortenRoutificError_"
+      ]
+    },
+    {
+      "name": "findNextAvailableDeliveryRow_",
+      "module": "Routific.gs",
+      "startLine": 11436,
+      "endLine": 11474,
+      "calls": []
+    },
+    {
+      "name": "shortenRoutificError_",
+      "module": "Routific.gs",
+      "startLine": 11485,
+      "endLine": 11502,
+      "calls": []
+    },
+    {
+      "name": "parseMaKitchensDeliveryWindow_",
+      "module": "Routific.gs",
+      "startLine": 11509,
+      "endLine": 11598,
+      "calls": [
+        "convert12HourTo24Hour_"
+      ]
+    },
+    {
+      "name": "convert12HourTo24Hour_",
+      "module": "Routific.gs",
+      "startLine": 11601,
+      "endLine": 11672,
+      "calls": []
+    },
+    {
+      "name": "handleRoutificWebhook_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 11697,
+      "endLine": 12241,
+      "calls": [
+        "routificWebhookResponse_",
+        "handleRoutePublishedDeliveryPlanned_",
+        "handleRouteEtaUpdatedDeliveryUpdate_",
+        "mkIntegrationOpenBook_",
+        "sendDeliveryConfirmationForOrder_"
+      ]
+    },
+    {
+      "name": "handleRoutePublishedDeliveryPlanned_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 12248,
+      "endLine": 12784,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "routePublishedHeaderMap_",
+        "routePublishedRequireColumn_",
+        "deliveryPlannedAlreadyLogged_",
+        "routePublishedNormalisePhone_",
+        "routePublishedFirstName_",
+        "routePublishedFormatWindow_",
+        "sendDeliveryPlannedTemplate_",
+        "registerWhatsAppOutbound_"
+      ]
+    },
+    {
+      "name": "sendDeliveryPlannedTemplate_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 12791,
+      "endLine": 12877,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "deliveryPlannedAlreadyLogged_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 12884,
+      "endLine": 12946,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "routePublishedHeaderMap_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 12953,
+      "endLine": 12968,
+      "calls": []
+    },
+    {
+      "name": "routePublishedRequireColumn_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 12971,
+      "endLine": 12989,
+      "calls": []
+    },
+    {
+      "name": "routePublishedNormalisePhone_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 12992,
+      "endLine": 13023,
+      "calls": []
+    },
+    {
+      "name": "routePublishedFirstName_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 13026,
+      "endLine": 13040,
+      "calls": []
+    },
+    {
+      "name": "routePublishedFormatWindow_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 13043,
+      "endLine": 13127,
+      "calls": []
+    },
+    {
+      "name": "handleRouteEtaUpdatedDeliveryUpdate_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 13135,
+      "endLine": 13686,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "routePublishedHeaderMap_",
+        "routePublishedRequireColumn_",
+        "deliveryUpdateAlreadyLogged_",
+        "routePublishedNormalisePhone_",
+        "routePublishedFirstName_",
+        "routePublishedFormatWindow_",
+        "fetchRoutificTracking_",
+        "sendDeliveryUpdateTemplate_",
+        "registerWhatsAppOutbound_"
+      ]
+    },
+    {
+      "name": "fetchRoutificTracking_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 13693,
+      "endLine": 13796,
+      "calls": [
+        "mkIntegrationFetch_"
+      ]
+    },
+    {
+      "name": "sendDeliveryUpdateTemplate_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 13805,
+      "endLine": 13903,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "deliveryUpdateAlreadyLogged_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 13910,
+      "endLine": 13972,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "sendDeliveryConfirmationForOrder_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 13981,
+      "endLine": 14235,
+      "calls": [
+        "deliveryConfirmationAlreadyLogged_",
+        "mkIntegrationOpenBook_",
+        "routePublishedHeaderMap_",
+        "routePublishedRequireColumn_",
+        "routePublishedNormalisePhone_",
+        "routePublishedFirstName_",
+        "sendDeliveryConfirmationTemplate_",
+        "registerWhatsAppOutbound_"
+      ]
+    },
+    {
+      "name": "sendDeliveryConfirmationTemplate_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 14238,
+      "endLine": 14309,
+      "calls": [
+        "sendWhatsAppPayload_"
+      ]
+    },
+    {
+      "name": "deliveryConfirmationAlreadyLogged_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 14312,
+      "endLine": 14375,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "routificWebhookResponse_",
+      "module": "RoutificWebhook.gs",
+      "startLine": 14379,
+      "endLine": 14394,
+      "calls": []
+    },
+    {
+      "name": "mkPhone_",
+      "module": "OrderEngine.gs",
+      "startLine": 14399,
+      "endLine": 14405,
+      "calls": []
+    },
+    {
+      "name": "mkText_",
+      "module": "OrderEngine.gs",
+      "startLine": 14407,
+      "endLine": 14412,
+      "calls": []
+    },
+    {
+      "name": "mkMoneyCents_",
+      "module": "OrderEngine.gs",
+      "startLine": 14414,
+      "endLine": 14418,
+      "calls": []
+    },
+    {
+      "name": "mkCustomerMatch_",
+      "module": "OrderEngine.gs",
+      "startLine": 14420,
+      "endLine": 14430,
+      "calls": [
+        "mkPhone_"
+      ]
+    },
+    {
+      "name": "mkOwnerDetails_",
+      "module": "OrderEngine.gs",
+      "startLine": 14432,
+      "endLine": 14453,
+      "calls": [
+        "mkPhone_",
+        "mkText_"
+      ]
+    },
+    {
+      "name": "mkQuote_",
+      "module": "OrderEngine.gs",
+      "startLine": 14455,
+      "endLine": 14502,
+      "calls": [
+        "mkMoneyCents_"
+      ]
+    },
+    {
+      "name": "mkConfirmation_",
+      "module": "OrderEngine.gs",
+      "startLine": 14504,
+      "endLine": 14513,
+      "calls": []
+    },
+    {
+      "name": "orderRequestJson_",
+      "module": "OrderRequests.gs",
+      "startLine": 14541,
+      "endLine": 14543,
+      "calls": []
+    },
+    {
+      "name": "orderRequestDigest_",
+      "module": "OrderRequests.gs",
+      "startLine": 14545,
+      "endLine": 14548,
+      "calls": []
+    },
+    {
+      "name": "orderRequestHmacHex_",
+      "module": "OrderRequests.gs",
+      "startLine": 14550,
+      "endLine": 14553,
+      "calls": []
+    },
+    {
+      "name": "orderRequestSafeEqual_",
+      "module": "OrderRequests.gs",
+      "startLine": 14555,
+      "endLine": 14561,
+      "calls": []
+    },
+    {
+      "name": "orderRequestVerifyEnvelope_",
+      "module": "OrderRequests.gs",
+      "startLine": 14563,
+      "endLine": 14582,
+      "calls": [
+        "orderRequestHmacHex_",
+        "orderRequestSafeEqual_"
+      ]
+    },
+    {
+      "name": "orderRequestOwner_",
+      "module": "OrderRequests.gs",
+      "startLine": 14584,
+      "endLine": 14587,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "setupOrderRequestWorkspace",
+      "module": "OrderRequests.gs",
+      "startLine": 14589,
+      "endLine": 14606,
+      "calls": [
+        "mkOwnerBook_",
+        "mkIntegrationOpenBook_",
+        "mkIntegrationNewTrigger_"
+      ]
+    },
+    {
+      "name": "orderRequestHeaderMap_",
+      "module": "OrderRequests.gs",
+      "startLine": 14608,
+      "endLine": 14612,
+      "calls": []
+    },
+    {
+      "name": "orderRequestRequireHeaders_",
+      "module": "OrderRequests.gs",
+      "startLine": 14614,
+      "endLine": 14618,
+      "calls": []
+    },
+    {
+      "name": "orderRequestReadMenuState_",
+      "module": "OrderRequests.gs",
+      "startLine": 14620,
+      "endLine": 14648,
+      "calls": [
+        "orderRequestRequireHeaders_",
+        "orderRequestHeaderMap_"
+      ]
+    },
+    {
+      "name": "orderRequestBeforeCutoff_",
+      "module": "OrderRequests.gs",
+      "startLine": 14650,
+      "endLine": 14656,
+      "calls": []
+    },
+    {
+      "name": "orderRequestLiveLines_",
+      "module": "OrderRequests.gs",
+      "startLine": 14658,
+      "endLine": 14667,
+      "calls": [
+        "mkCommitted_",
+        "mkMenuLines_"
+      ]
+    },
+    {
+      "name": "orderRequestCell_",
+      "module": "OrderRequests.gs",
+      "startLine": 14669,
+      "endLine": 14674,
+      "calls": []
+    },
+    {
+      "name": "orderRequestUpdateCells_",
+      "module": "OrderRequests.gs",
+      "startLine": 14676,
+      "endLine": 14683,
+      "calls": [
+        "orderRequestCell_"
+      ]
+    },
+    {
+      "name": "orderRequestExisting_",
+      "module": "OrderRequests.gs",
+      "startLine": 14685,
+      "endLine": 14691,
+      "calls": []
+    },
+    {
+      "name": "orderRequestValidReference_",
+      "module": "OrderRequests.gs",
+      "startLine": 14693,
+      "endLine": 14695,
+      "calls": []
+    },
+    {
+      "name": "orderRequestAllocateReference_",
+      "module": "OrderRequests.gs",
+      "startLine": 14699,
+      "endLine": 14713,
+      "calls": []
+    },
+    {
+      "name": "orderRequestCapture_",
+      "module": "OrderRequests.gs",
+      "startLine": 14715,
+      "endLine": 14797,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "orderRequestRequireHeaders_",
+        "orderRequestDigest_",
+        "orderRequestExisting_",
+        "orderRequestReadMenuState_",
+        "orderRequestBeforeCutoff_",
+        "getOrderingRules_",
+        "orderRequestLiveLines_",
+        "orderRequestAllocateReference_",
+        "orderRequestUpdateCells_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "orderRequestRecover_",
+      "module": "OrderRequests.gs",
+      "startLine": 14799,
+      "endLine": 14811,
+      "calls": [
+        "mkIntegrationOpenBook_",
+        "orderRequestDigest_"
+      ]
+    },
+    {
+      "name": "handleOrderRequestApi_",
+      "module": "OrderRequests.gs",
+      "startLine": 14813,
+      "endLine": 14826,
+      "calls": [
+        "orderRequestVerifyEnvelope_",
+        "orderRequestJson_",
+        "orderRequestCapture_",
+        "orderRequestRecover_"
+      ]
+    },
+    {
+      "name": "orderRequestInboxOwnerBook_",
+      "module": "OrderRequests.gs",
+      "startLine": 14830,
+      "endLine": 14836,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "orderRequestInboxOnOpen_",
+      "module": "OrderRequests.gs",
+      "startLine": 14838,
+      "endLine": 14843,
+      "calls": [
+        "mkOwnerBook_"
+      ]
+    },
+    {
+      "name": "orderRequestOpenInbox",
+      "module": "OrderRequests.gs",
+      "startLine": 14845,
+      "endLine": 14849,
+      "calls": [
+        "mkOwnerBook_"
+      ]
+    },
+    {
+      "name": "orderRequestInboxList",
+      "module": "OrderRequests.gs",
+      "startLine": 14851,
+      "endLine": 14869,
+      "calls": [
+        "mkOwnerBook_"
+      ]
+    },
+    {
+      "name": "orderRequestOwnerEventRequest_",
+      "module": "OrderRequests.gs",
+      "startLine": 14871,
+      "endLine": 14883,
+      "calls": [
+        "orderRequestUpdateCells_"
+      ]
+    },
+    {
+      "name": "orderRequestOwnerFindRow_",
+      "module": "OrderRequests.gs",
+      "startLine": 14885,
+      "endLine": 14893,
+      "calls": [
+        "orderRequestValidReference_"
+      ]
+    },
+    {
+      "name": "orderRequestMarkReceived",
+      "module": "OrderRequests.gs",
+      "startLine": 14895,
+      "endLine": 14920,
+      "calls": [
+        "mkOwnerBook_",
+        "mkPhone_",
+        "orderRequestOwnerFindRow_",
+        "orderRequestCellUpdate_",
+        "orderRequestOwnerEventRequest_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "orderRequestCellUpdate_",
+      "module": "OrderRequests.gs",
+      "startLine": 14922,
+      "endLine": 14926,
+      "calls": [
+        "orderRequestCell_"
+      ]
+    },
+    {
+      "name": "orderRequestFindCustomersBySender",
+      "module": "OrderRequests.gs",
+      "startLine": 14928,
+      "endLine": 14936,
+      "calls": [
+        "mkOwnerBook_",
+        "mkPhone_",
+        "mkCustomers_"
+      ]
+    },
+    {
+      "name": "orderRequestSafeCustomer_",
+      "module": "OrderRequests.gs",
+      "startLine": 14938,
+      "endLine": 14941,
+      "calls": [
+        "mkPhone_"
+      ]
+    },
+    {
+      "name": "orderRequestReject",
+      "module": "OrderRequests.gs",
+      "startLine": 14943,
+      "endLine": 14957,
+      "calls": [
+        "mkOwnerBook_",
+        "orderRequestOwnerFindRow_",
+        "mkIntegrationBatch_",
+        "orderRequestCellUpdate_",
+        "orderRequestOwnerEventRequest_"
+      ]
+    },
+    {
+      "name": "mkOwnerBook_",
+      "module": "OwnerOrders.gs",
+      "startLine": 14972,
+      "endLine": 14978,
+      "calls": [
+        "orderRequestInboxOwnerBook_"
+      ]
+    },
+    {
+      "name": "mkLocked_",
+      "module": "OwnerOrders.gs",
+      "startLine": 14980,
+      "endLine": 14985,
+      "calls": []
+    },
+    {
+      "name": "mkOwnerFreshValues_",
+      "module": "OwnerOrders.gs",
+      "startLine": 14987,
+      "endLine": 14998,
+      "calls": []
+    },
+    {
+      "name": "mkTable_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15000,
+      "endLine": 15011,
+      "calls": [
+        "mkOwnerFreshValues_",
+        "orderRequestRequireHeaders_",
+        "orderRequestHeaderMap_"
+      ]
+    },
+    {
+      "name": "mkRequire_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15013,
+      "endLine": 15015,
+      "calls": []
+    },
+    {
+      "name": "mkRows_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15017,
+      "endLine": 15019,
+      "calls": []
+    },
+    {
+      "name": "mkUnique_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15021,
+      "endLine": 15025,
+      "calls": [
+        "mkRows_"
+      ]
+    },
+    {
+      "name": "mkJson_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15027,
+      "endLine": 15031,
+      "calls": []
+    },
+    {
+      "name": "mkDate_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15033,
+      "endLine": 15035,
+      "calls": []
+    },
+    {
+      "name": "mkCustomers_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15037,
+      "endLine": 15045,
+      "calls": [
+        "mkTable_",
+        "mkRequire_"
+      ]
+    },
+    {
+      "name": "mkMenuLines_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15047,
+      "endLine": 15064,
+      "calls": [
+        "mkTable_",
+        "mkRequire_",
+        "mkDate_",
+        "mkMoneyCents_"
+      ]
+    },
+    {
+      "name": "mkCommitted_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15066,
+      "endLine": 15092,
+      "calls": [
+        "mkTable_",
+        "mkRequire_",
+        "mkDate_"
+      ]
+    },
+    {
+      "name": "ownerOrderBootstrap",
+      "module": "OwnerOrders.gs",
+      "startLine": 15094,
+      "endLine": 15101,
+      "calls": [
+        "mkOwnerBook_",
+        "getOrderingRules_",
+        "mkMenuLines_",
+        "mkTable_"
+      ]
+    },
+    {
+      "name": "ownerOrderLookupCustomer",
+      "module": "OwnerOrders.gs",
+      "startLine": 15103,
+      "endLine": 15107,
+      "calls": [
+        "mkCustomers_",
+        "mkOwnerBook_",
+        "mkPhone_"
+      ]
+    },
+    {
+      "name": "mkOwnerRequest_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15109,
+      "endLine": 15123,
+      "calls": [
+        "mkTable_",
+        "mkUnique_",
+        "orderRequestOwnerFindRow_",
+        "orderRequestDigest_",
+        "mkJson_"
+      ]
+    },
+    {
+      "name": "ownerOrderOpenRequest",
+      "module": "OwnerOrders.gs",
+      "startLine": 15125,
+      "endLine": 15129,
+      "calls": [
+        "mkOwnerBook_",
+        "mkOwnerRequest_"
+      ]
+    },
+    {
+      "name": "mkOwnerPrepare_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15131,
+      "endLine": 15155,
+      "calls": [
+        "mkOwnerDetails_",
+        "mkCustomers_",
+        "mkCustomerMatch_",
+        "mkOwnerRequest_",
+        "mkPhone_",
+        "mkJson_",
+        "orderRequestBeforeCutoff_",
+        "mkQuote_",
+        "mkMenuLines_",
+        "getOrderingRules_",
+        "mkCommitted_"
+      ]
+    },
+    {
+      "name": "ownerOrderReview",
+      "module": "OwnerOrders.gs",
+      "startLine": 15157,
+      "endLine": 15179,
+      "calls": [
+        "mkOwnerBook_",
+        "mkLocked_",
+        "mkTable_",
+        "mkOwnerPrepare_",
+        "mkOwnerRequest_",
+        "orderRequestDigest_",
+        "mkJson_",
+        "orderRequestUpdateCells_",
+        "orderRequestOwnerEventRequest_",
+        "mkIntegrationBatch_",
+        "mkConfirmation_"
+      ]
+    },
+    {
+      "name": "mkSerial_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15181,
+      "endLine": 15184,
+      "calls": []
+    },
+    {
+      "name": "mkDeliverySerial_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15186,
+      "endLine": 15186,
+      "calls": []
+    },
+    {
+      "name": "mkEmptyRows_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15188,
+      "endLine": 15196,
+      "calls": []
+    },
+    {
+      "name": "mkSetColumns_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15198,
+      "endLine": 15200,
+      "calls": [
+        "orderRequestCellUpdate_"
+      ]
+    },
+    {
+      "name": "mkNextOrderId_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15202,
+      "endLine": 15207,
+      "calls": []
+    },
+    {
+      "name": "mkOwnerFindReview_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15209,
+      "endLine": 15214,
+      "calls": [
+        "mkTable_",
+        "mkUnique_"
+      ]
+    },
+    {
+      "name": "ownerOrderAccept",
+      "module": "OwnerOrders.gs",
+      "startLine": 15216,
+      "endLine": 15270,
+      "calls": [
+        "mkOwnerBook_",
+        "mkLocked_",
+        "mkOwnerFindReview_",
+        "mkOwnerReconcile_",
+        "mkRows_",
+        "mkOwnerPrepare_",
+        "orderRequestDigest_",
+        "mkJson_",
+        "mkTable_",
+        "mkAssertOperationalLayout_",
+        "mkRequire_",
+        "mkEmptyRows_",
+        "mkIntegrationAssertNoPending_",
+        "mkIntegrationNextOrderId_",
+        "mkConfirmation_",
+        "mkSetColumns_",
+        "mkSerial_",
+        "mkDeliverySerial_",
+        "mkOwnerRequest_",
+        "orderRequestOwnerEventRequest_",
+        "orderRequestUpdateCells_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "mkOwnerReconcile_",
+      "module": "OwnerOrders.gs",
+      "startLine": 15272,
+      "endLine": 15312,
+      "calls": [
+        "mkTable_",
+        "mkUnique_",
+        "mkOwnerFreshValues_",
+        "mkOwnerRequest_",
+        "mkIntegrationBatch_",
+        "mkSetColumns_"
+      ]
+    },
+    {
+      "name": "ownerOrderCheck",
+      "module": "OwnerOrders.gs",
+      "startLine": 15314,
+      "endLine": 15314,
+      "calls": [
+        "mkOwnerBook_",
+        "mkLocked_",
+        "mkOwnerReconcile_",
+        "mkOwnerFindReview_"
+      ]
+    },
+    {
+      "name": "ownerOrderRecover",
+      "module": "OwnerOrders.gs",
+      "startLine": 15316,
+      "endLine": 15332,
+      "calls": [
+        "mkOwnerBook_",
+        "mkLocked_",
+        "mkOwnerFindReview_",
+        "mkTable_",
+        "mkOwnerReconcile_",
+        "mkUnique_",
+        "mkSetColumns_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "ownerOrderMarkManualSend",
+      "module": "OwnerOrders.gs",
+      "startLine": 15334,
+      "endLine": 15350,
+      "calls": [
+        "mkOwnerBook_",
+        "mkLocked_",
+        "mkOwnerFindReview_",
+        "mkOwnerReconcile_",
+        "mkSetColumns_",
+        "orderRequestOwnerFindRow_",
+        "orderRequestOwnerEventRequest_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "ownerOrderLoadReview",
+      "module": "OwnerOrders.gs",
+      "startLine": 15352,
+      "endLine": 15356,
+      "calls": [
+        "mkOwnerFindReview_",
+        "mkOwnerBook_"
+      ]
+    },
+    {
+      "name": "ownerOrderExpire",
+      "module": "OwnerOrders.gs",
+      "startLine": 15358,
+      "endLine": 15368,
+      "calls": [
+        "mkOwnerBook_",
+        "mkLocked_",
+        "orderRequestOwnerFindRow_",
+        "mkIntegrationBatch_",
+        "orderRequestOwnerEventRequest_"
+      ]
+    },
+    {
+      "name": "mkCustomerBaseline_",
+      "module": "OwnerCustomers.gs",
+      "startLine": 15373,
+      "endLine": 15380,
+      "calls": []
+    },
+    {
+      "name": "mkCustomerIdsUnchanged_",
+      "module": "OwnerCustomers.gs",
+      "startLine": 15382,
+      "endLine": 15385,
+      "calls": [
+        "mkCustomerBaseline_"
+      ]
+    },
+    {
+      "name": "mkCustomerIntakeSerial_",
+      "module": "OwnerCustomers.gs",
+      "startLine": 15387,
+      "endLine": 15394,
+      "calls": [
+        "mkSerial_"
+      ]
+    },
+    {
+      "name": "ownerOrderSaveCustomer",
+      "module": "OwnerCustomers.gs",
+      "startLine": 15396,
+      "endLine": 15470,
+      "calls": [
+        "mkOwnerBook_",
+        "mkOwnerDetails_",
+        "orderRequestDigest_",
+        "mkJson_",
+        "mkLocked_",
+        "mkTable_",
+        "mkUnique_",
+        "mkCustomers_",
+        "mkPhone_",
+        "mkCustomerIdsUnchanged_",
+        "mkCustomerMatch_",
+        "mkCustomerBaseline_",
+        "mkRequire_",
+        "mkCustomerIntakeSerial_",
+        "mkSerial_",
+        "mkEmptyRows_",
+        "mkIntegrationBatch_",
+        "orderRequestUpdateCells_",
+        "orderRequestCellUpdate_"
+      ]
+    },
+    {
+      "name": "mkAssertOperationalLayout_",
+      "module": "OwnerOrderSetup.gs",
+      "startLine": 15549,
+      "endLine": 15561,
+      "calls": []
+    },
+    {
+      "name": "setupOwnerOrderWorkspace",
+      "module": "OwnerOrderSetup.gs",
+      "startLine": 15588,
+      "endLine": 15640,
+      "calls": [
+        "mkOwnerBook_",
+        "mkLocked_",
+        "orderRequestCellUpdate_",
+        "mkFormulaCell_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "mkFormulaCell_",
+      "module": "OwnerOrderSetup.gs",
+      "startLine": 15642,
+      "endLine": 15646,
+      "calls": [
+        "orderRequestCellUpdate_"
+      ]
+    },
+    {
+      "name": "mkOwnerRowFormulaRequests_",
+      "module": "OwnerOrderSetup.gs",
+      "startLine": 15648,
+      "endLine": 15660,
+      "calls": [
+        "mkFormulaCell_"
+      ]
+    },
+    {
+      "name": "mkOrderPublishOwner_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15674,
+      "endLine": 15677,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "configureOrderingPublisherPreview",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15680,
+      "endLine": 15684,
+      "calls": [
+        "mkOrderPublishOwner_"
+      ]
+    },
+    {
+      "name": "saveOrderingPublisherSettings",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15686,
+      "endLine": 15698,
+      "calls": [
+        "mkIntegrationNoExternal_",
+        "mkOrderPublishOwner_"
+      ]
+    },
+    {
+      "name": "configureOrderingPublisherProduction",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15700,
+      "endLine": 15702,
+      "calls": []
+    },
+    {
+      "name": "mkOrderImagePath_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15704,
+      "endLine": 15707,
+      "calls": []
+    },
+    {
+      "name": "mkOrderBeforeCutoff_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15709,
+      "endLine": 15713,
+      "calls": []
+    },
+    {
+      "name": "mkOrderHexDigest_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15715,
+      "endLine": 15718,
+      "calls": []
+    },
+    {
+      "name": "mkOrderPublicItemId_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15720,
+      "endLine": 15722,
+      "calls": [
+        "mkOrderHexDigest_"
+      ]
+    },
+    {
+      "name": "mkOrderSnapshot_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15724,
+      "endLine": 15759,
+      "calls": [
+        "mkOrderBeforeCutoff_",
+        "mkOrderPublicItemId_",
+        "mkOrderImagePath_",
+        "getOrderingRules_",
+        "mkOrderHexDigest_"
+      ]
+    },
+    {
+      "name": "previewCurrentOrderingMenu",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15761,
+      "endLine": 15768,
+      "calls": [
+        "mkOrderPublishOwner_",
+        "mkOrderSnapshot_",
+        "buildActiveMenu_"
+      ]
+    },
+    {
+      "name": "mkOrderGithub_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15770,
+      "endLine": 15780,
+      "calls": [
+        "mkIntegrationFetch_"
+      ]
+    },
+    {
+      "name": "publishCurrentOrderingMenu",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15782,
+      "endLine": 15793,
+      "calls": [
+        "mkOrderPublishOwner_",
+        "buildActiveMenu_",
+        "mkOrderSnapshot_",
+        "mkOrderRequireMenuStateSheet_",
+        "mkOrderWriteSnapshot_"
+      ]
+    },
+    {
+      "name": "withdrawPublishedOrderingMenu",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15795,
+      "endLine": 15801,
+      "calls": [
+        "mkOrderPublishOwner_",
+        "mkOrderRequireMenuStateSheet_",
+        "mkOrderWriteSnapshot_"
+      ]
+    },
+    {
+      "name": "mkOrderRequireMenuStateSheet_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15803,
+      "endLine": 15811,
+      "calls": [
+        "mkIntegrationOpenBook_"
+      ]
+    },
+    {
+      "name": "mkOrderSavePublishedState_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15813,
+      "endLine": 15845,
+      "calls": [
+        "mkOrderRequireMenuStateSheet_",
+        "mkOrderPublicItemId_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "mkOrderWriteSnapshot_",
+      "module": "OrderingMenuPublisher.gs",
+      "startLine": 15847,
+      "endLine": 15883,
+      "calls": [
+        "mkOrderSavePublishedState_",
+        "mkOrderGithub_"
+      ]
+    },
+    {
+      "name": "mkIntegrationRequireTest_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15891,
+      "endLine": 15895,
+      "calls": []
+    },
+    {
+      "name": "mkIntegrationOpenBook_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15896,
+      "endLine": 15900,
+      "calls": [
+        "mkIntegrationRequireTest_"
+      ]
+    },
+    {
+      "name": "mkIntegrationActiveBook_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15901,
+      "endLine": 15906,
+      "calls": [
+        "mkIntegrationRequireTest_"
+      ]
+    },
+    {
+      "name": "mkIntegrationBatch_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15907,
+      "endLine": 15911,
+      "calls": [
+        "mkIntegrationRequireTest_"
+      ]
+    },
+    {
+      "name": "mkIntegrationNoExternal_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15912,
+      "endLine": 15914,
+      "calls": []
+    },
+    {
+      "name": "mkIntegrationFetch_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15915,
+      "endLine": 15915,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationDocumentOpen_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15916,
+      "endLine": 15916,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationDocumentCreate_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15917,
+      "endLine": 15917,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationDriveFile_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15918,
+      "endLine": 15918,
+      "calls": [
+        "mkIntegrationNoExternal_"
+      ]
+    },
+    {
+      "name": "mkIntegrationNewTrigger_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15919,
+      "endLine": 15924,
+      "calls": [
+        "mkIntegrationActiveBook_"
+      ]
+    },
+    {
+      "name": "configureOrderAutomationIntegrationTest",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15925,
+      "endLine": 15942,
+      "calls": []
+    },
+    {
+      "name": "initializeOrderAutomationIntegrationTest",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15943,
+      "endLine": 15953,
+      "calls": [
+        "mkOwnerBook_",
+        "buildActiveMenu_",
+        "mkOrderSnapshot_",
+        "mkOrderSavePublishedState_"
+      ]
+    },
+    {
+      "name": "retireLegacyOrderEntryInTest",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15957,
+      "endLine": 15977,
+      "calls": [
+        "mkIntegrationRequireTest_",
+        "mkOwnerBook_",
+        "mkLocked_",
+        "oeMeta_",
+        "mkIntegrationBatch_"
+      ]
+    },
+    {
+      "name": "mkIntegrationAssertNoPending_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15980,
+      "endLine": 15987,
+      "calls": []
+    },
+    {
+      "name": "mkIntegrationNextOrderId_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15988,
+      "endLine": 15996,
+      "calls": []
+    },
+    {
+      "name": "mkIntegrationLegacySnapshots_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 15998,
+      "endLine": 16022,
+      "calls": [
+        "mkAssertOperationalLayout_",
+        "mkMenuLines_",
+        "mkQuote_",
+        "mkCommitted_",
+        "extractPostcode_",
+        "mkSetColumns_"
+      ]
+    },
+    {
+      "name": "mkIntegrationEnrichMenu_",
+      "module": "IntegrationTestGuards.gs",
+      "startLine": 16025,
+      "endLine": 16040,
+      "calls": [
+        "orderRequestBeforeCutoff_",
+        "mkIntegrationOpenBook_",
+        "mkMenuLines_",
+        "mkCommitted_"
+      ]
+    },
+    {
+      "name": "buildActiveMenu_",
+      "module": "IntegrationDispatcher.gs",
+      "startLine": 16045,
+      "endLine": 16045,
+      "calls": [
+        "mkIntegrationEnrichMenu_",
+        "mkIntegrationOriginalMenu_"
+      ]
+    },
+    {
+      "name": "doGet",
+      "module": "IntegrationDispatcher.gs",
+      "startLine": 16046,
+      "endLine": 16049,
+      "calls": [
+        "mkIntegrationRequireTest_",
+        "orderRequestJson_"
+      ]
+    },
+    {
+      "name": "doPost",
+      "module": "IntegrationDispatcher.gs",
+      "startLine": 16050,
+      "endLine": 16058,
+      "calls": [
+        "mkIntegrationRequireTest_",
+        "handleOrderRequestApi_",
+        "orderRequestJson_"
+      ]
+    },
+    {
+      "name": "simulateLegacyPostInTest",
+      "module": "IntegrationDispatcher.gs",
+      "startLine": 16059,
+      "endLine": 16062,
+      "calls": [
+        "mkOwnerBook_",
+        "mkIntegrationLegacyDoPost_"
+      ]
+    },
+    {
+      "name": "integrationTestMenus",
+      "module": "IntegrationDispatcher.gs",
+      "startLine": 16063,
+      "endLine": 16065,
+      "calls": [
+        "mkOwnerBook_",
+        "orderRequestInboxOnOpen_",
+        "showPackingSlipsMenu_"
+      ]
+    }
+  ]
+}

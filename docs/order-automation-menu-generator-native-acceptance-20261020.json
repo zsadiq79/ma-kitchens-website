@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-10-20T11:09:10+11:00",
+  "scope": "Separate private Menu V2 review copy, owner-reported native browser test",
+  "reviewScriptId": "1aU80zoZXg1-VVmJ3mMwFmEZJz_FrcTuun7JugnTh8-APHAIiNRRF9Foy",
+  "ownerReportedBothCandidateFilesSaved": true,
+  "ownerProvidedDeploymentUrl": "https://script.google.com/macros/s/AKfycbwasj-RV_UHcZtOoUNWRFLNVL-yw9oYQbQz5C-9zl7RgXL0Gn8UJMg2gKOp42kzdxw7/exec",
+  "deploymentType": "Versioned /exec URL, not /dev",
+  "deploymentVersionIndependentlyRetrieved": false,
+  "ownerConfirmedMenuOpens": true,
+  "ownerStatement": "downloaded PNG, JPG and WEBP and they are all correct",
+  "formatsOwnerDownloadedAndVisuallyAccepted": [
+    "PNG",
+    "JPEG",
+    "WebP"
+  ],
+  "outputFilesIndependentlyInspected": false,
+  "outputMimeAndDimensionsIndependentlyMeasured": false,
+  "exactPrintedDateAndDeadlineConfirmed": false,
+  "originalProductionShortcutChanged": false,
+  "productionModified": false,
+  "automatedChecks": {
+    "passed": 188,
+    "failed": 0
+  },
+  "remaining": [
+    "Production installation and deployment require explicit approval",
+    "Re-read LIVE settings/records and create a fresh cutover backup in the approved window",
+    "Apply selected 8 PM poster setting only within approved configuration scope; preserve website enforcement unless explicitly changed",
+    "Verify working original generator shortcut again after any approved LIVE upgrade"
+  ],
+  "ownerContentConfirmation": {
+    "reportedAt": "2026-10-20T11:11:50+11:00",
+    "deliveryDateAsReported": "22/10",
+    "orderDeadlineTimeAsReported": "5PM",
+    "matchesCapturedLiveTimeConfig": true,
+    "deadlineCalendarDateExplicitlyReported": false,
+    "selectedFuturePosterTime": "20:00",
+    "liveSettingChanged": false
+  },
+  "reviewCompletedAt": "2026-10-20T11:13:51+11:00",
+  "compatibilityGateStatus": "PASSED_ON_REVIEWED_SOURCE_SCHEMA_AND_OWNER_NATIVE_ACCEPTANCE_BASIS",
+  "originalShortcutDeploymentVersionOwnerReported": 21,
+  "originalManifestOwnerSupplied": {
+    "timeZone": "Australia/Sydney",
+    "dependencies": {},
+    "exceptionLogging": "STACKDRIVER",
+    "runtimeVersion": "V8",
+    "webapp": {
+      "executeAs": "USER_DEPLOYING",
+      "access": "MYSELF"
+    }
+  },
+  "manifestValidated": true,
+  "manifestFindings": []
+}

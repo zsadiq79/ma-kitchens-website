@@ -1,0 +1,46 @@
+{
+  "ownerProvidedAtSydney": "2026-10-20T11:55:54+11:00",
+  "executionAtSydney": "2026-10-20T11:55:36+11:00",
+  "function": "previewOrderAutomationMigration",
+  "configurationCompletedBeforePreview": true,
+  "source": "Owner pasted Google Apps Script execution log",
+  "result": {
+    "ok": true,
+    "environment": "PRODUCTION",
+    "phase": "LEGACY",
+    "workbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "sheetCount": 26,
+    "orderColumns": 31,
+    "itemColumns": 23,
+    "formulaAnchors": 9,
+    "legacyState": "DRAFT",
+    "legacyOrderId": "",
+    "confirmationState": "",
+    "triggers": [
+      {
+        "handler": "orderEntryEdited",
+        "source": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+        "event": "ON_EDIT"
+      },
+      {
+        "handler": "orderEntryMenu",
+        "source": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+        "event": "ON_OPEN"
+      },
+      {
+        "handler": "showPackingSlipsMenu_",
+        "source": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+        "event": "ON_OPEN"
+      },
+      {
+        "handler": "runFeedbackSender",
+        "source": "",
+        "event": "CLOCK"
+      }
+    ],
+    "newLedgerCount": 7,
+    "writesIssued": false,
+    "externalActions": "EXISTING_SETTINGS_PRESERVED"
+  },
+  "interpretation": "newLedgerCount=7 describes the expected seven planned ledgers at LEGACY preview, not seven operational records imported. No spreadsheet migration writes were issued."
+}

@@ -3,12 +3,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const crypto = require('node:crypto');
 const { pathToFileURL } = require('node:url');
 const root = path.join(__dirname, '..');
 const modulePromise = import(pathToFileURL(path.join(root, 'lib/publishedOrderMenu.mjs')));
 const snapshot = JSON.parse(fs.readFileSync(path.join(root, 'data/published-order-menu.json'), 'utf8'));
-const sample = () => ({ schemaVersion: 1, publishedAt: '2026-10-16T09:00:00Z',
-  menuCycleId: 'MENU-2026-10-22', deliveryDate: '2026-10-22', meals: [{ dishName: 'Butter Chicken', price: 15, priceDisplay: '$15.00' }] });
+const sample = () => ({ schemaVersion: 2, menuRevision: 'a'.repeat(64), minimumOrderItems: 5, deliveryFeeCents: 1000, publishedAt: '2026-10-16T09:00:00Z',
+  menuCycleId: 'MENU-2026-10-22', deliveryDate: '2026-10-22', meals: [{ id: 'i_aaaaaaaaaaaaaaaaaaaaaaaa', dishName: 'Butter Chicken', price: 15, priceDisplay: '$15.00' }] });
 const now = () => new Date('2026-10-16T10:00:00Z');
 
 test('Saved snapshot opens the existing manual WhatsApp number with editable quantities', async () => {
@@ -18,9 +19,25 @@ test('Saved snapshot opens the existing manual WhatsApp number with editable qua
   assert(message.includes('Delivery: Thu 22 Oct')); assert(message.includes('5 × Butter Chicken - $75.00'));
   assert(message.includes('Food subtotal: $75.00')); assert(!message.includes('Delete any dishes'));
 });
-test('Initial 22 October snapshot has the 13 verified live dishes', async () => {
+test('Initial 22 October snapshot has the 14 currently available live dishes', async () => {
   const m = await modulePromise, menu = m.readPublishedOrderMenu(snapshot, new Date('2026-10-21T00:00:00Z'));
-  assert(menu); assert.equal(menu.meals.length, 13); assert.equal(menu.meals[0].dishName, 'Beef Sindhi Biryani');
+  assert(menu); assert.equal(menu.meals.length, 14); assert.equal(menu.meals[0].dishName, 'Crazy Haleem');
+});
+test('Public item IDs and revision match verified live menu-line IDs', () => {
+  const lineByDish = {
+    'Crazy Haleem': 'ML-20261022-M0058', 'Qeema Dillema': 'ML-20261022-M0059', 'Stir Fried Veggies': 'ML-20261022-M0060',
+    'Chicken Shashlik with White Rice': 'ML-20261022-M0061', 'Crème Criminal': 'ML-20261022-M0063',
+    'Achari Kabuli Biryani': 'ML-20261022-M0049', 'Highway Balochi karhai': 'ML-20261022-M0050', 'Desi Phalliya Alo': 'ML-20261022-M0051',
+    'Tawa Beef Kebab w/ Vegetables': 'ML-20261022-M0052', 'Dahi Phulkiya Chaat': 'ML-20261022-M0053',
+    'Fudge Brownie Trifle': 'ML-20261022-M0054', 'Beef Palao': 'ML-20261022-M0055', 'Bhindi': 'ML-20261022-M0056', 'Daal Maash': 'ML-20261022-M0057',
+  };
+  for (const meal of snapshot.meals) {
+    const expected = 'i_' + crypto.createHash('sha256').update('MK_ORDER_ITEM|' + lineByDish[meal.dishName]).digest('hex').slice(0, 24);
+    assert.equal(meal.id, expected);
+  }
+  const stable = [snapshot.menuCycleId, snapshot.deliveryDate, snapshot.minimumOrderItems, snapshot.deliveryFeeCents,
+    snapshot.meals.map(meal => [meal.id, meal.dishName, Math.round(meal.price * 100), meal.imageUrl || ''])];
+  assert.equal(snapshot.menuRevision, crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex'));
 });
 test('Ordering closes at 10pm Sydney on the day before delivery', async () => {
   const m = await modulePromise;
@@ -50,7 +67,7 @@ test('Invalid prices, mismatched display price and injected dish lines are rejec
     assert.equal(m.readPublishedOrderMenu({ ...sample(), meals: [meal] }, now()), null);
 });
 test('Replacing the published snapshot immediately selects the new content', async () => {
-  const m = await modulePromise, next = { ...sample(), meals: [{ dishName: 'Replacement dish', price: 18 }] };
+  const m = await modulePromise, next = { ...sample(), meals: [{ id: 'i_bbbbbbbbbbbbbbbbbbbbbbbb', dishName: 'Replacement dish', price: 18 }] };
   assert(m.selectedOrderTarget(next, ['5'], now()).searchParams.get('text').includes('Replacement dish - $90'));
   assert(!m.selectedOrderTarget(next, ['5'], now()).searchParams.get('text').includes('Butter Chicken'));
 });
@@ -61,25 +78,33 @@ test('Customer routing never fetches Apps Script and cannot cache past expiry', 
 });
 test('Published metadata reports the saved cycle or unavailable status', async () => {
   const m = await modulePromise;
-  assert.deepEqual(m.publishedOrderMetadata(sample(), now()), { ok: true, menuCycleId: 'MENU-2026-10-22', deliveryDate: '2026-10-22', publishedAt: '2026-10-16T09:00:00Z', dishCount: 1 });
+  assert.deepEqual(m.publishedOrderMetadata(sample(), now()), { ok: true, menuCycleId: 'MENU-2026-10-22', deliveryDate: '2026-10-22', publishedAt: '2026-10-16T09:00:00Z', menuRevision: 'a'.repeat(64), dishCount: 1 });
   assert.equal(m.publishedOrderMetadata({}, now()).ok, false);
 });
 
 function publisherFixture() {
   const props = { ORDER_MENU_GITHUB_TOKEN: 'test-private-token', ORDER_MENU_GITHUB_BRANCH: 'test-weekly-menu' };
   const calls = [], logs = [], stored = { value: { schemaVersion: 1, withdrawn: true } }; let held = false, writes = 0;
+  const requestHeaders = ['Record Type', 'Menu Revision', 'Menu Cycle ID', 'Delivery Date', 'Published At', 'Status', 'Public Item ID', 'Menu Line ID', 'Item Code', 'Cook ID', 'Kitchen Name', 'Dish Name', 'List Price Cents', 'Cook Pay Cents', 'Remaining Servings', 'Image URL', 'Minimum Order Items', 'Delivery Fee Cents'];
+  const stateWrites = [];
+  const stateSheet = { getRange: () => ({ getDisplayValues: () => [requestHeaders] }), getLastRow: () => 1, getSheetId: () => 99 };
+  const spreadsheet = { getOwner: () => ({ getEmail: () => 'owner@example.com' }), getSheetByName: () => stateSheet, getId: () => 'control-tower' };
   let owner = true, status = 200;
   const menu = { status: 'ACTIVE', menuCycleId: 'MENU-2099-01-01', deliveryDate: '2099-01-01', deliveryDateDisplay: 'Thu 1 Jan',
-    meals: [{ dishName: 'Dish', price: 15, priceDisplay: '$15.00', remainingServings: 10 }, { dishName: 'Sold out', price: 12, remainingServings: 0 }] };
+    meals: [{ id: 'i_cccccccccccccccccccccccc', menuLineId: 'ML-20990101-M0001', itemCode: 'M0001', cookId: 'C0001', cookPay: 8, kitchenName: 'Kitchen', dishName: 'Dish', price: 15, priceDisplay: '$15.00', remainingServings: 10 }, { id: 'i_dddddddddddddddddddddddd', menuLineId: 'ML-20990101-M0002', itemCode: 'M0002', cookId: 'C0001', cookPay: 8, kitchenName: 'Kitchen', dishName: 'Sold out', price: 12, remainingServings: 0 }] };
   const sha = 'a'.repeat(40), commit = 'b'.repeat(40);
   const ctx = { Date, console: { log: v => logs.push(v) }, CONTROL_TOWER_SPREADSHEET_ID: 'control-tower',
-    SpreadsheetApp: { openById: () => ({ getOwner: () => ({ getEmail: () => 'owner@example.com' }) }) },
+    SpreadsheetApp: { openById: () => spreadsheet },
     Session: { getEffectiveUser: () => ({ getEmail: () => owner ? 'owner@example.com' : 'other@example.com' }) },
     PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] || null }) },
     LockService: { getScriptLock: () => ({ tryLock: () => { held = true; return true; }, releaseLock: () => { held = false; } }) },
-    Utilities: { formatDate: (d, zone, pattern) => pattern === 'HH' ? new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' }).format(d) : new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d), Charset: { UTF_8: 'UTF-8' },
+    Utilities: { formatDate: (d, zone, pattern) => pattern === 'HH' ? new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' }).format(d) : new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d), Charset: { UTF_8: 'UTF-8' }, DigestAlgorithm: { SHA_256: 'sha256' },
+      computeDigest: (_, value) => [...crypto.createHash('sha256').update(String(value)).digest()].map(byte => byte > 127 ? byte - 256 : byte),
       base64Encode: s => Buffer.from(s, 'utf8').toString('base64'), base64Decode: s => Buffer.from(s, 'base64'),
       newBlob: b => ({ getDataAsString: () => Buffer.from(b).toString('utf8') }) },
+    getOrderingRules_: () => ({ minimumOrderItems: 5, deliveryFee: 10 }),
+    MK_ORDER_REQUEST_HEADERS: { 'Order Menu State': requestHeaders },
+    Sheets: { Spreadsheets: { batchUpdate: (body, id) => stateWrites.push({ body, id }) } },
     buildActiveMenu_: () => menu,
     UrlFetchApp: { fetch: (url, options) => {
       calls.push({ url, method: options.method });
@@ -91,12 +116,16 @@ function publisherFixture() {
     } },
   };
   vm.createContext(ctx); vm.runInContext(fs.readFileSync(path.join(root, 'apps-script/OrderingMenuPublisher.gs'), 'utf8'), ctx);
-  return { ctx, props, calls, logs, stored, menu, held: () => held, writes: () => writes, owner: v => { owner = v; }, status: v => { status = v; } };
+  return { ctx, props, calls, logs, stored, menu, stateWrites, held: () => held, writes: () => writes, owner: v => { owner = v; }, status: v => { status = v; } };
 }
 test('Publishing writes only available menu dishes to the configured branch', () => {
   const f = publisherFixture(), result = f.ctx.publishCurrentOrderingMenu();
   assert.equal(result.changed, true); assert.equal(result.branch, 'test-weekly-menu'); assert.equal(f.writes(), 1);
   assert.equal(f.stored.value.meals.length, 1); assert.equal(f.stored.value.meals[0].dishName, 'Dish'); assert.equal(f.held(), false);
+  assert.equal(f.stored.value.schemaVersion, 2); assert.match(f.stored.value.menuRevision, /^[a-f0-9]{64}$/);
+  assert.match(f.stored.value.meals[0].id, /^i_[a-f0-9]{24}$/); assert.equal(f.stored.value.minimumOrderItems, 5);
+  assert.equal(f.stored.value.deliveryFeeCents, 1000); assert.equal(f.stored.value.meals[0].itemCode, undefined);
+  assert.equal(f.stateWrites.length, 1);
 });
 test('Publication preview does not access GitHub or send WhatsApp messages', () => {
   const f = publisherFixture(), result = f.ctx.previewCurrentOrderingMenu(); assert.equal(result.dishCount, 1); assert.equal(f.calls.length, 0);
@@ -111,6 +140,19 @@ test('Republishing replaces dishes in the saved snapshot', () => {
 });
 test('Withdrawal replaces the snapshot with an unavailable record', () => {
   const f = publisherFixture(); f.ctx.withdrawPublishedOrderingMenu(); assert.equal(f.stored.value.withdrawn, true); assert.equal(f.stored.value.meals, undefined);
+});
+
+test('Withdrawal closes authoritative capture even when GitHub publication fails',()=>{
+  const f=publisherFixture();f.status(503);
+  assert.throws(()=>f.ctx.withdrawPublishedOrderingMenu(),/GITHUB_HTTP_503/);
+  assert.equal(f.writes(),0);assert.equal(f.stateWrites.length,1);
+  assert.equal(f.stateWrites[0].body.requests[1].updateCells.rows[1].values[5].userEnteredValue.stringValue,'WITHDRAWN');
+});
+
+test('A private state failure on identical publication cannot trigger another GitHub commit',()=>{
+  const f=publisherFixture();f.ctx.publishCurrentOrderingMenu();assert.equal(f.writes(),1);
+  f.ctx.Sheets.Spreadsheets.batchUpdate=()=>{throw new Error('State write unavailable')};
+  assert.throws(()=>f.ctx.publishCurrentOrderingMenu(),/State write unavailable/);assert.equal(f.writes(),1);
 });
 test('Missing or expired menus cannot overwrite the published menu', () => {
   for (const patch of [{ status: 'NO_ACTIVE_MENU' }, { deliveryDate: '2020-01-01', menuCycleId: 'MENU-2020-01-01' }]) {
@@ -142,7 +184,7 @@ test('Actual public verification route returns saved menu metadata without a loo
 });
 
 test('Blank and zero quantities are omitted from the WhatsApp order', async () => {
-  const m = await modulePromise, record = { ...sample(), meals: [sample().meals[0], { dishName: 'Unwanted dish', price: 12 }, { dishName: 'Also unwanted', price: 10 }] };
+  const m = await modulePromise, record = { ...sample(), meals: [sample().meals[0], { id: 'i_bbbbbbbbbbbbbbbbbbbbbbbb', dishName: 'Unwanted dish', price: 12 }, { id: 'i_cccccccccccccccccccccccc', dishName: 'Also unwanted', price: 10 }] };
   const text = m.selectedOrderTarget(record, ['5', '', '0'], now()).searchParams.get('text');
   assert(text.includes('5 × Butter Chicken')); assert(!text.includes('Unwanted')); assert(!text.includes('Also unwanted'));
 });
@@ -160,7 +202,7 @@ test('Fractional, negative, invalid and oversized quantities cannot continue', a
   for (const value of ['1.5', '-1', 'abc', '1000']) assert.throws(() => m.selectedOrderTarget(sample(), [value], now()), /INVALID_QUANTITY/);
 });
 test('Food subtotal uses integer cents and multiple servings', async () => {
-  const m = await modulePromise, record = { ...sample(), meals: [{ dishName: 'Dish', price: 12.35 }] };
+  const m = await modulePromise, record = { ...sample(), meals: [{ id: 'i_bbbbbbbbbbbbbbbbbbbbbbbb', dishName: 'Dish', price: 12.35 }] };
   const menu = m.readPublishedOrderMenu(record, now()); const summary = m.orderSelection(menu, ['3']);
   assert.equal(summary.totalQuantity, 3); assert.equal(summary.subtotalCents, 3705);
   assert(m.selectedOrderTarget(record, ['5'], now()).searchParams.get('text').includes('Food subtotal: $61.75'));
@@ -180,7 +222,7 @@ test('One to four items cannot continue; five servings of one dish qualify', asy
 });
 test('Minimum counts total servings across dishes, with a single delivery fee', async () => {
   const m = await modulePromise;
-  const record = { ...sample(), meals: [...sample().meals, { dishName: 'Daal', price: 12.35 }] };
+  const record = { ...sample(), meals: [...sample().meals, { id: 'i_bbbbbbbbbbbbbbbbbbbbbbbb', dishName: 'Daal', price: 12.35 }] };
   const text = m.selectedOrderTarget(record, ['3', '2'], now()).searchParams.get('text');
   assert(text.includes('Food subtotal: $69.70')); assert(text.includes('Total: $79.70'));
   assert.equal(text.split('Delivery fee: $10.00').length - 1, 1);
@@ -190,8 +232,8 @@ test('Saved choices restore only for the identical in-date menu', async () => {
   const m = await modulePromise, menu = m.readPublishedOrderMenu(sample(), now());
   const raw = JSON.stringify({ signature: m.orderDraftSignature(menu), quantities: ['5'] });
   assert.deepEqual(m.readOrderDraft(raw, menu, now()), ['5']);
-  assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ dishName: 'Different dish', price: 15 }] }, now()), null);
-  assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ dishName: 'Butter Chicken', price: 16 }] }, now()), null);
+  assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ id: 'i_bbbbbbbbbbbbbbbbbbbbbbbb', dishName: 'Different dish', price: 15 }] }, now()), null);
+  assert.equal(m.readOrderDraft(raw, { ...menu, meals: [{ id: 'i_aaaaaaaaaaaaaaaaaaaaaaaa', dishName: 'Butter Chicken', price: 16 }] }, now()), null);
   assert.equal(m.readOrderDraft(raw, menu, new Date('2026-10-21T11:00:00Z')), null);
 });
 test('Malformed saved choices cannot crash ordering or restore invalid quantities', async () => {
@@ -209,7 +251,7 @@ test('Menu photos normalize to the existing website library, without blocking or
   const record = sample(); record.meals[0].imageUrl = 'https://example.com/photo.jpg';
   assert.equal(m.readPublishedOrderMenu(record, now()).meals[0].imageUrl, '');
   assert(m.selectedOrderTarget(record, ['5'], now()));
-  assert.equal(m.readPublishedOrderMenu(snapshot, now()).meals[0].imageUrl, '/menu-images/Dish-0040.webp');
+  assert.equal(m.readPublishedOrderMenu(snapshot, new Date(snapshot.publishedAt)).meals[0].imageUrl, '/menu-images/Dish-0030.png');
 });
 test('Weekly publisher preserves valid photo mappings and safely omits missing photos', () => {
   const f = publisherFixture(); f.menu.meals[0].imageUrl = 'https://www.makitchens.com.au/menu-images/Dish-0041.jpg';
@@ -240,8 +282,10 @@ test('Publisher and website agree on the 10pm cutoff in winter and summer', asyn
   ]) for (const time of times) {
     const date = new Date(time);
     assert.equal(f.ctx.mkOrderBeforeCutoff_(delivery, date), m.orderingIsOpen(delivery, date));
-    const menu = { ...f.menu, deliveryDate: delivery, menuCycleId: 'MENU-' + delivery };
+    const menu = { ...f.menu, deliveryDate: delivery, menuCycleId: 'MENU-' + delivery,
+      meals: f.menu.meals.map(meal => ({ ...meal, menuLineId: 'ML-' + delivery.replace(/-/g, '') + '-' + meal.itemCode })) };
     if (m.orderingIsOpen(delivery, date)) assert(f.ctx.mkOrderSnapshot_(menu, date));
     else assert.throws(() => f.ctx.mkOrderSnapshot_(menu, date), /NO_ACTIVE_IN_DATE_MENU_TO_PUBLISH/);
   }
 });
+
