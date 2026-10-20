@@ -66,7 +66,9 @@ test('Prepared WhatsApp message carries saved reference and public quote without
   assert(message.endsWith('Order ref: MK-AB12CD34'));
   assert(message.includes('5 × Butter Chicken - $75.00'));
   assert(message.includes('Delivery fee: $10.00'));
-  assert(message.includes('not confirmed until Ma Kitchens accepts it'));
+  assert(message.startsWith('Hi Ma Kitchens, I would like to place this order request.'));
+  assert(message.includes('Total: $85.00'));
+  assert(!/tentative|Public estimate|This request is saved, but is not confirmed/.test(message));
   assert(!/name:|address:|phone:/i.test(message));
 });
 

@@ -239,10 +239,10 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
                 <div><span>Delivery</span><span>{foodMoney(deliveryFeeCents)}</span></div>
                 <div className={styles.total}><span>Estimated total</span><strong>{foodMoney((selection?.subtotalCents || 0) + deliveryFeeCents)}</strong></div>
               </div>
-              <p className={styles.sendNote}>We’ll confirm availability, any discounts and your final total.</p>
+              <p className={styles.sendNote}>We’ll confirm availability and your final total.</p>
               {message && <p className={styles.formError} role="alert">{message}</p>}
               <button id="continue-order" className={styles.whatsappButton} type="submit" disabled={!ready || saving}><WhatsAppIcon />{saving ? 'Saving request…' : savedRequest?.signature === currentOrderSignature ? 'Open WhatsApp again' : 'Save request & open WhatsApp'}<span aria-hidden="true">↗</span></button>
-              <p className={styles.sendNote}>{savedRequest?.signature === currentOrderSignature ? `Order ref: ${savedRequest.reference}. Your request is saved. Press Send in WhatsApp to send it.` : 'We save a tentative request before opening WhatsApp. Review it there, then press Send.'}</p>
+              {savedRequest?.signature === currentOrderSignature && <p className={styles.sendNote}>Order ref: {savedRequest.reference}. Your request is saved. Press Send in WhatsApp to send it.</p>}
               {savedRequest?.signature === currentOrderSignature && <p className={styles.sendNote}><a href={`/go/order/request#${savedRequest.capability}`}>Check saved request status</a></p>}
             </div>
           </div>
