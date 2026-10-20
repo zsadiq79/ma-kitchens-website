@@ -1,57 +1,42 @@
-# Ma Kitchens second-pass review and release status
+# Ma Kitchens second-pass findings and release review
 
-20 October 2026, Australia/Sydney.
+20 October 2026, completed preproduction review at 11:13 Sydney. Production installation is not approved and has not started.
 
-**36 order-system findings addressed: 16 High, 17 Medium and 3 Low. Three additional Medium menu-generator fixes are prepared; the owner has accepted native rendering and all three exports, with exact deadline confirmation still pending. All 188 automated tests pass: 179 order tests plus nine generator tests. The private order rehearsal is paused. Production has not been upgraded.**
+**39 findings have fixes in the prepared sources: 16 High, 20 Medium and three Low. These comprise 36 order-system findings and three additional menu-generator findings. All 188 automated tests pass, with zero failures.** Native order rehearsal passed its designated checks and is paused. The owner has accepted the private menu generator and all three actual image downloads. The fixes are not yet installed in original LIVE.
 
-**The separate weekly-menu generator's Code.gs and MenuV2.html have now both been reviewed. The owner accepted all three real image downloads. Exact printed deadline and original shortcut deployment mapping remain to confirm. The recent LIVE execution review is complete on the inspected sample, native reconciliation and owner-confirmed basis.**
+## Main findings and resulting behavior
 
-## What changed
+High fixes protect customer identity, duplicate/retried orders, atomic writes and recovery, stock/price snapshots, shared legacy writers, schema checks and environment isolation. Medium fixes cover calculations, frozen feedback identities, provider forwarding, recovery details, fees, deadline/export behavior and operational displays. Low fixes correct quote labels, percentage labels and menu visibility. Every finding and fix is listed below.
 
-The main fixes protect against duplicate orders, mismatched customers, lost-response retries, changed prices/cook payouts, stock errors, unsafe legacy writers and accidental provider actions in rehearsal. The website saves a tentative request first. The owner matches the real WhatsApp sender, reviews the final quote and accepts it once. Existing cook, packing, delivery, feedback and publisher functions remain included in the consolidated source.
+The website captures a tentative request. The owner matches the actual WhatsApp sender, loads or saves the real customer, reviews the final quote, accepts it once and rechecks the saved order. Existing cook, packing, delivery, feedback and ordering-menu publisher functions remain in the consolidated Control Tower source. The separate weekly menu artwork generator remains separate.
 
-High means an issue could misassign an order/customer, duplicate a write, break an important workflow or affect the wrong environment. Medium covers inconsistent calculations, recovery, validation, messages or operational displays. Low covers labels and menu availability.
+## Verification completed
 
-## Native evidence
+- 179 order-system automated checks plus nine generator checks passed. These are source/model and mocked-client tests, not 188 native/provider transactions.
+- Fresh-copy migration, unchanged rerun, exact schema/formula and owner-ledger protections passed. The rehearsal is paused with capture disabled; saved-request recovery remains available.
+- Manual rehearsal ORD-000053 and website reference 1002 accepted as ORD-000054 passed native verification. Five Haleem packs totalled AUD 66 with AUD 50 cook payout under rehearsal settings. Rechecks preserved the saved identities without another order.
+- Capture, retry/recovery, conflicting-payload rejection, cancellation/restoration, stock and cook/delivery/packing previews passed. A real capture took about 20 seconds, validating the larger request timeout.
+- All 4998 rehearsal discount-label formulas passed native checks. Comparison of the original 52 orders and 184 item rows found no unexpected financial differences beyond the reviewed cancelled-fee corrections.
+- The earlier private LIVE backup matched 6782 sampled user-entered cells/formulas and held 58 orders, 216 item rows and 50 customers. These are historical counts, not a cutover baseline or reserved next ID. Re-read latest LIVE and take another fresh backup at cutover.
+- The old Order Entry failure was traced to customer recalculation/type handling before an order commit. Native reconciliation accounts for the sample. The owner confirmed no other failures. No historical intake cleanup was performed.
+- Provider destinations were traced to existing Control Tower deployments: LIVE A / Version 46 for Flow/menu/feedback/verified WhatsApp; LIVE B / Version 33 for Routific. Meta callback and messages subscription are owner-confirmed. The authenticated Routific test payload was safely ignored as unsupported test content.
+- The separate Menu V2 source and all required Weekly Menu / Dishes / Menu Config fields are compatible with migration. The current menu retains 14 dishes. The owner installed the matching private candidate, opened it, downloaded PNG/JPEG/WebP and confirmed all look correct. Delivery 22/10 and configured deadline 5 PM are owner-confirmed. Original generator Version 21 and its owner-only Sydney/V8 manifest are owner-supplied and preserved.
 
-- Fresh-copy migration, unchanged rerun, exact schema/formula checks and owner-only ledger protections passed.
-- Manual order ORD-000053 and website request 1002 accepted as ORD-000054 verified against native records. Five Crazy Haleem packs priced at $56 food plus $10 delivery, total $66, with $50 cook payout. Repeated saved-order checks retained VERIFIED without a duplicate.
-- Website capture, retry-key/capability recovery and conflicting-payload rejection passed. Native capture took about 20 seconds, exposing and then verifying the fix for the previous 12-second timeout.
-- Cancellation/restoration, standard/free-delivery calculations, stock release and cook/delivery/packing previews passed. Existing provider sends, route dispatch and document generation were blocked in rehearsal.
-- Pausing blocked new requests while preserving recovery of unassigned and accepted requests. Native preflight reported PAUSED, 33 sheets, widths 37/30, nine formula anchors, the expected opening trigger and no missing ledgers.
-- All 4998 discount-label formulas are corrected without errors. Comparison of the original 52 order financial records and 184 item quantity/payout records found no unexpected differences from the preserved baseline and approved cancelled-fee corrections.
-- The current LIVE preparation backup contains 58 real orders, 216 item rows and 50 customers. All 6782 sampled user-entered values/formulas matched LIVE. Its 13 visible .gs files match the 12 originals plus the separately supplied publisher. The owner confirms LIVE code has not changed since supplying it.
-- Meta callback https://www.makitchens.com.au/api/whatsapp-events and messages subscription are owner-confirmed. A token-free GET returned the expected 403 rejection without submitting a message.
+## Evidence limits and current configuration
 
-## Readiness and limits
+Current editor and immutable deployment hashes were not independently retrieved. The supplied source, owner confirmations, visible inventory and backup provenance underpin compatibility. The owner-tested output files were not independently inspected or measured. Extreme-size image exports are tested offline rather than natively. Actual feedback/confirmation sends, real dispatches and document generation were blocked in rehearsal; no claim is made that every live provider action was replayed. Meta account/phone callback overrides were not independently queried. Historical rows retain reviewed legacy fallbacks; they are not claimed retroactively immutable.
 
-Production main and its READY deployment remain unchanged. Latest prepared production Code.gs SHA-256: fb1c9abc7ebff102715b15ce51705bee60b90b274a7332e4a344da9d09cb2693. Both release profiles contain 472 unique functions, retain every original function name and have no unresolved custom helper calls.
+The production candidate retains 472 unique functions, every original function name, and no unresolved custom helpers. Its Code.gs SHA-256 remains fb1c9abc7ebff102715b15ce51705bee60b90b274a7332e4a344da9d09cb2693. Original main remains 27ef64557f82361effbb90d7f75442b32df4096a at the last readback. No production source, deployment or setting was changed.
 
-Current-source compatibility is based on supplied source, backup provenance, visible inventory and direct owner confirmation. Current editor and deployed Version 46/33 hashes were not independently retrieved. Meta's app settings are owner-confirmed; phone/account callback overrides were not independently queried. No claim is made that every provider send or every runtime path was exercised. Newly accepted orders freeze their prices and identities; historical rows retain their reviewed legacy fallbacks and are not claimed to be retroactively immutable.
+The latest captured LIVE pricing is 0% discount, minimum five items, AUD 2.50 delivery and free-delivery threshold zero. Rehearsal's 20% / AUD 10 must not replace current LIVE settings. Read current LIVE again at cutover and preserve accepted snapshots. The menu's actual 5 PM output matches its current 17:00 setting. The owner selected an 8 PM poster deadline; that configuration change remains unapplied. Website enforcement remains 22:00 unless explicitly changed. Preserve these distinctions in the approved scope.
 
-Production request URL, signing secret and canonical-origin allowlist are not yet configured; these are explicit approved-rollout steps. Existing provider configuration remains unchanged. The owner has completed the recent failed/timed-out execution check and reports no failures beyond the reviewed old Order Entry error. At the approved cutover, reconcile the current LIVE draft and all latest records, take another fresh backup, preserve settings/triggers, migrate that same workbook and verify the current production menu and existing provider contracts. No rehearsal customer, order, counter, ledger or published snapshot is imported into production. Replace the rehearsal-derived public menu JSON with a freshly built LIVE snapshot before merging the website release.
+## Next stage, approval required
 
-The later workspace-confirmation sender and 10 on 10 offer are excluded from this release and logged in MA_KITCHENS_FUTURE_FEATURES.md.
+Use ORDER_AUTOMATION_ROLLOUT_REVIEW_20261020.md and its rollback companion. Agree a controlled window, pause known writers, reconcile outstanding work, take a fresh private backup, install the production profile in the same original LIVE workbook/project, preserve both existing web-app URLs and provider/trigger settings, migrate and compare every latest real record before reopening entry. No rehearsal customer, order, counter, ledger or public snapshot is imported.
 
-## Weekly menu artwork generator
+Production request URL, signing secret and canonical-origin allowlist must be configured privately in the approved window. Replace the rehearsal-derived public menu JSON with a fresh LIVE snapshot before merging the website release. Verify deployment readiness, public/private menu agreement, recovery and a specifically agreed owner acceptance test. Production-only provider actions require the agreed recipient/order scope. The standalone menu generator update and selected 8 PM poster setting must be explicitly included if performed; preserve original Version 21 and its shortcut. Check the working generator after the in-place upgrade.
 
-The current Ma Kitchens Menu V2 tool stays separate from Control Tower. The reviewed source reads original LIVE Weekly Menu, Dishes and Menu Config; required 26/17 headers are compatible with migration. The current 14-dish model is preserved. Three Medium fixes address deadline parsing, export bounds/encoding, and free-delivery basis wording. They are prepared and pass nine source/model/mocked-client checks; none is installed in a native project. The owner-only private review copy still contains original copied source.
-
-Actual PNG/JPEG/WebP downloads, visual output and original deployment mapping remain pending. The browser blocked local-file navigation because it accepts only HTTP/HTTPS; protected-preview access was not established. No output validation is claimed from automated mocks. See ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md for each fix, hashes, evidence and remaining gate.
-
-The owner selected an 8 PM poster deadline on the preceding day. LIVE remains configured at 17:00; website enforcement remains 22:00. No LIVE setting was changed. Current captured LIVE prices are 0% discount / AUD 2.50 delivery; preserve current LIVE rules at cutover rather than rehearsal's 20% / AUD 10.
-
-## LIVE failed-execution sample, 20 October 2026
-
-The owner supplied an orderEntryPlaceOrder Head/Menu failure from 19 October at 20:07 Sydney: "Customer or consent has not recalculated yet. No order created. Retry Place order." Its stack matches the supplied original customer helper. That throw occurs before allocating an order ID, marking COMMITTING, committing order/items or sending confirmation. Customer Intake can already have been written, so the failed execution does not mean nothing was saved.
-
-Native reads found two text-phone Order Entry intake rows at 20:05:11 and 20:34:44. The registry's numeric-phone QUERY excludes minority text values. Both phones were subsequently saved as numbers by WhatsApp intake and map to CUST-000046 / ORD-000053 and CUST-000047 / ORD-000055. Neither failed draft appears in Orders. Current LIVE remains DRAFT with no planned order or confirmation state. It contains 58 unique order IDs, 216 item rows, no item referencing a missing order and no order without items within the inspected complete populated ranges.
-
-This evidence accounts for the sample and supports the already fixed High finding 01. The release writes new intake phones numerically, uses fresh readback, records durable customer operations and retires the old entry writer after owner workspace activation. No additional code change or production cleanup was made. Do not convert or delete the historical intake rows as a routine repair because formula-generated customer IDs and consent history require preservation. Different errors/functions still require separate review; this sample does not certify every failed execution. Evidence: order-automation-legacy-entry-failure-20261020.json.
-
-Seven existing regressions covering numeric phones, fresh customer reads, stable IDs, pending retries and old-entry retirement passed again for this investigation. The production source hash is unchanged.
-
-At 07:56 Sydney on 20 October, the owner confirmed there were no other failures. The recent-execution preflight is therefore complete for the reported review window. This uses owner-reported coverage plus the inspected sample and native record reconciliation; it is not an independent audit of every execution log or a provider-send test. Earlier pending wording in the sample discussion is superseded by this confirmation.
+Future workspace confirmation sending and 10 on 10 automation remain excluded and logged in MA_KITCHENS_FUTURE_FEATURES.md.
 
 ## Every finding and its fix
 
@@ -94,16 +79,12 @@ At 07:56 Sydney on 20 October, the owner confirmed there were no other failures.
 | 35 | Medium | The website stopped waiting after 12 seconds while native Apps Script capture was still committing. A real rehearsal request was saved once as reference 1000 but the website returned ORDER_CAPTURE_UNCERTAIN. | Recovery found the same unassigned request. Both request routes now wait up to 45 seconds within an explicit 60-second function budget. No automatic write retries were added. Two regression checks pass, bringing the suite to 179. The revised preview is READY and native capture/recovery/retry/conflict checks pass; a fresh capture completed successfully in 19,929 ms. |
 | 36 | Low | Integer percentage labels rendered as 20.% Off because the inherited optional-decimal number format retained a decimal point. Numeric pricing was correct. | The prepared release selects an integer format for whole percentages and retains up to two decimal places for fractional discounts. Future writer commits normalize the label formula. A locked owner-only helper repairs existing matching formulas without altering prices or statuses. Native rehearsal labels on both accepted test orders now show 20% Off with unchanged financials. The owner installed the source and ran its repair helper; all 4998 formulas now pass native checks with no unexpected original financial differences. |
 
-## Additional prepared generator findings
+## Additional menu-generator findings
 
-| ID | Severity | Finding | Prepared fix and verification |
+| ID | Severity | Finding | Fix and verification |
 | --- | --- | --- | --- |
-| MG-01 | Medium | Sheets TIME Date parsed as text, causing fallback to 20:00. | Typed clock parsing, validation and spreadsheet-calendar calculation. Time/DST tests pass; native verification pending. |
-| MG-02 | Medium | Very large canvases could not shrink below scale 1; image encoders could return a different format. | Permit bounded shrinking, validate MIME for all formats and await fonts. Mocked pipeline/error checks pass; actual downloads pending. |
-| MG-03 | Medium | Free-delivery text always described a pre-discount threshold. | Respect the existing basis setting. Both wording variants pass; native visual verification pending. |
+| MG-01 | Medium | Sheets TIME Date was parsed as text, causing an incorrect fallback to 20:00. | Typed time parsing, input validation and spreadsheet-calendar calculation. Date/fraction/text, invalid values, both DST changes and a different script timezone pass; owner native output confirms configured 5 PM. |
+| MG-02 | Medium | Very large menus could not shrink below scale 1; encoders could return the wrong image format. | Allow bounded downscaling, validate dimensions/MIME, await fonts and realign before capture. Bound/error regressions pass. Owner downloaded and visually accepted the current menu in PNG/JPEG/WebP; extreme-size native exports were not exercised. |
+| MG-03 | Medium | Free-delivery text always described a pre-discount threshold. | Use the existing basis setting. Both wording variants and current disabled-threshold state pass; native current menu accepted by owner. |
 
-## Native acceptance update, 20 October 2026 at 11:09 Sydney
-
-This update supersedes earlier pending candidate-installation and three-format download notes. The owner reports saving both complete candidate files in the private review copy and supplied its versioned /exec deployment URL. The menu opens. The owner then confirmed: "downloaded PNG, JPG and WEBP and they are all correct". Record the current menu and all three real downloads as owner-tested and visually accepted. The agent has not received or independently inspected those image files, measured their formats/dimensions, or retrieved the exact deployed source/version. No claim of extreme-size native testing is made from the normal-menu acceptance.
-
-Still confirm the exact printed delivery date and deadline. Original working shortcut mapping/version and hidden manifest remain to capture before a separately approved original-generator update. LIVE still has the captured 17:00 poster setting; the owner's selected 20:00 time has not been applied. Website enforcement remains 22:00. No production source, deployment or configuration was changed. Evidence: order-automation-menu-generator-native-acceptance-20261020.json.
+Detailed generator evidence, source hashes, manifest and native acceptance are in ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md and its JSON records.

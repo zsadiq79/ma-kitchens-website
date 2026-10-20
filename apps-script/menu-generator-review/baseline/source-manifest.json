@@ -9,8 +9,11 @@
     "MenuV2.html"
   ],
   "htmlSupplied": true,
-  "manifestSupplied": false,
-  "deploymentMapping": "Owner identifies this project; shortcut deployment source/version has not been independently matched",
+  "manifestSupplied": true,
+  "deploymentMapping": "Owner selected original shortcut deployment and reported Version 21; deployed source bytes not independently retrieved",
   "productionModified": false,
-  "htmlSha256": "580bdb7d74c0d9f012e10f8a4e2ce55897ad4864553987f7ea4e3b7b6ac67f99"
+  "htmlSha256": "580bdb7d74c0d9f012e10f8a4e2ce55897ad4864553987f7ea4e3b7b6ac67f99",
+  "manifestSha256": "0dfbef8ae3a3bff2cd92e52d3a5c9afa5fbd49d4b36e245ba3b1c7d5d8df475f",
+  "manifestProvenance": "Owner pasted original project manifest on 20 October 2026 at 11:13 Sydney; normalized JSON file, not a byte-for-byte native export",
+  "originalDeploymentVersionOwnerReported": 21
 }

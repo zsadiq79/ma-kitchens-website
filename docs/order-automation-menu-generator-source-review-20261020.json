@@ -1,6 +1,6 @@
 {
   "reviewedAt": "2026-10-20T08:27:31+11:00",
-  "status": "OWNER_NATIVE_MENU_AND_THREE_EXPORTS_ACCEPTED_DATE_DEADLINE_AND_ORIGINAL_MAPPING_PENDING",
+  "status": "COMPATIBILITY_REVIEW_COMPLETE_OWNER_NATIVE_THREE_EXPORTS_ACCEPTED_PRODUCTION_UNCHANGED",
   "scriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
   "projectName": "Ma Kitchens Menu V2",
   "sourceSha256": "19fbf51903d677d82ee1074f0c4ae2192b8bfc2d5ccc5153a5cecef3d927fc86",
@@ -9,7 +9,7 @@
     "MenuV2.html"
   ],
   "htmlReceived": true,
-  "manifestReceived": false,
+  "manifestReceived": true,
   "architecture": {
     "standalone": true,
     "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
@@ -21,7 +21,8 @@
     "codeSourceReadOnly": true,
     "needsControlTowerCodeMerge": false,
     "deployedSourceVersionVerified": false,
-    "oldSlidesGeneratorNotAssumedCurrent": true
+    "oldSlidesGeneratorNotAssumedCurrent": true,
+    "originalShortcutMappingEvidence": "Owner selected matching original deployment and reported Version 21"
   },
   "schema": {
     "weeklyMenuColumns": 26,
@@ -56,9 +57,10 @@
     "policy": "Read current LIVE rules during cutover; rehearsal pricing is test evidence and must not replace LIVE configuration. Preserve accepted order/cart snapshots."
   },
   "pending": [
-    "Confirm printed delivery date and deadline",
-    "Capture original menu shortcut deployment mapping/version and manifest before a separately approved production update",
-    "Apply selected poster time only within explicitly approved LIVE configuration scope"
+    "Production installation and deployment require explicit approval",
+    "Re-read LIVE settings/records and create a fresh cutover backup in the approved window",
+    "Apply selected 8 PM poster setting only within approved configuration scope; preserve website enforcement unless explicitly changed",
+    "Verify working original generator shortcut again after any approved LIVE upgrade"
   ],
   "productionModified": false,
   "controlTowerSourceChanged": false,
@@ -70,7 +72,7 @@
     {
       "id": "MG-01",
       "severity": "Medium",
-      "status": "FIX_PREPARED_AUTOMATED_CHECKS_PASS_PRINTED_DEADLINE_CONFIRMATION_PENDING",
+      "status": "FIX_PREPARED_AUTOMATED_TIME_CALENDAR_CHECKS_PASS_OWNER_NATIVE_5PM_CONFIRMED",
       "issue": "Deadline time-cell parsing and calendar handling"
     },
     {
@@ -101,7 +103,8 @@
     "candidateInstalled": true,
     "installationEvidence": "Owner reported both full files saved",
     "deploymentUrl": "https://script.google.com/macros/s/AKfycbwasj-RV_UHcZtOoUNWRFLNVL-yw9oYQbQz5C-9zl7RgXL0Gn8UJMg2gKOp42kzdxw7/exec",
-    "deploymentVersionIndependentlyVerified": false
+    "deploymentVersionIndependentlyVerified": false,
+    "nativeMenuAndDownloadsOwnerAccepted": true
   },
   "browserVerification": {
     "actualDownloadsVerified": true,
@@ -111,5 +114,17 @@
     "verificationScope": "Owner downloaded and visually accepted all three formats; files not independently inspected",
     "nativeAcceptanceEvidence": "order-automation-menu-generator-native-acceptance-20261020.json"
   },
-  "reviewUpdatedAt": "2026-10-20T11:09:10+11:00"
+  "reviewUpdatedAt": "2026-10-20T11:13:51+11:00",
+  "manifestValidated": true,
+  "manifest": {
+    "timeZone": "Australia/Sydney",
+    "dependencies": {},
+    "exceptionLogging": "STACKDRIVER",
+    "runtimeVersion": "V8",
+    "webapp": {
+      "executeAs": "USER_DEPLOYING",
+      "access": "MYSELF"
+    }
+  },
+  "originalDeploymentVersionOwnerReported": 21
 }

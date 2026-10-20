@@ -27,5 +27,9 @@
   "candidateInstallationEvidence": "Owner reported Code.gs and MenuV2.html saved",
   "privateReviewDeploymentUrl": "https://script.google.com/macros/s/AKfycbwasj-RV_UHcZtOoUNWRFLNVL-yw9oYQbQz5C-9zl7RgXL0Gn8UJMg2gKOp42kzdxw7/exec",
   "verificationScope": "Owner-reported menu rendering and three downloaded images; actual files and deployed source/version not independently retrieved",
-  "nativeAcceptanceEvidence": "docs/order-automation-menu-generator-native-acceptance-20261020.json"
+  "nativeAcceptanceEvidence": "docs/order-automation-menu-generator-native-acceptance-20261020.json",
+  "manifestSha256": "0dfbef8ae3a3bff2cd92e52d3a5c9afa5fbd49d4b36e245ba3b1c7d5d8df475f",
+  "manifestMatchesOwnerSuppliedOriginal": true,
+  "reviewGateStatus": "Source/schema reviewed, owner native current-menu and all three export acceptance passed; original version and manifest owner-supplied",
+  "originalDeploymentRollbackVersionOwnerReported": 21
 }
