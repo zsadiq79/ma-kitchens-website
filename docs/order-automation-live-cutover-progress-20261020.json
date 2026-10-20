@@ -4,7 +4,7 @@
     "atSydney": "2026-10-20T11:17:57+11:00",
     "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
   },
-  "phase": "FRESH_BACKUP_VERIFIED_AWAITING_BOUND_SCRIPT_COPY_CHECK",
+  "phase": "PAUSED_FINAL_BACKUP_VERIFIED_READY_FOR_SOURCE_INSTALL",
   "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
   "backup": {
@@ -39,14 +39,66 @@
   },
   "sourceChangesMade": false,
   "productionDeploymentChangesMade": false,
-  "entryPauseAcknowledged": false,
-  "boundScriptCopyOwnerVerified": false,
-  "backupIsFinalPauseBaseline": false,
+  "entryPauseAcknowledged": true,
+  "boundScriptCopyOwnerVerified": true,
+  "backupIsFinalPauseBaseline": true,
   "requirementsBeforeSourceSave": [
-    "Verify distinct bound script of the new backup without executing it",
-    "Coordinate entry/known-writer pause and refresh LIVE delta baseline",
-    "Preserve current trigger and private property settings",
-    "Install only production profile in original LIVE, not backup or rehearsal"
+    "Preserve current triggers and private properties",
+    "Add matching production OwnerOrderWorkspace.html, then consolidate reviewed .gs source promptly in original LIVE",
+    "Keep order entry paused and feedback disabled until verification completes"
   ],
-  "privateRawEvidenceSaved": true
+  "privateRawEvidenceSaved": true,
+  "backupScriptId": "1UGSD2sYDXVteVyVOBEv_NK37nAZ9FHEVvyHZSePvHwqbIPjEWw9A_261",
+  "backupScriptUrl": "https://script.google.com/u/0/home/projects/1UGSD2sYDXVteVyVOBEv_NK37nAZ9FHEVvyHZSePvHwqbIPjEWw9A_261/edit",
+  "boundScriptEvidence": "Owner opened Extensions > Apps Script from the named fresh backup and supplied this distinct editor URL on 20 Oct 2026 at 11:35 Sydney. Source bytes and runtime binding not independently retrieved.",
+  "currentTriggersOwnerConfirmed": [
+    {
+      "handler": "orderEntryEdited",
+      "event": "ON_EDIT",
+      "deployment": "Head"
+    },
+    {
+      "handler": "orderEntryMenu",
+      "event": "ON_OPEN",
+      "deployment": "Head"
+    },
+    {
+      "handler": "showPackingSlipsMenu_",
+      "event": "ON_OPEN",
+      "deployment": "Head"
+    },
+    {
+      "handler": "runFeedbackSender",
+      "event": "CLOCK",
+      "deployment": "Head"
+    }
+  ],
+  "triggerConfirmationAtSydney": "2026-10-20T11:37:37+11:00",
+  "feedbackLastRunOwnerReported": "2026-10-20T11:34:42+11:00",
+  "entryPauseConfirmedAtSydney": "2026-10-20T11:45:45+11:00",
+  "feedbackOriginalLiveEnabled": true,
+  "feedbackCurrentLiveEnabled": false,
+  "feedbackTriggerPreserved": true,
+  "feedbackTriggerCadenceMinutes": 5,
+  "feedbackRestoreRequiredAfterChecks": true,
+  "latestExecutionCompletedOwnerConfirmed": true,
+  "finalPausedBackup": {
+    "id": "1NnTXZP-ggscCGRMtzZxdmYpm-Tqm2_3nBpxJgeC7XnY",
+    "title": "Ma Kitchens FINAL PAUSED BACKUP 20 Oct 2026 1146 Sydney",
+    "url": "https://docs.google.com/spreadsheets/d/1NnTXZP-ggscCGRMtzZxdmYpm-Tqm2_3nBpxJgeC7XnY/edit?usp=drivesdk",
+    "shared": false,
+    "permissionRoles": [
+      "owner"
+    ],
+    "comparedUserEnteredCells": 7418,
+    "differences": 0
+  },
+  "pauseBaseline": {
+    "orders": 58,
+    "lastOrderId": "ORD-000058",
+    "itemRows": 216,
+    "customers": 50,
+    "legacyState": "DRAFT"
+  },
+  "productionSourceInstalled": false
 }
