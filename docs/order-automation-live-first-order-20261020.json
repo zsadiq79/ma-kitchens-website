@@ -1,0 +1,69 @@
+{
+  "requestReference": "1000",
+  "orderId": "ORD-000059",
+  "requestStatus": "ACCEPTED",
+  "savedReviewState": "VERIFIED",
+  "journalState": "RECORDED",
+  "orderStatus": "Pending",
+  "paymentStatus": "Payment Requested",
+  "totalServings": 5,
+  "itemRows": 5,
+  "foodSubtotalAud": 75,
+  "deliveryFeeAud": 2.5,
+  "orderTotalAud": 77.5,
+  "cookPayoutAud": 54,
+  "allItemSnapshotsMatchOperationalPrices": true,
+  "stockDecrements": [
+    {
+      "menuLineId": "ML-20261022-M0052",
+      "decrement": 1
+    },
+    {
+      "menuLineId": "ML-20261022-M0055",
+      "decrement": 1
+    },
+    {
+      "menuLineId": "ML-20261022-M0058",
+      "decrement": 1
+    },
+    {
+      "menuLineId": "ML-20261022-M0059",
+      "decrement": 1
+    },
+    {
+      "menuLineId": "ML-20261022-M0061",
+      "decrement": 1
+    }
+  ],
+  "manualConfirmationSentMarked": false,
+  "ordersAfterOneTestAcceptance": 59,
+  "baselineOrders": 58,
+  "newCustomerCreated": false,
+  "packingEligibility": "Pending test order should be excluded until Confirmed; no payment receipt is fabricated.",
+  "ownerReportedVerifiedAtSydney": "2026-10-20T12:51:24+11:00",
+  "packingTestPreparation": {
+    "orderId": "ORD-000059",
+    "temporarilyConfirmed": true,
+    "paymentStatus": "Payment Requested",
+    "notes": "LIVE rollout test. DO NOT PREPARE OR DELIVER. Cancel after verification.",
+    "packingPreviewDateBefore": "2026-10-15",
+    "packingPreviewDateSetTo": "2026-10-22",
+    "previewFunctionRunPending": false,
+    "confirmationNotSent": true,
+    "cancellationRequiredAfterPacking": false
+  },
+  "ownerPackingPreviewConfirmedAtSydney": "2026-10-20T12:57:58+11:00",
+  "ownerPackingPreviewResult": {
+    "bags": 1,
+    "packs": 5,
+    "orderId": "ORD-000059"
+  },
+  "ownerRetentionInstruction": {
+    "atSydney": "2026-10-20T12:55:32+11:00",
+    "instruction": "Do not delete this order. Keep ORD-000059 for 22 October delivery as the owner test order.",
+    "supersedesPriorCancellationPlan": true,
+    "cancelOrDelete": false,
+    "preparationDeliveryIntentNotYetClarified": true,
+    "existingDoNotPrepareNotePreservedPendingClarification": true
+  }
+}
