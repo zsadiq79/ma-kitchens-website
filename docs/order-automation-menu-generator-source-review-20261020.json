@@ -126,5 +126,15 @@
       "access": "MYSELF"
     }
   },
-  "originalDeploymentVersionOwnerReported": 21
+  "originalDeploymentVersionOwnerReported": 21,
+  "finalProductionStatus": {
+    "installed": true,
+    "versionOwnerReported": 22,
+    "rollbackVersion": 21,
+    "originalShortcutPreserved": true,
+    "nativeOwnerExportsPassed": true,
+    "posterDeadline": "21 October 2026, 20:00 Sydney",
+    "websiteCutoff": "21 October 2026, 22:00 Sydney",
+    "supersedesEarlierPreproductionFlags": true
+  }
 }

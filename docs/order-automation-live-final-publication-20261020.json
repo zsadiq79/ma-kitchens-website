@@ -1,0 +1,21 @@
+{
+  "ownerExecutionAtSydney": "2026-10-20T13:42:23+11:00",
+  "changed": true,
+  "branch": "main",
+  "commit": "f8028741a07fe8fbe6b925a0c7e3bb1319411144",
+  "menuCycleId": "MENU-2026-10-22",
+  "menuRevision": "f2d81367cf41f8ecefac52edfbcea3ae06e02f34d2c514a366583cba5ede1c0b",
+  "dishCount": 14,
+  "publishedAt": "2026-10-20T02:42:32.650Z",
+  "productionDeploymentId": "dpl_99mhN1hbxBjYhgDN4nVnbrCRyDQz",
+  "deploymentState": "READY",
+  "metadataApiStatus": 200,
+  "privateMenuRevisionMatches": true,
+  "privateState": "ACTIVE",
+  "privateDeliveryFeeCents": 1000,
+  "publicSnapshotDeliveryFeeCents": 1000,
+  "browserDeliveryDisplay": "$10.00",
+  "minimumOrderItems": 5,
+  "newRequestOrOrderCreatedDuringFinalCheck": false,
+  "existingAcceptedPricesUnchanged": true
+}

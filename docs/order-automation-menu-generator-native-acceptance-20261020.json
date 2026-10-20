@@ -15,19 +15,14 @@
   ],
   "outputFilesIndependentlyInspected": false,
   "outputMimeAndDimensionsIndependentlyMeasured": false,
-  "exactPrintedDateAndDeadlineConfirmed": false,
+  "exactPrintedDateAndDeadlineConfirmed": true,
   "originalProductionShortcutChanged": false,
-  "productionModified": false,
+  "productionModified": true,
   "automatedChecks": {
-    "passed": 188,
+    "passed": 193,
     "failed": 0
   },
-  "remaining": [
-    "Production installation and deployment require explicit approval",
-    "Re-read LIVE settings/records and create a fresh cutover backup in the approved window",
-    "Apply selected 8 PM poster setting only within approved configuration scope; preserve website enforcement unless explicitly changed",
-    "Verify working original generator shortcut again after any approved LIVE upgrade"
-  ],
+  "remaining": [],
   "ownerContentConfirmation": {
     "reportedAt": "2026-10-20T11:11:50+11:00",
     "deliveryDateAsReported": "22/10",
@@ -39,7 +34,7 @@
   },
   "reviewCompletedAt": "2026-10-20T11:13:51+11:00",
   "compatibilityGateStatus": "PASSED_ON_REVIEWED_SOURCE_SCHEMA_AND_OWNER_NATIVE_ACCEPTANCE_BASIS",
-  "originalShortcutDeploymentVersionOwnerReported": 21,
+  "originalShortcutDeploymentVersionOwnerReported": 22,
   "originalManifestOwnerSupplied": {
     "timeZone": "Australia/Sydney",
     "dependencies": {},
@@ -51,5 +46,16 @@
     }
   },
   "manifestValidated": true,
-  "manifestFindings": []
+  "manifestFindings": [],
+  "originalDeploymentRollbackVersion": 21,
+  "productionAcceptance": {
+    "ownerConfirmedAtSydney": "2026-10-20T13:20:32+11:00",
+    "printedDeadline": "21 October, 8 PM",
+    "formats": [
+      "PNG",
+      "JPG",
+      "WebP"
+    ],
+    "originalShortcutWorking": true
+  }
 }

@@ -4,7 +4,7 @@
     "atSydney": "2026-10-20T11:17:57+11:00",
     "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
   },
-  "phase": "LIVE_VERIFIED_FINAL_DELIVERY_FEE_PUBLICATION_PENDING",
+  "phase": "LIVE_ROLLOUT_VERIFIED_HANDOVER_COMPLETE",
   "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
   "backup": {
@@ -100,7 +100,7 @@
   "sourceInstallationOwnerReportedAtSydney": "2026-10-20T11:53:02+11:00",
   "sourceInstallationBasis": "Owner reported saving production OwnerOrderWorkspace.html, deleting other .gs files and replacing Code.gs with complete production candidate. Native editor bytes not independently retrieved.",
   "productionSchemaMigrationPerformed": true,
-  "nextStep": "Owner runs publishCurrentOrderingMenu in LIVE, then verify private/public revision, fee, deployment and final handover.",
+  "nextStep": "Normal operation through Website Requests and existing weekly menu shortcut.",
   "productionConfigured": true,
   "nativePreflightPassed": true,
   "nativePreflightEvidence": "order-automation-live-native-preflight-20261020.json",
@@ -185,7 +185,7 @@
   "productionWebsitePR": 41,
   "productionWebsiteMergeSha": "ef30a61ee4d7ed0e6a34c6f01762651458f004f5",
   "temporarySigningSetupHelperRemovalPending": false,
-  "productionDeploymentId": "dpl_GNJxgPuNYXf58hkZwfPhGnPoKeNT",
+  "productionDeploymentId": "dpl_99mhN1hbxBjYhgDN4nVnbrCRyDQz",
   "productionDeploymentState": "READY",
   "productionReadProbeEvidence": "order-automation-live-production-read-probes-20261020.json",
   "signedRecoveryVerified": true,
@@ -229,5 +229,7 @@
   "finalNativePreviewEvidence": "order-automation-live-final-checkpoint-20261020.json",
   "currentDeliveryFeeAud": 10,
   "ownerDeliveryFeeSelectionAud": 10,
-  "publicDeliveryFeePublicationPending": true
+  "publicDeliveryFeePublicationPending": false,
+  "finalPublicationEvidence": "order-automation-live-final-publication-20261020.json",
+  "productionWebsiteCurrentCommit": "f8028741a07fe8fbe6b925a0c7e3bb1319411144"
 }

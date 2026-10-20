@@ -105,5 +105,15 @@
   },
   "sourceReview": "ORDER_AUTOMATION_MENU_GENERATOR_REVIEW_20261020.md",
   "nativeAcceptanceEvidence": "order-automation-menu-generator-native-acceptance-20261020.json",
-  "currentShortcutProjectMappingOwnerConfirmed": true
+  "currentShortcutProjectMappingOwnerConfirmed": true,
+  "finalProductionStatus": {
+    "installed": true,
+    "versionOwnerReported": 22,
+    "rollbackVersion": 21,
+    "originalShortcutPreserved": true,
+    "nativeOwnerExportsPassed": true,
+    "posterDeadline": "21 October 2026, 20:00 Sydney",
+    "websiteCutoff": "21 October 2026, 22:00 Sydney",
+    "supersedesEarlierPreproductionFlags": true
+  }
 }

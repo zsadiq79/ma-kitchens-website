@@ -1,3 +1,7 @@
+# Executed rollout record
+
+The plan below is retained as the historical preparation record. Rollout was authorized and executed on 20 October 2026. Current status, evidence and operating instructions are in ORDER_AUTOMATION_LIVE_HANDOVER_20261020.md and ORDER_AUTOMATION_RELEASE_REVIEW_20261020.md. Earlier NOT APPROVED or pending statements below describe the preproduction point in time and are superseded. Both Control Tower URLs are now Version 47, Menu V2 is owner-confirmed Version 22 and the final AUD 10 menu publication is READY.
+
 # Production installation plan for review
 
 Status: NOT APPROVED FOR EXECUTION. Preproduction review and designated rehearsal checks are complete on the documented source, native-schema and owner-tested basis. All 188 automated checks pass. Recent LIVE execution review is complete for the owner-reported window. The separate menu review passed current-menu rendering and all three downloads; original generator Version 21 and manifest are owner-supplied. Obtain explicit approval before changing original LIVE source, settings, deployments or data. Rehearsal and the preparation backup are separate files.

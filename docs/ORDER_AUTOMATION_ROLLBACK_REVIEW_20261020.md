@@ -1,3 +1,11 @@
+# Current rollback references
+
+No rollback was performed. The historical plan below is retained for procedure context. Current Control Tower LIVE A and B are Version 47; prior versions are 46 and 33 respectively. Menu V2 is owner-confirmed Version 22; prior version is 21. Current website menu commit is f8028741a07fe8fbe6b925a0c7e3bb1319411144, READY deployment dpl_99mhN1hbxBjYhgDN4nVnbrCRyDQz. Website application rollout was ef30a61ee4d7ed0e6a34c6f01762651458f004f5; pre-rollout reference is 27ef64557f82361effbb90d7f75442b32df4096a.
+
+Final paused backup is workbook 1NnTXZP-ggscCGRMtzZxdmYpm-Tqm2_3nBpxJgeC7XnY, 20 October 11:46 Sydney. At least ORD-000059 was accepted after that backup and must be preserved. The owner explicitly retained that order and its do-not-prepare note. Never roll back the entire workbook over subsequent orders.
+
+Current triggers: orderRequestInboxOnOpen_ and showPackingSlipsMenu_ ON_OPEN, plus original runFeedbackSender CLOCK every five minutes. Feedback enabled. Poster deadline is now 20:00; website enforcement remains 22:00. New-order delivery is AUD 10, while accepted snapshots retain their prior charges. Earlier pending/unmodified statements below are historical and superseded.
+
 # Production stop and rollback plan for review
 
 Status: NOT APPROVED FOR EXECUTION. Use only during an explicitly approved production window after fresh reads. A workbook backup is separate from editor source, versioned web apps, triggers, script properties, Vercel settings and provider configuration.

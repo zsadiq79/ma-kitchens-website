@@ -1,6 +1,6 @@
 {
   "project": "Ma Kitchens Menu V2, separate standalone app",
-  "status": "Installed and deployed in private review copy per owner report. All three downloads visually accepted by owner. Production unchanged.",
+  "status": "Reviewed source installed in original Menu V2, Version 22 owner-confirmed. Original shortcut and PNG/JPG/WebP accepted.",
   "baselineScriptId": "1P40KjOrj6Efs_2oSWwuP9GOZeDhonUNLYUlfnosPa1Hh4e9C6GKWFuRf",
   "spreadsheetReadTarget": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
   "codeSha256": "dea7211901cd3ecc3beacd7afafdbf9ba335e3e97d1007f7c39df0215d59021e",
@@ -11,25 +11,26 @@
     "MG-03: Correct free-delivery threshold-basis text"
   ],
   "otherBehavior": "Original menu data, images, grouping, ordering, styles and original 22 server functions retained.",
-  "configuredPosterDeadline": "Read from Menu Config. No LIVE setting changed.",
+  "configuredPosterDeadline": "20:00 Sydney on day before delivery; Menu Config B16",
   "nativeDeploymentVerified": false,
-  "productionModified": false,
+  "productionModified": true,
   "ownerSelectedPosterDeadline": "20:00 on day before delivery, selected 20 October 2026",
-  "liveDeadlineConfigChanged": false,
+  "liveDeadlineConfigChanged": true,
   "privateReviewCopyScriptId": "1aU80zoZXg1-VVmJ3mMwFmEZJz_FrcTuun7JugnTh8-APHAIiNRRF9Foy",
   "candidateInstalled": true,
   "automatedTests": {
     "generator": 9,
-    "combined": 188,
+    "combined": 193,
     "failed": 0
   },
   "actualBrowserDownloadsVerified": true,
   "candidateInstallationEvidence": "Owner reported Code.gs and MenuV2.html saved",
   "privateReviewDeploymentUrl": "https://script.google.com/macros/s/AKfycbwasj-RV_UHcZtOoUNWRFLNVL-yw9oYQbQz5C-9zl7RgXL0Gn8UJMg2gKOp42kzdxw7/exec",
-  "verificationScope": "Owner-reported menu rendering and three downloaded images; actual files and deployed source/version not independently retrieved",
+  "verificationScope": "Owner-reported Version 22 and rendered menu/download acceptance. Immutable Google source bytes not independently retrieved.",
   "nativeAcceptanceEvidence": "docs/order-automation-menu-generator-native-acceptance-20261020.json",
   "manifestSha256": "0dfbef8ae3a3bff2cd92e52d3a5c9afa5fbd49d4b36e245ba3b1c7d5d8df475f",
   "manifestMatchesOwnerSuppliedOriginal": true,
   "reviewGateStatus": "Source/schema reviewed, owner native current-menu and all three export acceptance passed; original version and manifest owner-supplied",
-  "originalDeploymentRollbackVersionOwnerReported": 21
+  "originalDeploymentRollbackVersionOwnerReported": 21,
+  "originalDeploymentVersionOwnerReported": 22
 }
