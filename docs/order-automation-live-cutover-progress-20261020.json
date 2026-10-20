@@ -1,0 +1,52 @@
+{
+  "authorization": {
+    "ownerStatement": "begin",
+    "atSydney": "2026-10-20T11:17:57+11:00",
+    "scope": "Controlled LIVE rollout described in the reviewed installation plan. No real provider sends or dispatches are authorized."
+  },
+  "phase": "FRESH_BACKUP_VERIFIED_AWAITING_BOUND_SCRIPT_COPY_CHECK",
+  "sourceWorkbook": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+  "sourceScript": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE",
+  "backup": {
+    "success": true,
+    "id": "1wTYROqgz4JPHCePno-dgqb3dhVvY9vEt8v2WN3JcdDs",
+    "title": "Ma Kitchens LIVE CUTOVER BACKUP 20 Oct 2026 1118 Sydney",
+    "mimeType": "application/vnd.google-apps.spreadsheet",
+    "url": "https://docs.google.com/spreadsheets/d/1wTYROqgz4JPHCePno-dgqb3dhVvY9vEt8v2WN3JcdDs/edit?usp=drivesdk",
+    "made_private": false
+  },
+  "backupPrivacy": {
+    "shared": false,
+    "roles": [
+      "owner"
+    ]
+  },
+  "nativeChecks": {
+    "sheetCount": 26,
+    "orders": 58,
+    "lastOrderId": "ORD-000058",
+    "itemRows": 216,
+    "customers": 50,
+    "comparedUserEnteredCells": 7418,
+    "differenceCount": 0,
+    "legacyState": "DRAFT",
+    "livePricing": {
+      "discountPercent": 0,
+      "minimumItems": 5,
+      "deliveryFeeAud": 2.5,
+      "freeDeliveryThreshold": 0
+    }
+  },
+  "sourceChangesMade": false,
+  "productionDeploymentChangesMade": false,
+  "entryPauseAcknowledged": false,
+  "boundScriptCopyOwnerVerified": false,
+  "backupIsFinalPauseBaseline": false,
+  "requirementsBeforeSourceSave": [
+    "Verify distinct bound script of the new backup without executing it",
+    "Coordinate entry/known-writer pause and refresh LIVE delta baseline",
+    "Preserve current trigger and private property settings",
+    "Install only production profile in original LIVE, not backup or rehearsal"
+  ],
+  "privateRawEvidenceSaved": true
+}
