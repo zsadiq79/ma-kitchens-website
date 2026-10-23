@@ -70,6 +70,7 @@ function mkQuote_(input, lines, rules, committed) {
   const manualReductionCents = Math.round(Number(rawReduction) * 100);
   if (!Number.isSafeInteger(manualReductionCents)) throw new Error('Invalid manual dollar reduction.');
   if (manualReductionCents > 0 && !String(input.manualReductionReason || '').trim()) throw new Error('Enter a reason for the manual dollar reduction.');
+  if (manualReductionCents > 100000000) throw new Error('Manual dollar reduction exceeds the supported amount.');
   const minimum = Number(rules.minimumOrderItems), seen = {}, selected = [];
   let totalQuantity = 0, listSubtotalCents = 0, foodSubtotalCents = 0, cookPayoutCents = 0;
   input.items.forEach(item => {
