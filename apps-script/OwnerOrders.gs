@@ -267,7 +267,7 @@ function ownerOrderAccept(id, hash) {
     mkAssertOperationalLayout_(book);
     mkRequire_(orders, ['Customer Name (SNAPSHOT)', 'Phone (SNAPSHOT)', 'Postcode (SNAPSHOT)', 'Owner Operation ID']);
     mkRequire_(items, ['List Price (SNAPSHOT)', 'Cook Pay (SNAPSHOT)', 'Cook ID (SNAPSHOT)', 'Customer Unit Price (SNAPSHOT)', 'Line Total (SNAPSHOT)']);
-    const orderRow = mkEmptyRows_(orders, 1, [1, 2, 3, 4, 9, 10, 11, 14, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37], 2, 2000)[0];
+    const orderRow = mkEmptyRows_(orders, 1, [1, 2, 3, 4, 9, 10, 11, 14, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39], 2, 2000)[0];
     const itemRows = mkEmptyRows_(items, review.quote.items.length, [1, 4, 7, 14, 18, 23, 24, 25, 26, 27, 28, 29, 30], 3, 5000);
     const journal = mkTable_(book, MK_OWNER.journal), journalRow = journal.sheet.getLastRow() + 1;
     if (journal.rows.some(row => row[3] === 'COMMITTING')) throw new Error('Reconcile the outstanding uncertain order operation before creating another order.');
