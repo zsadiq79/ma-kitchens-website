@@ -30,7 +30,7 @@ function WhatsAppOrderButton() {
 
 export const metadata: Metadata = {
   title: "Weekly Menu | Ma Kitchens",
-  description: "View the current Ma Kitchens weekly menu and browse previous menus.",
+  description: "View the current Ma Kitchens weekly menu and place your order online.",
 };
 
 export default function MenuPage() {
