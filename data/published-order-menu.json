@@ -1,5 +1,124 @@
 {
   "schemaVersion": 2,
-  "withdrawn": true,
-  "publishedAt": "2026-10-23T05:01:24.183Z"
+  "menuRevision": "cc97abce98b7c594e38293ce60b34f4d1216a9fe0656e9e2d56e94c5361b26a6",
+  "minimumOrderItems": 5,
+  "deliveryFeeCents": 1000,
+  "publishedAt": "2026-10-23T05:03:33.242Z",
+  "menuCycleId": "MENU-2026-10-29",
+  "deliveryDate": "2026-10-29",
+  "deliveryDateDisplay": "Thu 29 Oct",
+  "meals": [
+    {
+      "id": "i_c71ceb763abc3d86c927f63c",
+      "dishName": "Aloo Gosht Shorba",
+      "price": 17,
+      "priceDisplay": "$17.00",
+      "imageUrl": "/menu-images/Dish-0073.jpg"
+    },
+    {
+      "id": "i_10cf725f8391b5b881dcd7ba",
+      "dishName": "White Badami Chicken Karhai",
+      "price": 15,
+      "priceDisplay": "$15.00",
+      "imageUrl": "/menu-images/Dish-0034.jpg"
+    },
+    {
+      "id": "i_1711bdbc12ec77cbfbbdbb72",
+      "dishName": "Dhaba Dhamaka Sabzi",
+      "price": 11,
+      "priceDisplay": "$11.00",
+      "imageUrl": "/menu-images/Dish-0076.png"
+    },
+    {
+      "id": "i_6d1cf7ad3771abbd2580ed1b",
+      "dishName": "Aalo Tikki Pulao",
+      "price": 13,
+      "priceDisplay": "$13.00",
+      "imageUrl": "/menu-images/Dish-0021.png"
+    },
+    {
+      "id": "i_c791e9b4243bdb926c50d376",
+      "dishName": "Gulab Jamun",
+      "price": 10,
+      "priceDisplay": "$10.00",
+      "imageUrl": "/menu-images/Dish-0074.jpg"
+    },
+    {
+      "id": "i_bf0ee8849b8e12356299870f",
+      "dishName": "Pineapple Delight",
+      "price": 10,
+      "priceDisplay": "$10.00",
+      "imageUrl": "/menu-images/Dish-0075.jpg"
+    },
+    {
+      "id": "i_46a3ad7a85ecff8cf04b85ab",
+      "dishName": "Zauq Tikka Chicken Biryani",
+      "price": 17,
+      "priceDisplay": "$17.00",
+      "imageUrl": "/menu-images/Dish-0064.jpeg"
+    },
+    {
+      "id": "i_c853fd5f1e8e7452310ef2dc",
+      "dishName": "Khas Zauq Beef Nihari",
+      "price": 17,
+      "priceDisplay": "$17.00",
+      "imageUrl": "/menu-images/Dish-0065.jpeg"
+    },
+    {
+      "id": "i_b3fb1e31dd7a8a91eb10b2b5",
+      "dishName": "Lahori Chikar Cholay",
+      "price": 12,
+      "priceDisplay": "$12.00",
+      "imageUrl": "/menu-images/Dish-0066.jpg"
+    },
+    {
+      "id": "i_2f21138fd46599d254962147",
+      "dishName": "Punjabi Sarso Ka Saag",
+      "price": 14,
+      "priceDisplay": "$14.00",
+      "imageUrl": "/menu-images/Dish-0067.jpeg"
+    },
+    {
+      "id": "i_885a2892752c7b35b6aa84c1",
+      "dishName": "Zauq Club Sandwich",
+      "price": 11,
+      "priceDisplay": "$11.00",
+      "imageUrl": "/menu-images/Dish-0068.jpeg"
+    },
+    {
+      "id": "i_3ee29953957c80a9384f5a43",
+      "dishName": "Pure Sunshine in a Cup",
+      "price": 11,
+      "priceDisplay": "$11.00",
+      "imageUrl": "/menu-images/Dish-0069.jpeg"
+    },
+    {
+      "id": "i_3404bb286f6f33136487137a",
+      "dishName": "Chicken Karahi",
+      "price": 17,
+      "priceDisplay": "$17.00",
+      "imageUrl": "/menu-images/Dish-0070.jpg"
+    },
+    {
+      "id": "i_23c827994b59da7be1b0c061",
+      "dishName": "Aloo Matar Gajar",
+      "price": 14,
+      "priceDisplay": "$14.00",
+      "imageUrl": "/menu-images/Dish-0020.png"
+    },
+    {
+      "id": "i_f9bbdc431b1d4b8084fca558",
+      "dishName": "Masar Chawal",
+      "price": 17,
+      "priceDisplay": "$17.00",
+      "imageUrl": "/menu-images/Dish-0045.jpg"
+    },
+    {
+      "id": "i_db126fe4d62c6875e8f9110e",
+      "dishName": "Thaylay Wali Chaat",
+      "price": 10,
+      "priceDisplay": "$10.00",
+      "imageUrl": "/menu-images/Dish-0062.jpg"
+    }
+  ]
 }
