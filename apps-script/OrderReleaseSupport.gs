@@ -347,7 +347,7 @@ function mkReleaseMigrationRequests_(state, owner) {
 function previewOwnerDollarReductionMigration() {
   const book = mkReleaseOwnerBook_(false), orders = book.getSheetByName('Orders');
   if (!orders) throw new Error('Orders sheet is missing.');
-  const headers = orders.getRange(1,1,1,Math.max(39,orders.getLastColumn())).getDisplayValues()[0];
+  const headers = orders.getRange(1,1,1,orders.getMaxColumns()).getDisplayValues()[0];
   const expected = MK_OWNER_OPERATIONAL_LAYOUT.Orders.slice(0,37);
   if (expected.some((header,i)=>headers[i]!==header)) throw new Error('Existing Orders columns differ; do not migrate.');
   const newHeaders = MK_OWNER_OPERATIONAL_LAYOUT.Orders.slice(37,39);
@@ -358,7 +358,7 @@ function previewOwnerDollarReductionMigration() {
   const next = MK_OWNER_FORMULA_SNAPSHOTS['Orders!L2'];
   if (current!==original && current!==next) throw new Error('Orders L2 formula differs; manual review required.');
   const last = Math.max(2,orders.getLastRow());
-  const populated = orders.getRange(2,38,last-1,2).getValues().some(row=>row.some(value=>value!=='' && value!==null));
+  const populated = orders.getMaxColumns()>=38 && orders.getRange(2,38,last-1,Math.min(2,orders.getMaxColumns()-37)).getValues().some(row=>row.some(value=>value!=='' && value!==null));
   if (populated && current!==next) throw new Error('AL/AM already have data; investigate before migrating.');
   return {ok:true,writeIssued:false,alreadyMigrated:current===next&&headers[37]===newHeaders[0]&&headers[38]===newHeaders[1],
     formulaMatchesOriginal:current===original,ordersColumns:orders.getMaxColumns(),lastOrderRow:last,
