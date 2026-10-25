@@ -339,6 +339,50 @@ function mkReleaseMigrationRequests_(state, owner) {
   });
   return {requests:requests,ledgerIds:ledgerIds};
 }
+/* Additive migration for an already-operational Owner Workspace.
+ * Never call the original initial-install migration for this feature.
+ * Run previewOwnerDollarReductionMigration() first; production execution
+ * requires a separate explicit deployment approval.
+ */
+function previewOwnerDollarReductionMigration() {
+  const book = mkReleaseOwnerBook_(false), orders = book.getSheetByName('Orders');
+  if (!orders) throw new Error('Orders sheet is missing.');
+  const headers = orders.getRange(1,1,1,orders.getMaxColumns()).getDisplayValues()[0];
+  const expected = MK_OWNER_OPERATIONAL_LAYOUT.Orders.slice(0,37);
+  if (expected.some((header,i)=>headers[i]!==header)) throw new Error('Existing Orders columns differ; do not migrate.');
+  const newHeaders = MK_OWNER_OPERATIONAL_LAYOUT.Orders.slice(37,39);
+  if ([37,38].some((i,j)=>headers[i] && headers[i]!==newHeaders[j]))
+    throw new Error('AL/AM contain other headers; do not overwrite.');
+  const current = orders.getRange('L2').getFormula();
+  const original = '=ARRAYFORMULA(IF(A2:A2000="","",IF(I2:I2000="Cancelled",0,IF(O2:O2000+IF(P2:P2000="",0,P2:P2000)-IF(Q2:Q2000="",0,Q2:Q2000)<0,0,O2:O2000+IF(P2:P2000="",0,P2:P2000)-IF(Q2:Q2000="",0,Q2:Q2000)))))';
+  const next = MK_OWNER_FORMULA_SNAPSHOTS['Orders!L2'];
+  if (current!==original && current!==next) throw new Error('Orders L2 formula differs; manual review required.');
+  const last = Math.max(2,orders.getLastRow());
+  const populated = orders.getMaxColumns()>=38 && orders.getRange(2,38,last-1,Math.min(2,orders.getMaxColumns()-37)).getValues().some(row=>row.some(value=>value!=='' && value!==null));
+  if (populated && current!==next) throw new Error('AL/AM already have data; investigate before migrating.');
+  return {ok:true,writeIssued:false,alreadyMigrated:current===next&&headers[37]===newHeaders[0]&&headers[38]===newHeaders[1],
+    formulaMatchesOriginal:current===original,ordersColumns:orders.getMaxColumns(),lastOrderRow:last,
+    changesRequired:current===next&&headers[37]===newHeaders[0]&&headers[38]===newHeaders[1]?0:3};
+}
+function migrateOwnerDollarReduction() {
+  const book = mkReleaseOwnerBook_(false);
+  return mkLocked_(()=>{
+    if (PropertiesService.getScriptProperties().getProperty('OWNER_DOLLAR_REDUCTION_MIGRATION_APPROVED')!=='YES')
+      throw new Error('Explicit owner dollar reduction migration approval is required.');
+    const preview=previewOwnerDollarReductionMigration();
+    if (preview.alreadyMigrated) return {ok:true,changed:false};
+    const orders=book.getSheetByName('Orders'), requests=[];
+    if (orders.getMaxColumns()<39) requests.push({appendDimension:{sheetId:orders.getSheetId(),dimension:'COLUMNS',length:39-orders.getMaxColumns()}});
+    requests.push(orderRequestCellUpdate_(orders,1,38,'Manual Order Discount (AUD)'));
+    requests.push(orderRequestCellUpdate_(orders,1,39,'Manual Order Discount Reason'));
+    requests.push(mkFormulaCell_(orders,2,12,MK_OWNER_FORMULA_SNAPSHOTS['Orders!L2']));
+    Sheets.Spreadsheets.batchUpdate({requests},book.getId());
+    const verified=previewOwnerDollarReductionMigration();
+    if (!verified.alreadyMigrated) throw new Error('Migration response uncertain: inspect the workbook before retrying.');
+    return {ok:true,changed:true,verified:true};
+  });
+}
+
 function migrateOrderAutomationWorkspace() {
   const book = mkReleaseOwnerBook_(false);
   return mkLocked_(() => {

@@ -65,6 +65,12 @@ function mkQuote_(input, lines, rules, committed) {
   if (!Number.isFinite(discountPercent) || discountPercent < 0 || discountPercent > 100 || Math.abs(Math.round(discountPercent * 100) - discountPercent * 100) > 0.00000001)
     throw new Error('Discount must be between 0 and 100 with up to two decimal places.');
   if (discountPercent !== defaultDiscount && !String(input.discountReason || '').trim()) throw new Error('Add a reason for the per order discount override.');
+  const rawReduction = input.manualReduction === undefined || input.manualReduction === null || input.manualReduction === '' ? '0' : String(input.manualReduction).trim();
+  if (!/^\d+(?:\.\d{1,2})?$/.test(rawReduction)) throw new Error('Manual dollar reduction must be a nonnegative amount with at most two decimal places.');
+  const manualReductionCents = Math.round(Number(rawReduction) * 100);
+  if (!Number.isSafeInteger(manualReductionCents)) throw new Error('Invalid manual dollar reduction.');
+  if (manualReductionCents > 0 && !String(input.manualReductionReason || '').trim()) throw new Error('Enter a reason for the manual dollar reduction.');
+  if (manualReductionCents > 100000000) throw new Error('Manual dollar reduction exceeds the supported amount.');
   const minimum = Number(rules.minimumOrderItems), seen = {}, selected = [];
   let totalQuantity = 0, listSubtotalCents = 0, foodSubtotalCents = 0, cookPayoutCents = 0;
   input.items.forEach(item => {
@@ -98,8 +104,10 @@ function mkQuote_(input, lines, rules, committed) {
   if (!['Post-discount food value', 'Pre-discount food value'].includes(basis)) throw new Error('Unknown free delivery threshold basis.');
   const thresholdValue = basis === 'Post-discount food value' ? foodSubtotalCents : listSubtotalCents;
   const deliveryFeeCents = thresholdCents > 0 && thresholdValue >= thresholdCents ? 0 : standardDeliveryFeeCents;
-  return { items: selected, totalQuantity: totalQuantity, listSubtotalCents: listSubtotalCents, foodSubtotalCents: foodSubtotalCents,
-    cookPayoutCents: cookPayoutCents, deliveryFeeCents: deliveryFeeCents, totalCents: foodSubtotalCents + deliveryFeeCents,
+  const payableBeforeReductionCents = foodSubtotalCents + deliveryFeeCents;
+  if (manualReductionCents > payableBeforeReductionCents) throw new Error('Manual dollar reduction cannot exceed the payable bill.');
+  return { manualReductionCents: manualReductionCents, manualReductionReason: mkText_(input.manualReductionReason, 'manual dollar reduction reason', 500, false), payableBeforeReductionCents: payableBeforeReductionCents, items: selected, totalQuantity: totalQuantity, listSubtotalCents: listSubtotalCents, foodSubtotalCents: foodSubtotalCents,
+    cookPayoutCents: cookPayoutCents, deliveryFeeCents: deliveryFeeCents, totalCents: payableBeforeReductionCents - manualReductionCents,
     discountPercent: discountPercent, minimumOrderItems: minimum, standardDeliveryFeeCents: standardDeliveryFeeCents,
     freeDeliveryThresholdCents: thresholdCents, freeDeliveryBasis: basis };
 }
@@ -109,8 +117,9 @@ function mkConfirmation_(review, orderId) {
   return ['Order received', '', 'Customer: ' + review.details.name, 'Order: ' + orderId, 'Delivery: ' + review.deliveryDate + ', ' + DELIVERY_WINDOW, '',
     ...review.quote.items.map(item => item.quantity + ' × ' + item.dishName + ': ' + money(item.lineTotalCents)), '',
     'Food subtotal: ' + money(review.quote.foodSubtotalCents), 'Delivery: ' + money(review.quote.deliveryFeeCents),
+    ...(review.quote.manualReductionCents > 0 ? ['Manual reduction: -' + money(review.quote.manualReductionCents), 'Reduction reason: ' + review.quote.manualReductionReason] : []),
     'Total: ' + money(review.quote.totalCents), 'Address: ' + review.details.address,
     review.details.instructions ? 'Delivery instructions: ' + review.details.instructions : '', '',
-    'PayID: ' + PAYMENT_PAYID, 'Payment reference: ' + orderId,
-    'Please send payment confirmation to Ma Kitchens on WhatsApp.'].filter(line => line !== undefined).join('\n');
+    ...(review.quote.totalCents === 0 ? ['No payment required.'] : ['PayID: ' + PAYMENT_PAYID, 'Payment reference: ' + orderId,
+    'Please send payment confirmation to Ma Kitchens on WhatsApp.'])].filter(line => line !== undefined).join('\n');
 }

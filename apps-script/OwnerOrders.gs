@@ -267,19 +267,19 @@ function ownerOrderAccept(id, hash) {
     mkAssertOperationalLayout_(book);
     mkRequire_(orders, ['Customer Name (SNAPSHOT)', 'Phone (SNAPSHOT)', 'Postcode (SNAPSHOT)', 'Owner Operation ID']);
     mkRequire_(items, ['List Price (SNAPSHOT)', 'Cook Pay (SNAPSHOT)', 'Cook ID (SNAPSHOT)', 'Customer Unit Price (SNAPSHOT)', 'Line Total (SNAPSHOT)']);
-    const orderRow = mkEmptyRows_(orders, 1, [1, 2, 3, 4, 9, 10, 11, 14, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37], 2, 2000)[0];
+    const orderRow = mkEmptyRows_(orders, 1, [1, 2, 3, 4, 9, 10, 11, 14, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39], 2, 2000)[0];
     const itemRows = mkEmptyRows_(items, review.quote.items.length, [1, 4, 7, 14, 18, 23, 24, 25, 26, 27, 28, 29, 30], 3, 5000);
     const journal = mkTable_(book, MK_OWNER.journal), journalRow = journal.sheet.getLastRow() + 1;
     if (journal.rows.some(row => row[3] === 'COMMITTING')) throw new Error('Reconcile the outstanding uncertain order operation before creating another order.');
     const orderId = mkNextOrderId_(orders, journal), now = new Date().toISOString(), operation = 'OWN-' + id;
     const confirmation = mkConfirmation_(review, orderId);
     const requests = mkSetColumns_(orders.sheet, orderRow, { 1: orderId, 2: mkSerial_(new Date()), 3: mkDeliverySerial_(review.deliveryDate),
-      4: review.details.customerId, 9: 'Pending', 10: 'Payment Requested', 11: DELIVERY_WINDOW,
+      4: review.details.customerId, 9: 'Pending', 10: review.quote.totalCents === 0 ? 'Waived' : 'Payment Requested', 11: DELIVERY_WINDOW,
       14: review.details.instructions,
       26: review.quote.discountPercent, 27: review.quote.standardDeliveryFeeCents / 100, 28: review.quote.freeDeliveryThresholdCents / 100,
       29: review.quote.freeDeliveryBasis, 30: review.quote.minimumOrderItems, 31: review.details.address,
       32: review.details.name, 33: review.details.phone, 34: review.details.postcode, 35: review.details.instructions,
-      36: review.requestReference, 37: operation });
+      36: review.requestReference, 37: operation, 38: (review.quote.manualReductionCents || 0) / 100, 39: review.quote.manualReductionReason || '' });
     review.quote.items.forEach((item, index) => requests.push(...mkSetColumns_(items.sheet, itemRows[index], {
       1: orderId, 4: item.dishName, 7: item.quantity, 14: 'Pending', 18: operation, 23: item.itemCode,
       24: item.listPriceCents / 100, 25: item.cookPayCents / 100, 26: item.cookId, 27: item.kitchenName,
@@ -324,7 +324,7 @@ function mkOwnerReconcile_(book, saved) {
   let current = found.row;
   for (let attempt = 0; attempt < 8; attempt++) {
     SpreadsheetApp.flush();
-    current = mkOwnerFreshValues_(book, orders.sheet, found.number, 1, 37)[0] || [];
+    current = mkOwnerFreshValues_(book, orders.sheet, found.number, 1, 39)[0] || [];
     if (String(current[23]) === 'OK') break;
     Utilities.sleep(200);
   }
@@ -341,12 +341,14 @@ function mkOwnerReconcile_(book, saved) {
   const okay = snapshotsOK && String(current[8]) !== 'Cancelled' && String(current[23]) === 'OK' && String(current[22]) === 'OK' &&
     typeof current[11] === 'number' && typeof current[17] === 'number' && String(current[4]) === review.details.name &&
     String(current[5]) === review.details.phone && String(current[6]) === review.details.address && String(current[7]) === review.details.postcode &&
+    Math.round(Number(current[37] || 0) * 100) === (review.quote.manualReductionCents || 0) && String(current[38] || '') === String(review.quote.manualReductionReason || '') &&
+    String(current[9]) === (review.quote.totalCents === 0 ? 'Waived' : 'Payment Requested') &&
     Math.round(Number(current[11]) * 100) === review.quote.totalCents && Math.round(Number(current[17]) * 100) === review.quote.cookPayoutCents &&
     Number(current[19]) === review.quote.totalQuantity && (!request || request.linkedOrderId === orderId);
   const state = okay ? 'VERIFIED' : 'REVIEW_REQUIRED';
   Sheets.Spreadsheets.batchUpdate({ requests: mkSetColumns_(saved.table.sheet, saved.number, { 4: state, 8: new Date().toISOString() }) }, book.getId());
   return { orderId: orderId, reviewId: String(saved.row[0]), state: state,
-    confirmation: okay ? String(saved.row[9]) : '', message: okay ? 'Order saved as Pending with Payment Requested. Copy the saved confirmation and send it manually.' :
+    confirmation: okay ? String(saved.row[9]) : '', message: okay ? (review.quote.totalCents === 0 ? 'Order saved as Pending with payment Waived. Copy the saved confirmation and send it manually.' : 'Order saved as Pending with Payment Requested. Copy the saved confirmation and send it manually.') :
       'Order is saved but formula or snapshot checks need review. Do not recreate it or send a confirmation yet.' };
 }
 

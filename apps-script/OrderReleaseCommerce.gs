@@ -79,7 +79,7 @@ function mkReleaseCreateCartOrder_(recipient, cart, menu, customer, quote) {
   const requests = mkSetColumns_(orders.sheet,orderRow,{1:orderId,2:mkSerial_(new Date()),3:mkDeliverySerial_(menu.deliveryDate),
     4:details.customerId,9:'Pending',10:'Payment Requested',11:DELIVERY_WINDOW,14:'WhatsApp order',
     26:priced.discountPercent,27:priced.standardDeliveryFeeCents/100,28:priced.freeDeliveryThresholdCents/100,29:priced.freeDeliveryBasis,
-    30:priced.minimumOrderItems,31:details.address,32:details.name,33:details.phone,34:details.postcode,35:'',36:'',37:operation});
+    30:priced.minimumOrderItems,31:details.address,32:details.name,33:details.phone,34:details.postcode,35:'',36:'',37:operation,38:0,39:''});
   priced.items.forEach((line,index) => requests.push(...mkSetColumns_(items.sheet,itemRows[index],{1:orderId,4:line.dishName,7:line.quantity,14:'Pending',18:operation,
     23:line.itemCode,24:line.listPriceCents/100,25:line.cookPayCents/100,26:line.cookId,27:line.kitchenName,28:line.menuLineId,29:line.unitPriceCents/100,30:line.lineTotalCents/100})));
   requests.push(...mkOwnerRowFormulaRequests_(orders.sheet,orderRow,items.sheet,itemRows));
