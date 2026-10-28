@@ -1,0 +1,25 @@
+{
+  "profile": {
+    "folder": "production-candidate",
+    "environment": "PRODUCTION",
+    "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
+  },
+  "release": "soldout-availability-20261028",
+  "source": "User-supplied current Code.gs, 28 October 2026",
+  "suppliedSourceSha256": "fe1d43ec43dc11c0c5d0e9699bc332aebab8548e2b7d4515823b1898d319d8cf",
+  "suppliedFunctionCount": 524,
+  "outputSha256": "0481c950211dd275b4ec87cb8728b7c7fe0b321c5a4e9d74c22568b9dbd90057",
+  "modifiedExistingFunctions": [
+    "mkOrderSnapshot_",
+    "previewCurrentOrderingMenu",
+    "publishCurrentOrderingMenu",
+    "orderRequestCapture_",
+    "doPost"
+  ],
+  "installFiles": [
+    "Code.gs"
+  ],
+  "preserveOtherEditorFiles": true,
+  "liveInstalled": false
+}

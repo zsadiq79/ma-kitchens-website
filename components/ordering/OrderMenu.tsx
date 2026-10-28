@@ -7,6 +7,7 @@ import {
   readPublishedOrderMenu, readOrderDraft, orderDraftSignature,
 } from '../../lib/publishedOrderMenu.mjs';
 import { orderRequestSignature, validOrderRequestKey } from '../../lib/orderRequest.mjs';
+import { AVAILABILITY_POLL_MS, readOrderAvailability, blockedOrderItems } from '../../lib/orderAvailability.mjs';
 import styles from './OrderMenu.module.css';
 
 type Menu = {
@@ -22,6 +23,7 @@ type Menu = {
 };
 
 type SavedRequest = { signature: string; reference: string; capability: string; whatsappUrl: string };
+type Availability = { status: string; checkedAt: string; items: { id: string; status: string }[] };
 
 function WhatsAppIcon() {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.9 11.9 0 0 0 12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6A12 12 0 0 0 12 24c6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.5-8.5ZM12 22a10 10 0 0 1-5.1-1.4l-.4-.2-3.7 1 1-3.6-.3-.4A10 10 0 1 1 12 22Zm5.5-7.5c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.5s1.1 2.9 1.3 3.1c.2.2 2.1 3.2 5.1 4.4l1.7.6c.7.2 1.3.2 1.8.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.3-.6-.4Z" /></svg>;
@@ -43,6 +45,10 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   const [draftReady, setDraftReady] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedRequest, setSavedRequest] = useState<SavedRequest | null>(null);
+  const [availability, setAvailability] = useState<Availability | null>(null);
+  const [availabilityError, setAvailabilityError] = useState(false);
+  const availabilityRef = useRef<Availability | null>(null);
+  const availabilityFlight = useRef<Promise<Availability> | null>(null);
   const saveLock = useRef(false);
   const pendingRef = useRef<{signature:string;requestKey:string}|null>(null);
   const [retryKey,setRetryKey] = useState('');
@@ -50,7 +56,58 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   const deliveryFeeCents = menu?.deliveryFeeCents ?? 1000;
   const selection = menu ? orderSelection(menu, quantities) : null;
   const currentOrderSignature = menu ? orderRequestSignature(menu, quantities) : '';
-  const ready = Boolean(selection && selection.totalQuantity >= minimumOrderItems && !selection.invalidIndexes.length && !expired && !stale);
+  const blocked = selection ? blockedOrderItems(availability, selection) : [];
+  const statusById = new Map(availability?.items.map(item => [item.id, item.status]) || []);
+  const allSoldOut = Boolean(menu && availability?.status === 'OPEN' && menu.meals.every(meal => statusById.get(meal.id) === 'SOLD_OUT'));
+  const reopening = savedRequest?.signature === currentOrderSignature;
+  const ready = Boolean(selection && selection.totalQuantity >= minimumOrderItems && !selection.invalidIndexes.length && !expired && !stale &&
+    (reopening || !blocked.length));
+
+  async function refreshAvailability(): Promise<Availability> {
+    if (!menu) throw new Error('MENU_CLOSED');
+    if (availabilityFlight.current) return availabilityFlight.current;
+    const operation = (async () => {
+      const response = await fetch('/api/order-menu/availability', { signal: AbortSignal.timeout(12000) });
+      const value = await response.json();
+      if (!response.ok) {
+        if (value?.error === 'MENU_CLOSED') setExpired(true);
+        throw new Error('AVAILABILITY_UNAVAILABLE');
+      }
+      const result = readOrderAvailability(value, menu) as Availability;
+      availabilityRef.current = result;
+      setAvailability(result); setAvailabilityError(false);
+      if (result.status === 'CLOSED') setExpired(true);
+      if (result.status === 'STALE') setStale(true);
+      return result;
+    })();
+    availabilityFlight.current = operation;
+    try { return await operation; }
+    catch (error) { setAvailabilityError(true); throw error; }
+    finally { availabilityFlight.current = null; }
+  }
+
+  useEffect(() => {
+    if (!menu || expired || stale) return;
+    let disposed = false, timer: ReturnType<typeof setTimeout> | undefined;
+    const schedule = () => {
+      if (timer) clearTimeout(timer);
+      if (!disposed && document.visibilityState === 'visible') timer = setTimeout(check, AVAILABILITY_POLL_MS);
+    };
+    const check = async () => {
+      if (disposed || document.visibilityState !== 'visible') return;
+      try { await refreshAvailability(); } catch { /* The form explains retry; never invent zero stock. */ }
+      schedule();
+    };
+    const visibility = () => {
+      if (timer) clearTimeout(timer);
+      if (document.visibilityState === 'visible') void check();
+    };
+    void check();
+    document.addEventListener('visibilitychange', visibility);
+    return () => { disposed = true; if (timer) clearTimeout(timer); document.removeEventListener('visibilitychange', visibility); };
+    // The published menu is immutable for this page. Quantity edits do not restart polling.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menu, expired, stale]);
 
   useEffect(() => {
     try {
@@ -116,7 +173,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
   async function continueToWhatsApp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (saveLock.current) return;
-    if (!selection || selection.invalidIndexes.length || selection.totalQuantity < minimumOrderItems || !menu || expired) return;
+    if (!selection || selection.invalidIndexes.length || selection.totalQuantity < minimumOrderItems || !menu || expired || stale) return;
     const signature = orderRequestSignature(menu, quantities);
     if (savedRequest?.signature === signature) {
       window.location.assign(savedRequest.whatsappUrl);
@@ -126,6 +183,16 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
     setSaving(true);
     setMessage('');
     try {
+      let currentAvailability = availabilityRef.current;
+      if (!currentAvailability || Date.now() - Date.parse(currentAvailability.checkedAt) > 30000) {
+        try { currentAvailability = await refreshAvailability(); }
+        catch { /* The existing capture endpoint still checks stock authoritatively. */ }
+      }
+      if (currentAvailability && currentAvailability.status !== 'OPEN') return;
+      const unavailableItems = currentAvailability ? blockedOrderItems(currentAvailability, selection) : [];
+      if (unavailableItems.length) {
+        setMessage('Some selected dishes are no longer available. Remove them before continuing.'); return;
+      }
       let pending = pendingRef.current;
       try {
         const raw = window.sessionStorage.getItem('ma-kitchens:pending-order-request:v1');
@@ -145,6 +212,9 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
           typeof result.capability !== 'string' || typeof result.whatsappUrl !== 'string') {
         if (result?.error === 'MENU_CLOSED' || result?.error === 'MENU_STALE' || result?.error === 'MENU_REVISION_MISMATCH') {
           if (result.error === 'MENU_CLOSED') setExpired(true); else setStale(true);
+        } else if (result?.error === 'ITEM_UNAVAILABLE') {
+          setMessage('A selected dish no longer has enough servings. Reduce its quantity or remove it, then try again.');
+          void refreshAvailability().catch(() => {});
         } else if (result?.error === 'ORDER_CAPTURE_UNCERTAIN') {
           setMessage('We could not confirm the save. Your choices are still here. Try again to check the same request.');
         } else {
@@ -191,6 +261,10 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
             <div className={styles.delivery}><span aria-hidden="true">◷</span> Delivery {menu.deliveryDateDisplay}</div>
           </>}
         </div>
+        {!unavailable && <div className={styles.availabilityNotice} role="status" aria-live="polite">
+          {allSoldOut ? 'This week’s menu is sold out.' : blocked.length ? 'A selected dish is no longer available. Remove it to continue.' :
+            availabilityError ? 'Availability updates are temporarily unavailable. We’ll check again before saving your request.' : ''}
+        </div>}
         {unavailable ? <section className={styles.closed} aria-label="Menu unavailable">
           <h2>{stale ? 'Refresh the current menu' : 'A fresh menu is on its way'}</h2>
           <p>{stale ? 'Your saved choices remain in this tab. Refresh the page to load the latest menu.' : 'Ask us for the current menu on WhatsApp.'}</p>
@@ -201,26 +275,30 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
             {menu.meals.map((meal, index) => {
               const invalid = Boolean(selection?.invalidIndexes.includes(index));
               const selected = !invalid && Number(quantities[index]) > 0;
-              return <div key={index} className={`${styles.dish} ${selected ? styles.selected : ''}`}>
+              const dishStatus = statusById.get(meal.id);
+              const dishUnavailable = dishStatus === 'SOLD_OUT' || dishStatus === 'UNAVAILABLE';
+              return <div key={meal.id} className={`${styles.dish} ${selected ? styles.selected : ''} ${dishUnavailable ? styles.unavailableDish : ''}`}>
                 <DishThumbnail key={meal.imageUrl || 'no-photo'} src={meal.imageUrl} eager={index < 2} />
                 <div className={styles.dishContent}>
                 <div className={styles.dishInfo}>
                   <div><label htmlFor={`quantity-${index}`} className={styles.dishName}>{meal.dishName}</label>
                     <p className={styles.price}>{foodMoney(Math.round(meal.price * 100))}<span> each</span></p>
+                    {dishUnavailable && <span id={`availability-${index}`} className={styles.soldOut}>{dishStatus === 'SOLD_OUT' ? 'Sold out' : 'Unavailable'}</span>}
                   </div>
                 </div>
                 <div className={styles.quantityArea}>
                   <div className={`${styles.quantity} ${invalid ? styles.invalid : ''}`}>
                     <button type="button" aria-label={`Remove one ${meal.dishName}`} disabled={!quantities[index] || quantities[index] === '0'} onClick={() => stepQuantity(index, -1)}>−</button>
-                    <input id={`quantity-${index}`} aria-label={`Quantity for ${meal.dishName}`} type="text" inputMode="numeric" enterKeyHint="next" autoComplete="off" maxLength={6} placeholder="Qty" value={quantities[index]} onChange={event => updateQuantity(index, event.target.value)} onFocus={event => event.target.select()} onKeyDown={event => {
+                    <input id={`quantity-${index}`} aria-label={`Quantity for ${meal.dishName}`} disabled={dishUnavailable} type="text" inputMode="numeric" enterKeyHint="next" autoComplete="off" maxLength={6} placeholder="Qty" value={quantities[index]} onChange={event => updateQuantity(index, event.target.value)} onFocus={event => event.target.select()} onKeyDown={event => {
                       if (event.key === 'Enter') {
                         event.preventDefault();
                         const next = document.getElementById(`quantity-${index + 1}`) || document.getElementById('continue-order');
                         next?.focus();
                       }
-                    }} aria-invalid={invalid || undefined} aria-describedby={invalid ? `error-${index}` : undefined} />
-                    <button type="button" aria-label={`Add one ${meal.dishName}`} disabled={Number(quantities[index]) >= MAX_ORDER_QUANTITY} onClick={() => stepQuantity(index, 1)}>+</button>
+                    }} aria-invalid={invalid || undefined} aria-describedby={dishUnavailable ? `availability-${index}` : invalid ? `error-${index}` : undefined} />
+                    <button type="button" aria-label={`Add one ${meal.dishName}`} disabled={dishUnavailable || Number(quantities[index]) >= MAX_ORDER_QUANTITY} onClick={() => stepQuantity(index, 1)}>+</button>
                   </div>
+                  {dishUnavailable && Number(quantities[index]) > 0 && <button type="button" className={styles.removeUnavailable} onClick={() => updateQuantity(index, '')}>Remove {meal.dishName}</button>}
                   {invalid && <p id={`error-${index}`} className={styles.fieldError}>Use a whole number, 1–999.</p>}
                 </div>
                 </div>
