@@ -7,7 +7,7 @@ import {
   readPublishedOrderMenu, readOrderDraft, orderDraftSignature,
 } from '../../lib/publishedOrderMenu.mjs';
 import { orderRequestSignature, validOrderRequestKey } from '../../lib/orderRequest.mjs';
-import { AVAILABILITY_POLL_MS, readOrderAvailability, blockedOrderItems } from '../../lib/orderAvailability.mjs';
+import { AVAILABILITY_POLL_MS, readOrderAvailability, blockedOrderItems, lowStockLabel } from '../../lib/orderAvailability.mjs';
 import styles from './OrderMenu.module.css';
 
 type Menu = {
@@ -23,7 +23,7 @@ type Menu = {
 };
 
 type SavedRequest = { signature: string; reference: string; capability: string; whatsappUrl: string };
-type Availability = { status: string; checkedAt: string; items: { id: string; status: string }[] };
+type Availability = { status: string; checkedAt: string; items: { id: string; status: string; lowStockRemaining?: number }[] };
 
 function WhatsAppIcon() {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.9 11.9 0 0 0 12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6A12 12 0 0 0 12 24c6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.5-8.5ZM12 22a10 10 0 0 1-5.1-1.4l-.4-.2-3.7 1 1-3.6-.3-.4A10 10 0 1 1 12 22Zm5.5-7.5c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.5s1.1 2.9 1.3 3.1c.2.2 2.1 3.2 5.1 4.4l1.7.6c.7.2 1.3.2 1.8.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.3-.6-.4Z" /></svg>;
@@ -276,6 +276,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
               const invalid = Boolean(selection?.invalidIndexes.includes(index));
               const selected = !invalid && Number(quantities[index]) > 0;
               const dishStatus = statusById.get(meal.id);
+              const stockLabel = lowStockLabel(availability?.items.find(item => item.id === meal.id));
               const dishUnavailable = dishStatus === 'SOLD_OUT' || dishStatus === 'UNAVAILABLE';
               return <div key={meal.id} className={`${styles.dish} ${selected ? styles.selected : ''} ${dishUnavailable ? styles.unavailableDish : ''}`}>
                 <DishThumbnail key={meal.imageUrl || 'no-photo'} src={meal.imageUrl} eager={index < 2} />
@@ -284,6 +285,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
                   <div><label htmlFor={`quantity-${index}`} className={styles.dishName}>{meal.dishName}</label>
                     <p className={styles.price}>{foodMoney(Math.round(meal.price * 100))}<span> each</span></p>
                     {dishUnavailable && <span id={`availability-${index}`} className={styles.soldOut}>{dishStatus === 'SOLD_OUT' ? 'Sold out' : 'Unavailable'}</span>}
+                    {stockLabel && <span id={`availability-${index}`} className={styles.lowStock}>{stockLabel}</span>}
                   </div>
                 </div>
                 <div className={styles.quantityArea}>
@@ -295,7 +297,7 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
                         const next = document.getElementById(`quantity-${index + 1}`) || document.getElementById('continue-order');
                         next?.focus();
                       }
-                    }} aria-invalid={invalid || undefined} aria-describedby={dishUnavailable ? `availability-${index}` : invalid ? `error-${index}` : undefined} />
+                    }} aria-invalid={invalid || undefined} aria-describedby={dishUnavailable || stockLabel ? `availability-${index}` : invalid ? `error-${index}` : undefined} />
                     <button type="button" aria-label={`Add one ${meal.dishName}`} disabled={dishUnavailable || Number(quantities[index]) >= MAX_ORDER_QUANTITY} onClick={() => stepQuantity(index, 1)}>+</button>
                   </div>
                   {dishUnavailable && Number(quantities[index]) > 0 && <button type="button" className={styles.removeUnavailable} onClick={() => updateQuantity(index, '')}>Remove {meal.dishName}</button>}

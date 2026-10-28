@@ -13,12 +13,12 @@ mod.require=function(name){if(name.endsWith('.module.css'))return new Proxy({},{
 mod._compile(ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,filename);
 const id='i_'+'a'.repeat(24),id2='i_'+'b'.repeat(24);
 const menu={schemaVersion:2,menuRevision:'a'.repeat(64),menuCycleId:'MENU-2099-10-29',deliveryDate:'2099-10-29',deliveryDateDisplay:'Thu 29 Oct',publishedAt:'2026-10-28T00:00:00Z',minimumOrderItems:5,deliveryFeeCents:1000,meals:[{id,dishName:'First Dish',price:15},{id:id2,dishName:'Second Dish',price:12}]};
-let statuses=['AVAILABLE','AVAILABLE'],fail=false,resolveFirst,calls=0,captures=0,timer;
+let counts=[],statuses=['AVAILABLE','AVAILABLE'],fail=false,resolveFirst,calls=0,captures=0,timer;
 const first=new Promise(resolve=>resolveFirst=resolve);
 global.fetch=async url=>{
   if(url==='/api/order-requests'){captures++;return {ok:false,json:async()=>({ok:false,error:'ITEM_UNAVAILABLE'})};}
   calls++;if(calls===1)await first;if(fail)throw Error('offline');
-  return {ok:true,json:async()=>({ok:true,...menu,status:'OPEN',checkedAt:new Date().toISOString(),items:[{id,status:statuses[0]},{id:id2,status:statuses[1]}]})};
+  return {ok:true,json:async()=>({ok:true,...menu,status:'OPEN',checkedAt:new Date().toISOString(),items:[{id,status:statuses[0],...(counts[0]===undefined?{}:{lowStockRemaining:counts[0]})},{id:id2,status:statuses[1]}]})};
 };
 const originalSet=global.setTimeout,originalClear=global.clearTimeout;
 global.setTimeout=(fn,delay,...args)=>{if(delay===30000){timer=fn;return 4242;}return originalSet(fn,delay,...args);};
@@ -32,6 +32,9 @@ async function main(){
   assert(document.body.textContent.includes('First Dish'),'menu renders before availability response');
   assert.equal(plus().disabled,false);assert.equal(captures,0);
   await act(async()=>{resolveFirst();await flush();});
+  counts=[3];await poll();assert(document.body.textContent.includes('Only 3 servings left'));assert.equal(plus().disabled,false);
+  counts=[1];await poll();assert(document.body.textContent.includes('Last serving available'));
+  counts=[];await poll();assert(!document.body.textContent.includes('Last serving available'));
   await act(async()=>{for(let i=0;i<5;i++){plus().click();await flush();}});
   assert.equal(document.querySelector('#quantity-0').value,'5');assert.equal(document.querySelector('#continue-order').disabled,false);
   statuses=['SOLD_OUT','AVAILABLE'];await poll();
@@ -51,6 +54,6 @@ async function main(){
   await act(async()=>{document.querySelector('form').dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}));await flush();});
   assert.equal(captures,1);assert(document.body.textContent.includes('no longer has enough servings'));assert.equal(document.querySelector('#quantity-0').value,'5');
   await act(async()=>root.unmount());
-  console.log(JSON.stringify({passed:true,checks:14,availabilityCalls:calls,captureCalls:captures,realNetworkCalls:0}));
+  console.log(JSON.stringify({passed:true,checks:18,availabilityCalls:calls,captureCalls:captures,realNetworkCalls:0}));
 }
 main().catch(error=>{console.error(error);process.exitCode=1;}).finally(()=>{global.setTimeout=originalSet;global.clearTimeout=originalClear;dom.window.close();});
