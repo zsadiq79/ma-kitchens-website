@@ -82,3 +82,4 @@
 .unavailableDish { background: #faf8f5; }
 .unavailableDish .thumbnail { opacity: .7; }
 .removeUnavailable { border: 0; background: transparent; color: #743d25; text-decoration: underline; cursor: pointer; padding: .4rem 0; font-size: .8rem; }
+.lowStock { display: inline-block; margin-top: .4rem; padding: .2rem .55rem; border-radius: .3rem; background: #fff0d8; color: #75420d; font-size: .82rem; font-weight: 700; }

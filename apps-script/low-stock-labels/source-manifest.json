@@ -1,0 +1,17 @@
+{
+  "profile": {
+    "folder": "production-candidate",
+    "environment": "PRODUCTION",
+    "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
+  },
+  "release": "low-stock-labels-20261028",
+  "baselineSha256": "0481c950211dd275b4ec87cb8728b7c7fe0b321c5a4e9d74c22568b9dbd90057",
+  "outputSha256": "66dd67de3f12871b31f63255d72df24a89c520cb94a31ef6d2f70af8f91621d7",
+  "changedExistingFunctions": [
+    "orderAvailabilityRead_"
+  ],
+  "newFunctions": [
+    "mkLowStockSettings_"
+  ]
+}
