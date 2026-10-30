@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { after } from 'next/server';
+import { getCachedOrderAvailability } from '@/lib/orderAvailabilityServer';
+import { initialOrderAvailability } from '@/lib/orderAvailabilityInitial.mjs';
 import publishedMenu from '@/data/published-order-menu.json';
 import { readPublishedOrderMenu } from '@/lib/publishedOrderMenu.mjs';
 import { OrderMenu } from '@/components/ordering/OrderMenu';
@@ -10,8 +13,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function CurrentOrderingMenu() {
-  // Bundled public menu only. No Apps Script/Google Sheets request on page load.
+export default async function CurrentOrderingMenu() {
   const menu = readPublishedOrderMenu(publishedMenu);
-  return <OrderMenu menu={menu} />;
+  if (!menu) return <OrderMenu menu={null} />;
+  // A warm shared cache supplies labels in the initial HTML. Never hold the menu
+  // behind a cold Apps Script call. Finish warming after responding if necessary.
+  const pending = getCachedOrderAvailability(menu);
+  after(async () => { await pending.catch(() => null); });
+  const initialAvailability = await initialOrderAvailability(pending);
+  return <OrderMenu menu={menu} initialAvailability={initialAvailability} />;
 }
+

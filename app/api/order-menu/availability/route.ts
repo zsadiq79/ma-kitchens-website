@@ -1,6 +1,6 @@
 import publishedMenu from '../../../../data/published-order-menu.json';
 import { readPublishedOrderMenu } from '../../../../lib/publishedOrderMenu.mjs';
-import { loadOrderAvailability } from '../../../../lib/orderAvailabilityBackend.mjs';
+import { getCachedOrderAvailability } from '../../../../lib/orderAvailabilityServer';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,11 +11,9 @@ export async function GET() {
   const noCache = { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' };
   if (!menu) return Response.json({ ok: false, error: 'MENU_CLOSED' }, { status: 409, headers: noCache });
   try {
-    const result = await loadOrderAvailability(menu, {
-      secret: process.env.ORDER_REQUEST_API_SECRET, backendUrl: process.env.ORDER_REQUEST_API_URL,
-    });
+    const result = await getCachedOrderAvailability(menu);
     return Response.json(result, { headers: result.status === 'OPEN' ? {
-      'Cache-Control': 'public, max-age=0, s-maxage=10, must-revalidate',
+      'Cache-Control': 'public, max-age=0, s-maxage=2, must-revalidate',
       'X-Robots-Tag': 'noindex, nofollow',
     } : noCache });
   } catch {

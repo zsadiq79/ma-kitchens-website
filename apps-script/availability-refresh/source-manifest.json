@@ -1,0 +1,16 @@
+{
+  "baselineCommit": "cf95fa0658bc776c4938f13917083a1ec5cb338a",
+  "baselineScriptDeploymentVersion": 53,
+  "baselineSourceSha256": "66dd67de3f12871b31f63255d72df24a89c520cb94a31ef6d2f70af8f91621d7",
+  "candidateSourceSha256": "58e22fa9bf25503627800d1a466241090af706a18d0d36c9ff5b2901e3363c75",
+  "changedFunctions": [
+    "orderAvailabilityRead_"
+  ],
+  "status": "PREPARED ONLY. Refresh live Code.gs before deployment.",
+  "profile": {
+    "folder": "production-candidate",
+    "environment": "PRODUCTION",
+    "spreadsheetId": "1m_QLaKXFQcUTcU0pMK9l42_DPm9YA0WHHqq_sU6mHW4",
+    "scriptId": "1hjXoo82Cv5bQ8a6AQibLqmD96j9FtXUtUkIsDuz_kkrf-F71nbW0XsIE"
+  }
+}

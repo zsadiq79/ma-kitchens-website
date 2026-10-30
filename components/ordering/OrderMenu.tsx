@@ -37,17 +37,17 @@ function DishThumbnail({ src, eager }: { src?: string; eager: boolean }) {
   </div>;
 }
 
-export function OrderMenu({ menu }: { menu: Menu | null }) {
+export function OrderMenu({ menu, initialAvailability = null }: { menu: Menu | null; initialAvailability?: Availability | null }) {
   const [quantities, setQuantities] = useState<string[]>(() => menu ? menu.meals.map(() => '') : []);
-  const [expired, setExpired] = useState(false);
-  const [stale, setStale] = useState(false);
+  const [expired, setExpired] = useState(initialAvailability?.status === 'CLOSED');
+  const [stale, setStale] = useState(initialAvailability?.status === 'STALE');
   const [message, setMessage] = useState('');
   const [draftReady, setDraftReady] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedRequest, setSavedRequest] = useState<SavedRequest | null>(null);
-  const [availability, setAvailability] = useState<Availability | null>(null);
+  const [availability, setAvailability] = useState<Availability | null>(initialAvailability);
   const [availabilityError, setAvailabilityError] = useState(false);
-  const availabilityRef = useRef<Availability | null>(null);
+  const availabilityRef = useRef<Availability | null>(initialAvailability);
   const availabilityFlight = useRef<Promise<Availability> | null>(null);
   const saveLock = useRef(false);
   const pendingRef = useRef<{signature:string;requestKey:string}|null>(null);
@@ -263,7 +263,8 @@ export function OrderMenu({ menu }: { menu: Menu | null }) {
         </div>
         {!unavailable && <div className={styles.availabilityNotice} role="status" aria-live="polite">
           {allSoldOut ? 'This week’s menu is sold out.' : blocked.length ? 'A selected dish is no longer available. Remove it to continue.' :
-            availabilityError ? 'Availability updates are temporarily unavailable. We’ll check again before saving your request.' : ''}
+            availabilityError ? 'Availability updates are temporarily unavailable. We’ll check again before saving your request.' :
+            !availability ? 'Checking remaining servings…' : ''}
         </div>}
         {unavailable ? <section className={styles.closed} aria-label="Menu unavailable">
           <h2>{stale ? 'Refresh the current menu' : 'A fresh menu is on its way'}</h2>

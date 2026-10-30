@@ -21,15 +21,16 @@ global.fetch=async url=>{
   return {ok:true,json:async()=>({ok:true,...menu,status:'OPEN',checkedAt:new Date().toISOString(),items:[{id,status:statuses[0],...(counts[0]===undefined?{}:{lowStockRemaining:counts[0]})},{id:id2,status:statuses[1]}]})};
 };
 const originalSet=global.setTimeout,originalClear=global.clearTimeout;
-global.setTimeout=(fn,delay,...args)=>{if(delay===30000){timer=fn;return 4242;}return originalSet(fn,delay,...args);};
+global.setTimeout=(fn,delay,...args)=>{if(delay===10000){timer=fn;return 4242;}return originalSet(fn,delay,...args);};
 global.clearTimeout=value=>{if(value===4242){timer=undefined;return;}return originalClear(value);};
 const root=createRoot(document.getElementById('root'));
 const flush=()=>new Promise(resolve=>originalSet(resolve,0));
 const plus=()=>document.querySelector('button[aria-label="Add one First Dish"]');
 async function poll(){const next=timer;timer=undefined;await act(async()=>{await next();await flush();});}
 async function main(){
-  await act(async()=>{root.render(React.createElement(mod.exports.OrderMenu,{menu}));await flush();});
+  await act(async()=>{root.render(React.createElement(mod.exports.OrderMenu,{menu,initialAvailability:{status:'OPEN',checkedAt:new Date().toISOString(),items:[{id,status:'AVAILABLE',lowStockRemaining:4},{id:id2,status:'AVAILABLE'}]}}));await flush();});
   assert(document.body.textContent.includes('First Dish'),'menu renders before availability response');
+  assert(document.body.textContent.includes('Only 4 servings left'),'initial labels render before a held network response');
   assert.equal(plus().disabled,false);assert.equal(captures,0);
   await act(async()=>{resolveFirst();await flush();});
   counts=[3];await poll();assert(document.body.textContent.includes('Only 3 servings left'));assert.equal(plus().disabled,false);
@@ -54,6 +55,6 @@ async function main(){
   await act(async()=>{document.querySelector('form').dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}));await flush();});
   assert.equal(captures,1);assert(document.body.textContent.includes('no longer has enough servings'));assert.equal(document.querySelector('#quantity-0').value,'5');
   await act(async()=>root.unmount());
-  console.log(JSON.stringify({passed:true,checks:18,availabilityCalls:calls,captureCalls:captures,realNetworkCalls:0}));
+  console.log(JSON.stringify({passed:true,checks:19,availabilityCalls:calls,captureCalls:captures,realNetworkCalls:0}));
 }
 main().catch(error=>{console.error(error);process.exitCode=1;}).finally(()=>{global.setTimeout=originalSet;global.clearTimeout=originalClear;dom.window.close();});
