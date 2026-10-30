@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    "/api/marketing-menu": ["./public/weekly-menus/**/*"],
+  },
   async headers() {
     return [
       {
