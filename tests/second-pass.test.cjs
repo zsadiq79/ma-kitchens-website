@@ -374,10 +374,10 @@ test('Preview middleware blocks legacy providers on this branch and allows only 
 });
 
 test('Routific forwarding rejects invalid HMACs and requires successful upstream JSON without logging private data',async()=>{
-  const boundary=await import('../lib/orderApiBoundary.mjs');const source=fs.readFileSync(path.join(root,'app/api/routific-webhook/route.js'),'utf8').replace(/^import .*;\n/gm,'').replace(/export /g,'');
-  let sent=0;const ctx={...boundary,crypto,Response,URL,Buffer,AbortSignal,process:{env:{ROUTIFIC_WEBHOOK_SECRET:'provider-test-secret',CONTROL_TOWER_WEBHOOK_SECRET:'forward-test-secret',CONTROL_TOWER_WEBHOOK_URL:'https://script.google.com/macros/s/TEST/exec'}},
-    fetch:async()=>{sent++;const response=Response.json({status:500});Object.defineProperty(response,'url',{value:'https://script.googleusercontent.com/macros/echo'});return response},
-    console:{log(){throw new Error('Private logging attempted')},error(){throw new Error('Private logging attempted')}}};vm.createContext(ctx);vm.runInContext(source,ctx);
+  const {receiveRoutific}=await import('../lib/routificIngress.mjs');
+  let sent=0;const dependencies={env:{ROUTIFIC_WEBHOOK_SECRET:'provider-test-secret',CONTROL_TOWER_WEBHOOK_SECRET:'forward-test-secret',CONTROL_TOWER_WEBHOOK_URL:'https://script.google.com/macros/s/TEST/exec'},
+    fetcher:async()=>{sent++;const response=Response.json({status:500});Object.defineProperty(response,'url',{value:'https://script.googleusercontent.com/macros/echo'});return response}};
+  const ctx={POST:request=>receiveRoutific(request,dependencies)};
   const raw=JSON.stringify({type:'order.status_updated',data:{order:{customerOrderNumber:'ORD-000001'}}});
   const make=signature=>new Request('https://preview.test/api/routific-webhook',{method:'POST',headers:{'x-routific-signature':signature},body:raw});
   assert.equal((await ctx.POST(make('0'.repeat(64)))).status,401);assert.equal(sent,0);

@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "app/api/queues/routific-recovery/route.js": {
+      "experimentalTriggers": [{"type":"queue/v2beta","topic":"ma-kitchens-routific-recovery-v1"}]
+    }
+  }
+}

@@ -275,3 +275,9 @@ test('draft and direct submission record first interaction in the existing atomi
   assert.equal(f.batches(),before+1);assert.equal(f.tables.get('Feedback V2 Orders').values[1][9],new Date(now).toISOString());
  }
 });
+test('status callbacks read only the message ledgers and never load the full feedback schema',()=>{
+ const f=fixture();f.c.fwSchema_=()=>{throw Error('Full feedback schema must not load for receipts');};
+ const before=f.reads.tables;
+ assert.equal(f.c.updateWhatsAppLogFromStatus_({id:'wamid.delivery',status:'read',recipient_id:'61420123456',timestamp:String(now/1000)}),true);
+ assert.equal(f.reads.tables-before,2);assert.equal(f.tables.get('WhatsApp Log').values[1][8],'Read');
+});

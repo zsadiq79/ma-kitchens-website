@@ -97,9 +97,9 @@ function updateWhatsAppLogFromStatus_(status) {
       [3,5,6,7,8,9,10].forEach(i => { if (row[i] instanceof Date) requests.push(fwCell_(t.sheet, found[0].number, i, row[i])); else if (i >= 8 || i === 3) requests.push(fwCell_(t.sheet, found[0].number, i, row[i])); });
     } else requests.push(fwAppend_(t.sheet, [row]));
     if (fwProps_().getProperty('FEEDBACK_V2_WRITES_ENABLED') === 'true') {
-      const schema = fwSchema_(book); const matches = schema.orders.rows.map((r,i) => ({row:r.slice(),number:i+2})).filter(x => x.row[16] === status.id);
+      const feedbackOrders = fwTable_(book, FW.orders, FW.orderHeaders); if (FW.orderHeaders.some((h,i) => feedbackOrders.headers[i] !== h)) fwError_('CONFIGURATION_ERROR'); const matches = feedbackOrders.rows.map((r,i) => ({row:r.slice(),number:i+2})).filter(x => x.row[16] === status.id);
       if (matches.length > 1) fwError_('CONFIGURATION_ERROR');
-      if (matches.length && index) { const r = matches[0].row, i = index + 13; if (!Number.isFinite(fwTime_(r[i])) || eventAt.getTime() < fwTime_(r[i])) r[i] = eventAt.toISOString(); requests.push(fwUpdate_(schema.orders.sheet, matches[0].number, r)); }
+      if (matches.length && index) { const r = matches[0].row, i = index + 13; if (!Number.isFinite(fwTime_(r[i])) || eventAt.getTime() < fwTime_(r[i])) { r[i] = eventAt.toISOString(); requests.push(fwCell_(feedbackOrders.sheet, matches[0].number, i, r[i])); } }
     }
     fwBatch_(book, requests); return true;
   });
