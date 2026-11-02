@@ -8,7 +8,8 @@ const MK_RV2=Object.freeze({version:'2026-11-01-candidate-1',prefix:'MK_RV2_',mo
 function rv2Mode_(){const value=PropertiesService.getScriptProperties().getProperty(MK_RV2.mode)||'OFF';
   if(!['OFF','CAPTURE','LIVE','PAUSED','TEST'].includes(value))throw new Error('RECOVERY_MODE_INVALID');return value;}
 function rv2Active_(){return ['LIVE','TEST'].includes(rv2Mode_());}
-function rv2SendPrefix_(){return rv2Mode_()==='TEST'?MK_RV2.prefix+'TEST_SEND_':MK_RV2.send;}
+function rv2SendPrefix_(){if(rv2Mode_()!=='TEST')return MK_RV2.send;const c=rv2TestConfig_();return MK_RV2.prefix+'TEST_SEND_'+(c.runId?c.runId+'_':'');}
+function rv2RecordKey_(r){return (r.test?MK_RV2.prefix+'TEST_SEND_'+(r.testRunId?r.testRunId+'_':''):MK_RV2.send)+r.orderId+'_'+r.stage;}
 function rv2JobPrefix_(){return rv2Mode_()==='TEST'?MK_RV2.prefix+'TEST_ROUTE_JOB_':MK_RV2.route;}
 function rv2Json_(raw){if(!raw)return null;try{return JSON.parse(raw);}catch(_){throw new Error('RECOVERY_RECORD_INVALID');}}
 function rv2Lock_(fn){const lock=LockService.getScriptLock();if(!lock.tryLock(1000))throw new Error('RECOVERY_BUSY');
@@ -191,7 +192,7 @@ function rv2Reserve_(tables,item,owner){
     const recipient=rv2Recipient_(tables,item,true);if(!recipient)return null;
     if(rv2Mode_()==='TEST')rv2AssertTestItem_(tables,item,recipient);
     const record={state:'SENDING',attemptId:Utilities.getUuid(),attemptAt:new Date().toISOString(),orderId:item.orderId,stage:item.stage,
-      recipient:recipient.phone,routeUuid:item.routeUuid,test:rv2Mode_()==='TEST',eta:item.eta?new Date(item.eta).toISOString():null};
+      recipient:recipient.phone,routeUuid:item.routeUuid,test:rv2Mode_()==='TEST',testRunId:rv2Mode_()==='TEST'?(rv2TestConfig_().runId||null):null,eta:item.eta?new Date(item.eta).toISOString():null};
     rv2Set_(props,rv2SendPrefix_()+item.orderId+'_'+item.stage,record);
     rv2Set_(props,MK_RV2.lease,{owner:owner,until:Date.now()+90000});
     return {record:record,recipient:recipient};
@@ -208,7 +209,7 @@ function rv2Send_(tables,item,owner,tracking){
   }catch(_){console.error(JSON.stringify({diagnostic:'RECOVERY_SEND_UNCERTAIN',orderId:item.orderId,stage:item.stage}));return false;}
   // The durable acceptance record precedes spreadsheet logging. Logging can be repaired without resending.
   const record=Object.assign({},prepared.record,{state:'ACCEPTED',messageId:messageId,acceptedAt:new Date().toISOString()});
-  const sendKey=(record.test?MK_RV2.prefix+'TEST_SEND_':MK_RV2.send)+item.orderId+'_'+item.stage;
+  const sendKey=rv2RecordKey_(record);
   PropertiesService.getScriptProperties().setProperty(sendKey,JSON.stringify(record));
   rv2RegisterLog_(tables,record);
   record.logged=true;PropertiesService.getScriptProperties().setProperty(sendKey,JSON.stringify(record));
@@ -247,7 +248,7 @@ function rv2MarkDelivered_(tables,item,detail){
 function rv2RepairLog_(tables,record){
   if(record.state!=='ACCEPTED' || !record.messageId || !record.orderId || !record.stage || !record.recipient)return;
   if(!rv2Logged_(tables,record.orderId,record.stage))rv2RegisterLog_(tables,record);
-  record.logged=true;rv2Set_(PropertiesService.getScriptProperties(),(record.test?MK_RV2.prefix+'TEST_SEND_':MK_RV2.send)+record.orderId+'_'+record.stage,record);
+  record.logged=true;rv2Set_(PropertiesService.getScriptProperties(),rv2RecordKey_(record),record);
 }
 function runRoutificRecoveryWorker_(){
   mkReleaseBinding_(false);if(!rv2Active_())return;

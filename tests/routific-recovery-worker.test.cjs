@@ -222,3 +222,10 @@ test('busy shared lock defers work without losing its queue or accepted receipt'
  assert.doesNotThrow(()=>h.run());assert.ok(Object.keys(h.props).some(k=>k.startsWith('MK_RV2_SEND_')&&JSON.parse(h.props[k]).state==='ACCEPTED'));
  h.busy(false);h.c.mkEtaSend_=send;h.advance(100000);h.run();assert.equal(h.sent.filter(x=>x.orderId==='ORD-000001'&&x.stage==='delivery_journey_started_eta').length,1);
 });
+test('a second rehearsal uses isolated receipt keys and preserves the first run reservations',()=>{
+ const h=harness(),cfg=testConfig(h);cfg.runId='rv2-test-20261105-180000';h.props.MK_RV2_MODE='TEST';h.props.MK_RV2_TEST_CONFIG=JSON.stringify(cfg);
+ const legacy='MK_RV2_TEST_SEND_ORD-900001_delivery_journey_started_eta';h.props[legacy]=JSON.stringify({state:'ACCEPTED',messageId:'old'});
+ assert.equal(h.c.rv2SendPrefix_(),'MK_RV2_TEST_SEND_rv2-test-20261105-180000_');
+ assert.equal(h.c.rv2RecordKey_({test:true,testRunId:cfg.runId,orderId:'ORD-900001',stage:'delivery_next_eta'}),'MK_RV2_TEST_SEND_rv2-test-20261105-180000_ORD-900001_delivery_next_eta');
+ assert.equal(JSON.parse(h.props[legacy]).messageId,'old');cfg.runId='unsafe prefix';h.props.MK_RV2_TEST_CONFIG=JSON.stringify(cfg);assert.throws(()=>h.c.rv2TestConfig_(),/NOT_AUTHORIZED/);
+});

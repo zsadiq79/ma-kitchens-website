@@ -9,6 +9,7 @@ function rv2ValidateTestConfig_(config){
   if(!config || config.recipient!=='61420306705' || !mkEtaUuid_(config.routeUuid) || !config.bookId ||
     config.bookId===CONTROL_TOWER_SPREADSHEET_ID || !Array.isArray(config.orders) || config.orders.length!==6 ||
     new Set(config.orders.map(function(o){return o.orderId;})).size!==6 || new Set(config.orders.map(function(o){return o.uuid;})).size!==6 ||
+    config.runId!==undefined && !/^rv2-test-[0-9]{8}-[0-9]{6}$/.test(config.runId) ||
     typeof config.expiresAt!=='number' || !Number.isFinite(config.expiresAt) || config.expiresAt<Date.now() ||
     config.orders.some(function(o){return !/^ORD-90000[1-6]$/.test(o.orderId) || !mkEtaUuid_(o.uuid);}))
     throw new Error('RECOVERY_TEST_NOT_AUTHORIZED');
@@ -97,7 +98,7 @@ function prepareRoutificRecoveryTestAssets(){
     names.forEach(function(name){const sheet=testBook.getSheetByName(name),last=name==='Customers'?1000:name==='WhatsApp Log'?1515:2000;
       if(sheet.getMaxRows()<last)sheet.insertRowsAfter(sheet.getMaxRows(),last-sheet.getMaxRows());
       sheet.getRange(last,headers[name].length).setFormula('=IF(FALSE,"","")');});
-    const config={version:1,bookId:state.bookId,routeUuid:state.routeUuid,orders:orders,recipient:'61420306705',date:date,expiresAt:Date.now()+8*3600000};
+    const config={version:1,bookId:state.bookId,routeUuid:state.routeUuid,orders:orders,recipient:'61420306705',date:date,runId:tag,expiresAt:Date.now()+8*3600000};
     rv2Set_(props,MK_RV2.prefix+'TEST_CONFIG',config);
     state.state='READY_UNPUBLISHED';rv2Set_(props,MK_RV2.prefix+'TEST_SETUP',state);
     console.log(JSON.stringify({ok:true,state:state.state,date:date,routeUuid:state.routeUuid,testOrders:6,recipient:'0420 306 705',messagesSent:0,productionRecordsChanged:0}));
@@ -110,7 +111,7 @@ function enableRoutificRecoveryRouteTest(){
   if(orders.length!==6 || orders.some(function(o){return !config.orders.some(function(t){return t.orderId===o.customerOrderNumber && t.uuid===o.uuid;}) || o.status!=='scheduled';}) ||
     snapshot.items.some(function(s){return !!s.actualDepartureTime || !!s.actualArrivalTime;}))throw new Error('RECOVERY_TEST_ROUTE_NOT_READY');
   const props=PropertiesService.getScriptProperties();
-  if(rv2Mode_()!=='OFF')throw new Error('RECOVERY_TEST_MODE_CONFLICT');
+  if(!['OFF','CAPTURE'].includes(rv2Mode_()))throw new Error('RECOVERY_TEST_MODE_CONFLICT');
   props.setProperty(MK_RV2.cutoff,new Date().toISOString());props.setProperty(MK_RV2.mode,'TEST');
   rv2Set_(props,MK_RV2.prefix+'TEST_ROUTE_JOB_'+config.routeUuid,{routeUuid:config.routeUuid,eventAt:Date.now(),firstReceivedAt:Date.now(),lastReceivedAt:Date.now(),attempts:0,nextPollAt:0});
   console.log(JSON.stringify({ok:true,mode:'TEST',routeUuid:config.routeUuid,recipient:'0420 306 705',messagesSent:0,productionRecordsChanged:0}));
@@ -187,4 +188,30 @@ function refreshRoutificRecoveryTestDate(){
     props.setProperty(MK_RV2.mode,'TEST');
   });
   console.log(JSON.stringify({ok:true,mode:'TEST',date:today,routeUuid:config.routeUuid,testOrders:6,expiresAt:new Date(renewed.expiresAt).toISOString(),messagesSent:0,productionRecordsChanged:0}));
+}
+
+function archiveCompletedRoutificRecoveryTest(){
+  mkReleaseOwnerBook_(false);if(rv2Mode_()!=='OFF')throw new Error('RECOVERY_TEST_MODE_CONFLICT');
+  const props=PropertiesService.getScriptProperties(),raw=props.getProperty(MK_RV2.prefix+'TEST_CONFIG'),config=rv2Json_(raw);
+  if(!config)throw new Error('RECOVERY_TEST_NOT_AUTHORIZED');
+  rv2ValidateTestConfig_(Object.assign({},config,{expiresAt:Date.now()+60000}));
+  const snapshot=rv2Timeline_(config.routeUuid,Date.now()+40000),orders=snapshot.items.flatMap(function(s){return s.orders||[];});
+  if(orders.length!==6 || orders.some(function(o){return o.status!=='delivered' || !config.orders.some(function(t){return t.orderId===o.customerOrderNumber && t.uuid===o.uuid;});}))throw new Error('RECOVERY_TEST_NOT_COMPLETE');
+  const all=props.getProperties(),records=Object.keys(all).filter(function(k){return k.startsWith(MK_RV2.prefix+'TEST_SEND_');}).map(function(k){return rv2Json_(all[k]);}).filter(function(r){return r.routeUuid===config.routeUuid;});
+  if(records.length!==18 || records.some(function(r){return r.state!=='ACCEPTED' || !r.logged;}))throw new Error('RECOVERY_TEST_NOT_COMPLETE');
+  rv2Lock_(function(){
+    if(rv2Mode_()!=='OFF' || props.getProperty(MK_RV2.prefix+'TEST_CONFIG')!==raw || props.getProperty(MK_RV2.prefix+'TEST_ROUTE_JOB_'+config.routeUuid))throw new Error('RECOVERY_TEST_MODE_CONFLICT');
+    const key=MK_RV2.prefix+'TEST_HISTORY_'+config.routeUuid;
+    rv2Set_(props,key,{config:config,setup:rv2Json_(props.getProperty(MK_RV2.prefix+'TEST_SETUP')),archivedAt:new Date().toISOString(),receiptsPreserved:true});
+    props.deleteProperty(MK_RV2.prefix+'TEST_SETUP');
+  });
+  console.log(JSON.stringify({ok:true,archivedRoute:config.routeUuid,receiptsPreserved:18,messagesSent:0,productionRecordsChanged:0}));
+}
+function prepareRoutificRecoveryIngressTest(){
+  mkReleaseOwnerBook_(false);const config=rv2TestConfig_(),props=PropertiesService.getScriptProperties();
+  if(rv2Mode_()!=='OFF')throw new Error('RECOVERY_TEST_MODE_CONFLICT');
+  const snapshot=rv2Timeline_(config.routeUuid,Date.now()+40000),orders=snapshot.items.flatMap(function(s){return s.orders||[];});
+  if(orders.length!==6 || orders.some(function(o){return o.status!=='scheduled' || !config.orders.some(function(t){return t.orderId===o.customerOrderNumber && t.uuid===o.uuid;});}) || snapshot.items.some(function(s){return !!s.actualDepartureTime || !!s.actualArrivalTime;}))throw new Error('RECOVERY_TEST_ROUTE_NOT_READY');
+  rv2Lock_(function(){if(rv2Mode_()!=='OFF')throw new Error('RECOVERY_TEST_MODE_CONFLICT');props.setProperty(MK_RV2.cutoff,new Date().toISOString());props.setProperty(MK_RV2.mode,'CAPTURE');});
+  console.log(JSON.stringify({ok:true,mode:'CAPTURE',routeUuid:config.routeUuid,customerMessagingEnabled:false,messagesSent:0}));
 }
