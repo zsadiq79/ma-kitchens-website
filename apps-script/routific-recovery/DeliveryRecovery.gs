@@ -97,11 +97,23 @@ function rv2Tables_(){
   const required={Orders:['Order ID','Delivery Date','Customer ID','Customer Name','Phone','Order Status'],
     Deliveries:['Order ID','Routific ID','Delivery Status','Delivered At'],
     Customers:['Customer ID','Name','Phone','WhatsApp Opt-In'], 'WhatsApp Log':['Message ID','Order ID','Message Type','Status']};
-  Object.keys(required).forEach(function(name){
+  const names=Object.keys(required),useBatch=typeof Sheets!=='undefined' && Sheets.Spreadsheets && Sheets.Spreadsheets.Values;
+  const batch=useBatch?Sheets.Spreadsheets.Values.batchGet(book.getId(),{ranges:names.map(function(name){return "'"+name+"'";}),
+    valueRenderOption:'UNFORMATTED_VALUE',dateTimeRenderOption:'SERIAL_NUMBER',majorDimension:'ROWS'}):null;
+  if(useBatch && (!batch || !Array.isArray(batch.valueRanges) || batch.valueRanges.length!==names.length))throw new Error('RECOVERY_TABLE_RESPONSE_INVALID');
+  names.forEach(function(name,index){
     const sheet=book.getSheetByName(name);if(!sheet)throw new Error('RECOVERY_SHEET_MISSING');
-    const rows=sheet.getDataRange().getValues(),head=rows.shift()||[],columns={};
+    const rows=useBatch?(batch.valueRanges[index].values||[]).map(function(row){return row.slice();}):sheet.getDataRange().getValues(),head=rows.shift()||[],columns={};
     head.forEach(function(h,i){h=String(h).trim();if(h && columns[h]!==undefined)throw new Error('RECOVERY_DUPLICATE_HEADER');if(h)columns[h]=i;});
     if(required[name].some(function(h){return columns[h]===undefined;}))throw new Error('RECOVERY_HEADER_MISSING');
+    if(useBatch){
+      rows.forEach(function(row){while(row.length<head.length)row.push('');});
+      if(name==='Orders')rows.forEach(function(row){const value=row[columns['Delivery Date']];
+        // Sheets serials represent local calendar days. UTC midnight preserves that day in Sydney.
+        if(typeof value==='number' && Number.isFinite(value) && value>=1 && value<100000)
+          row[columns['Delivery Date']]=new Date((Math.floor(value)-25569)*86400000);
+      });
+    }
     tables[name]={sheet:sheet,rows:rows,columns:columns,width:head.length};
   });return tables;
 }
@@ -265,7 +277,8 @@ function runRoutificRecoveryWorker_(){
     const all=props.getProperties();
     const repairs=Object.keys(all).filter(function(k){if(!k.startsWith(rv2SendPrefix_()))return false;const r=rv2Json_(all[k]);return r.state==='ACCEPTED' && !r.logged;});
     if(!repairs.length && !Object.keys(all).some(function(k){return k.startsWith(rv2JobPrefix_());})){rv2Maintenance_(null);return;}
-    const tables=rv2Tables_();
+    const tableStarted=Date.now(),tables=rv2Tables_();
+    console.log(JSON.stringify({diagnostic:'RECOVERY_WORKER_TABLES',elapsedMs:Date.now()-tableStarted,totalMs:Date.now()-started,budgetRemainingMs:deadline-Date.now()}));
     // Reconcile only a bounded number of accepted sends per pass; never retry SENDING.
     for(const key of repairs){if(Date.now()>deadline)break;rv2RepairLog_(tables,rv2Json_(all[key]));}
     const jobs=Object.keys(all).filter(function(k){return k.startsWith(rv2JobPrefix_());})

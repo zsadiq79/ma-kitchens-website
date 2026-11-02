@@ -130,7 +130,9 @@ function inspectRoutificRecoveryRouteTest(){
   const head=values.shift(),messageColumn=head.indexOf('Message ID'),statusColumn=head.indexOf('Status');
   const stages=[MK_RV2.journey,MK_RV2.next,MK_RV2.delivered],summary={};
   stages.forEach(function(stage){const items=records.filter(function(r){return r.stage===stage;});
+    const acceptedTimes=items.filter(function(r){return r.state==='ACCEPTED' && Number.isFinite(Date.parse(r.acceptedAt));}).map(function(r){return r.acceptedAt;}).sort();
     summary[stage]={accepted:items.filter(function(r){return r.state==='ACCEPTED';}).length,
+      firstAcceptedAt:acceptedTimes[0]||null,lastAcceptedAt:acceptedTimes[acceptedTimes.length-1]||null,
       providerDeliveredOrRead:items.filter(function(r){return values.some(function(row){return row[messageColumn]===r.messageId && ['Delivered','Read'].includes(row[statusColumn]);});}).length,
       providerFailed:items.filter(function(r){return values.some(function(row){return row[messageColumn]===r.messageId && row[statusColumn]==='Failed';});}).length,
       uncertain:items.filter(function(r){return r.state==='SENDING';}).length};});

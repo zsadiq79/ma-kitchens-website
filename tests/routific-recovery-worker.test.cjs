@@ -72,6 +72,21 @@ test('normal production worker sends journeys and first next, with all network c
 test('19-customer route sends all departure messages in one healthy pass without rereading full sheets per message',()=>{
  const h=harness(19);h.enqueue();h.run();assert.equal(h.sent.length,20);assert.equal(h.sent.filter(s=>s.stage==='delivery_journey_started_eta').length,19);
 });
+test('batch loading reads all four tables once and preserves Sydney delivery dates for sending',()=>{
+ const h=harness(2);let reads=0;
+ h.c.Sheets={Spreadsheets:{Values:{batchGet:(id,options)=>{
+  reads++;assert.equal(id,'book');assert.equal(options.valueRenderOption,'UNFORMATTED_VALUE');assert.equal(options.dateTimeRenderOption,'SERIAL_NUMBER');
+  assert.deepEqual(Array.from(options.ranges),["'Orders'","'Deliveries'","'Customers'","'WhatsApp Log'"]);
+  return {valueRanges:Object.keys(h.rows).map(name=>({values:h.rows[name].map(row=>row.map(value=>value instanceof Date?Math.floor(value.getTime()/86400000)+25569:value))}))};
+ }}}};
+ for(const name of Object.keys(h.rows))h.book.getSheetByName(name).getDataRange=()=>{throw Error('Serial table read prohibited');};
+ h.enqueue();h.run();assert.equal(reads,1);assert.equal(h.sent.length,3);
+ assert(h.logs.some(line=>line.includes('RECOVERY_WORKER_TABLES')));
+});
+test('partial batch response fails without sending from incomplete tables',()=>{
+ const h=harness();h.c.Sheets={Spreadsheets:{Values:{batchGet:()=>({valueRanges:[]})}}};h.enqueue();
+ assert.throws(()=>h.run(),/RECOVERY_TABLE_RESPONSE_INVALID/);assert.equal(h.sent.length,0);assert(h.props['MK_RV2_ROUTE_'+route]);
+});
 test('five co-located timeline entries all receive next messages, rather than just the first order',()=>{
  const h=harness(6);const keys={};for(let i=1;i<=5;i++){
   h.stops[i].plannedArrivalTime=h.stops[1].plannedArrivalTime;h.stops[i].plannedDepartureTime=h.stops[1].plannedDepartureTime;
