@@ -244,3 +244,11 @@ test('a second rehearsal uses isolated receipt keys and preserves the first run 
  assert.equal(h.c.rv2RecordKey_({test:true,testRunId:cfg.runId,orderId:'ORD-900001',stage:'delivery_next_eta'}),'MK_RV2_TEST_SEND_rv2-test-20261105-180000_ORD-900001_delivery_next_eta');
  assert.equal(JSON.parse(h.props[legacy]).messageId,'old');cfg.runId='unsafe prefix';h.props.MK_RV2_TEST_CONFIG=JSON.stringify(cfg);assert.throws(()=>h.c.rv2TestConfig_(),/NOT_AUTHORIZED/);
 });
+
+test('provider health events persist proof without route jobs, spreadsheet calls, Routific calls or messages',()=>{
+ const h=harness(),event={version:1,key:'e'.repeat(64),payload:{type:'webhook.test'}};
+ const result=h.c.rv2Accept_(event);assert.equal(result.healthCheck,true);assert.equal(result.durablyStored,true);
+ const first=h.props.MK_RV2_HEALTH_LAST;h.advance(1000);h.c.rv2Accept_(event);assert.equal(h.props.MK_RV2_HEALTH_LAST,first);
+ assert.equal(Object.keys(h.props).filter(k=>k.startsWith('MK_RV2_ROUTE_')).length,0);assert.equal(h.calls.length,0);assert.equal(h.sent.length,0);
+ h.busy(true);assert.throws(()=>h.c.rv2Accept_({...event,key:'f'.repeat(64)}),/RECOVERY_BUSY/);assert.equal(h.props['MK_RV2_EVENT_'+ 'f'.repeat(64)],undefined);
+});

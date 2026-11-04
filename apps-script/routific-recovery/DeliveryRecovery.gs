@@ -30,7 +30,15 @@ function handleRoutificRecoveryIngress_(e){
 }
 function rv2Accept_(event){
   if(!event || event.version!==1 || !/^[a-f0-9]{64}$/.test(event.key) || !event.payload ||
-    !['route.published','route.eta_updated','order.status_updated'].includes(event.payload.type))throw new Error('RECOVERY_EVENT_INVALID');
+    !['route.published','route.eta_updated','order.status_updated','webhook.test'].includes(event.payload.type))throw new Error('RECOVERY_EVENT_INVALID');
+  // Provider test events verify durable forwarding without route work or outbound APIs.
+  if(event.payload.type==='webhook.test')return rv2Lock_(function(){
+    const props=PropertiesService.getScriptProperties(),key=MK_RV2.event+event.key;
+    let record=rv2Json_(props.getProperty(key));
+    if(!record){record={acceptedAt:Date.now(),kind:'WEBHOOK_HEALTH'};rv2Set_(props,key,record);}
+    rv2Set_(props,MK_RV2.prefix+'HEALTH_LAST',{eventKey:event.key,acceptedAt:record.acceptedAt,kind:'WEBHOOK_HEALTH'});
+    return {status:200,recoveryVersion:1,eventKey:event.key,durablyStored:true,healthCheck:true};
+  });
   const payload=event.payload,route=payload.data && payload.data.route,eventAt=rv2Date_(payload.timestamp);
   if(!route || !mkEtaUuid_(route.uuid) || !Number.isFinite(eventAt) || eventAt>Date.now()+60000)throw new Error('RECOVERY_EVENT_INVALID');
   return rv2Lock_(function(){

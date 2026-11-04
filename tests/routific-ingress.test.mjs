@@ -70,3 +70,10 @@ test('disabled consumer and invalid backend configuration cannot acknowledge wor
 test('Apps Script timeouts and errors are sanitized and remain retryable',async()=>{
   await assert.rejects(deliverRoutificEvent({version:1,key:'a'.repeat(64),payload},{env,fetcher:async()=>{throw Error('private-forward-secret');}}),e=>e.message==='ROUTIFIC_RECOVERY_DELIVERY_RETRY');
 });
+
+test('signed provider health tests use the durable queue and discard arbitrary test payload data',async()=>{
+  let forwarded;
+  const response=await receiveRoutific(req(JSON.stringify({type:'webhook.test',data:{route:{uuid:'ignored'},private:'discard'}})),{env,publish:async(_,event)=>{forwarded=event;return{messageId:'health'};}});
+  assert.equal(response.status,200);assert.equal((await response.json()).durablyQueued,true);assert.deepEqual(forwarded.payload,{type:'webhook.test'});
+  assert.deepEqual(await deliverRoutificEvent(forwarded,{env,fetcher:async()=>upstream({status:200,recoveryVersion:1,eventKey:forwarded.key,durablyStored:true,healthCheck:true})}),{accepted:true});
+});

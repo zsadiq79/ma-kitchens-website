@@ -10,6 +10,8 @@ The worker batches spreadsheet reads, groups co-located deliveries, refreshes ag
 
 Authenticated WhatsApp receipts are captured in immutable event properties without spreadsheet access or the shared writer lock. The existing minute worker applies bounded atomic batches to WhatsApp, feedback and marketing ledgers. Replays merge monotonic statuses and earliest timestamps, including receipt-before-registration and ambiguous-commit recovery. Feedback defers while delivery jobs are pending. Receipt activation remains controlled by MK_RCPT_ENABLED.
 
+Signed provider `webhook.test` events take the same durable queue and authenticated forwarding path, then persist a health receipt without creating route work, reading customer sheets, calling Routific or sending messages. This supports production transport checks without consuming order allocations.
+
 ## Evidence and limits
 
 Two earlier driver tests established real provider delivery and exposed latency. One delivered all 18 messages; the other delivered 15 and missed three next-stop notifications after their ETA expired. These tests did not establish acceptable burst performance.
