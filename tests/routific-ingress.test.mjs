@@ -77,3 +77,13 @@ test('signed provider health tests use the durable queue and discard arbitrary t
   assert.equal(response.status,200);assert.equal((await response.json()).durablyQueued,true);assert.deepEqual(forwarded.payload,{type:'webhook.test'});
   assert.deepEqual(await deliverRoutificEvent(forwarded,{env,fetcher:async()=>upstream({status:200,recoveryVersion:1,eventKey:forwarded.key,durablyStored:true,healthCheck:true})}),{accepted:true});
 });
+
+test('the actual untyped provider connection test is normalized after signature verification',async()=>{
+  let event;
+  const body=JSON.stringify({message:'Test connection',timestamp:'2026-11-04T12:00:00Z'});
+  const response=await receiveRoutific(req(body),{env,publish:async(_,value)=>{event=value;return {messageId:'health'};}});
+  assert.equal(response.status,200);assert.equal((await response.json()).durablyQueued,true);assert.deepEqual(event.payload,{type:'webhook.test'});
+  let called=false;
+  assert.equal((await receiveRoutific(req(body,'bad'),{env,publish:()=>{called=true;}})).status,401);assert.equal(called,false);
+  await receiveRoutific(req(JSON.stringify({message:'not the fixed test shape',timestamp:'x',data:{route:{}}})),{env,publish:()=>{called=true;}});assert.equal(called,false);
+});
