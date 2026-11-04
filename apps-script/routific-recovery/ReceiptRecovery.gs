@@ -39,9 +39,10 @@ function wrqMergeStatus_(existing,status){
   return row;
 }
 function wrqSame_(a,b){return a instanceof Date || b instanceof Date ? a instanceof Date && b instanceof Date && a.getTime()===b.getTime() : a===b;}
-function wrqApplyBatch_(book,entries){
+function wrqApplyBatch_(book,entries,fixture){
+  if(fixture)wrhValidateContext_(fixture);
   const names=['WhatsApp Log'],ranges=["'WhatsApp Log'!A:K"];
-  const feedback=fwProps_().getProperty('FEEDBACK_V2_WRITES_ENABLED')==='true',marketing=typeof MKM!=='undefined';
+  const feedback=!!fixture || fwProps_().getProperty('FEEDBACK_V2_WRITES_ENABLED')==='true',marketing=typeof MKM!=='undefined';
   if(feedback){names.push(FW.orders);ranges.push("'"+FW.orders.replace(/'/g,"''")+"'!A:Y");}
   if(marketing){names.push(MKM.events);ranges.push("'"+MKM.events.replace(/'/g,"''")+"'!A:I");}
   // Typed grid reads preserve actual provider timestamps and the workbook timezone.
@@ -91,19 +92,19 @@ function wrqApplyBatch_(book,entries){
   fwBatch_(book,requests);
   return {events:entries.length,messages:changes.size,requests:requests.length};
 }
-function wrqRun_(){
-  if(!wrqEnabled_())return;
-  const props=PropertiesService.getScriptProperties(),all=props.getProperties(),started=Date.now();
+function wrqRun_(fixture){
+  if(fixture){wrhValidateContext_(fixture);}else if(!wrqEnabled_())return;
+  const props=fixture?fixture.store:PropertiesService.getScriptProperties(),all=props.getProperties(),started=Date.now();
   const entries=Object.keys(all).filter(function(key){return key.startsWith(MK_RCPT.prefix);}).map(function(key){return {key:key,raw:all[key],record:JSON.parse(all[key])};});
   const pending=entries.filter(function(e){return !e.record.doneAt;}).sort(function(a,b){return Number(a.record.status.timestamp)-Number(b.record.status.timestamp)||a.key.localeCompare(b.key);}).slice(0,MK_RCPT.batch);
   if(!pending.length){
     entries.filter(function(e){return e.record.doneAt && Date.now()-e.record.doneAt>2*86400000;}).slice(0,20).forEach(function(e){props.deleteProperty(e.key);});return;
   }
-  const lock=LockService.getScriptLock();if(!lock.tryLock(250)){console.log(JSON.stringify({diagnostic:'RECEIPT_WORKER_DEFERRED',pending:pending.length}));return;}
+  const lock=LockService.getScriptLock();if(!lock.tryLock(250)){console.log(JSON.stringify({diagnostic:'RECEIPT_WORKER_DEFERRED',pending:pending.length}));return {deferred:true};}
   try{
     const latest=props.getProperties(),current=pending.filter(function(e){const value=latest[e.key];if(!value)return false;e.record=JSON.parse(value);return !e.record.doneAt;});
     if(!current.length)return;
-    const result=fwWithReads_(function(){return wrqApplyBatch_(fwBook_(),current);});
+    const result=fwWithReads_(function(){return wrqApplyBatch_(fixture?fixture.book:fwBook_(),current,fixture);});
     const updates={};current.forEach(function(e){updates[e.key]=JSON.stringify({version:1,status:e.record.status,receivedAt:e.record.receivedAt,doneAt:Date.now()});});
     let recent=[];try{recent=JSON.parse(props.getProperty('WHATSAPP_RECENT_STATUS_LOG')||'[]');}catch(_){}
     if(!Array.isArray(recent))recent=[];
@@ -113,10 +114,12 @@ function wrqRun_(){
     // Commit completion only after the atomic spreadsheet batch. A retry rereads and merges persisted rows.
     props.setProperties(updates,false);
     console.log(JSON.stringify(Object.assign({diagnostic:'RECEIPT_WORKER',elapsedMs:Date.now()-started},result)));
-  }catch(_){console.log(JSON.stringify({diagnostic:'RECEIPT_WORKER_RETRY',pending:pending.length}));}
+    return Object.assign({deferred:false},result);
+  }catch(_){console.log(JSON.stringify({diagnostic:'RECEIPT_WORKER_RETRY',pending:pending.length}));return {retry:true};}
   finally{lock.releaseLock();}
 }
 function wrqDeliveryPending_(){
+  if(typeof wrhFeedbackTest_!=='undefined' && wrhFeedbackTest_===true)return true;
   if(!wrqEnabled_() || !rv2Active_())return false;
   const props=PropertiesService.getScriptProperties().getProperties(),prefix=rv2JobPrefix_();
   return Object.keys(props).some(function(key){return key.startsWith(prefix);});
