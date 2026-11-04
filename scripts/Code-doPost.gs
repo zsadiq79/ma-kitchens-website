@@ -18,6 +18,8 @@ function doPost(e) {
     // Preserve the existing authenticated Routific routing and its handler.
     if (payload && (Object.prototype.hasOwnProperty.call(payload, 'controlTowerSecret') || payload.payload?.type === 'order.status_updated')) return handleRoutificWebhook_(e);
     if (!verified && fwProps_().getProperty('WHATSAPP_REQUIRE_VERIFIED_FORWARD') === 'true') return json({ ok: false });
+    const queuedReceipts = verified && typeof wrqEnabled_ === 'function' && wrqEnabled_();
+    if (queuedReceipts) wrqCapturePayload_(payload);
     let failed = false;
     // Process every entry/change, not just the first callback envelope.
     (Array.isArray(payload.entry) ? payload.entry : []).forEach(entry => {
@@ -29,7 +31,7 @@ function doPost(e) {
         (Array.isArray(value.statuses) ? value.statuses : []).forEach(status => {
           try {
             // Do not fabricate receipt times. V2 receipts only use verified events.
-            if (verified) { recordWhatsAppStatus_(status); updateWhatsAppLogFromStatus_(status); }
+            if (verified) { if (!queuedReceipts) { recordWhatsAppStatus_(status); updateWhatsAppLogFromStatus_(status); } }
             else if (fwProps_().getProperty('FEEDBACK_V2_WRITES_ENABLED') !== 'true') {
               recordWhatsAppStatus_(status); updateWhatsAppLogFromStatus_(status); // Legacy history only; V2 is disabled.
             }
