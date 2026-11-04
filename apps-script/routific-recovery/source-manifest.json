@@ -1,0 +1,26 @@
+{
+  "website": {
+    "repository": "zsadiq79/ma-kitchens-website",
+    "productionCommit": "d05d2bac41acce5a410f00fb5a3437fa42d10009",
+    "productionDeployment": "dpl_9CcE8dVHe8LNFpXuJLFXoBijS1nR",
+    "verifiedReady": true,
+    "verifiedVia": "GitHub and Vercel connectors"
+  },
+  "ownerSourceFiles": [
+    {
+      "role": "owner_current_code_gs",
+      "sha256": "0f6ce643f691dce71a53136dfe7cdd1c394c3a8113bad1bd537bc6c5810435d8",
+      "bytes": 622670
+    },
+    {
+      "role": "owner_current_marketing_gs",
+      "sha256": "251371e8412138384ea36eb2b365d0e85baa99f56b406a6334caae29dbadc9c8",
+      "bytes": 24754
+    }
+  ],
+  "liveAppsScriptBaseline": "PENDING_READ_ONLY_INSPECTION",
+  "historicalRouteTimelineAudit": "PENDING",
+  "productionChangesMade": false,
+  "newServicesProvisioned": false,
+  "customerMessagesSent": 0
+}

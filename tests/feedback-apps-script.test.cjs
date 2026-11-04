@@ -7,6 +7,75 @@ const path = require('node:path');
 const files = ['FeedbackWeb', 'FeedbackLegacyBridge', 'FeedbackSender', 'FeedbackWebSender', 'FeedbackDryRun', 'FeedbackInteraction', 'PermanentWhatsAppLog', 'Code-doPost'];
 const original = ['Feedback ID','Submitted At','Order ID','Customer ID','Cook ID','Item Code','Rating / 5','Complaint','Refund','Comments','Follow-up Status','WhatsApp Message ID'];
 const now = Date.parse('2026-10-09T12:00:00Z');
+function receiptFixture(){
+ const f=fixture();
+ f.c.PropertiesService={getScriptProperties:()=>({getProperty:k=>f.props[k]??null,getProperties:()=>({...f.props}),setProperty:(k,v)=>{f.props[k]=v;},setProperties:values=>Object.assign(f.props,values),deleteProperty:k=>delete f.props[k]})};
+ f.c.Utilities.newBlob=s=>({getBytes:()=>Buffer.from(s)});
+ vm.runInContext(fs.readFileSync(path.join(__dirname,'../apps-script/routific-recovery/DeliveryRecovery.gs'),'utf8'),f.c);
+ vm.runInContext(fs.readFileSync(path.join(__dirname,'../apps-script/routific-recovery/ReceiptRecovery.gs'),'utf8'),f.c);
+ f.c.mkReleaseOwnerBook_=()=>f.c.fwBook_();
+ f.c.mkEtaUuid_=value=>typeof value==='string'&&/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(value);
+ const originalBatches=f.batches,initialBatches=originalBatches();f.batches=()=>originalBatches()-initialBatches;
+ return f;
+}
+function receiptPayload(statuses){return {entry:[{changes:[{value:{statuses}}]}]};}
+function receiptStatus(id,status='read',offset=0){return{id,status,timestamp:String(now/1000+offset),recipient_id:'61420123456'};}
+test('authenticated callback queue bypasses all synchronous receipt writers under lock contention',()=>{
+ const f=receiptFixture();f.props.MK_RCPT_ENABLED='true';
+ f.c.LockService={getScriptLock:()=>{throw Error('No shared lock permitted');}};f.c.recordWhatsAppStatus_=()=>{throw Error('History write before ack');};f.c.updateWhatsAppLogFromStatus_=()=>{throw Error('Sheet write before ack');};
+ const result=f.c.doPost({parameter:{action:'whatsapp_verified'},postData:{contents:JSON.stringify({secret:f.props.FLOW_MENU_API_SECRET,payload:receiptPayload([receiptStatus('authenticated.receipt')])})}});
+ assert.equal(JSON.parse(result.text).ok,true);assert.equal(Object.keys(f.props).filter(k=>k.startsWith('MK_RCPT_EVENT_')).length,1);assert.equal(f.batches(),0);
+ const forged=f.c.doPost({parameter:{action:'whatsapp_verified'},postData:{contents:JSON.stringify({secret:'wrong',payload:receiptPayload([receiptStatus('forged.receipt')])})}});
+ assert.equal(JSON.parse(forged.text).ok,false);assert.equal(Object.keys(f.props).filter(k=>k.startsWith('MK_RCPT_EVENT_')).length,1);
+});
+test('owner simulation exercises all eighteen planner notifications without sends or persisted changes',()=>{
+ const f=receiptFixture(),before=JSON.stringify(f.props),result=f.c.deliveryReceiptRepairSelfTest();assert.equal(result.passed,true);assert.equal(result.simulatedUniqueSends,18);
+ assert.equal(JSON.stringify(f.props),before);assert.equal(f.batches(),0);assert.equal(f.sends(),0);
+});
+test('durable receipt capture needs neither shared locks nor spreadsheet access and deduplicates retries',()=>{
+ const f=receiptFixture();f.c.LockService={getScriptLock:()=>{throw Error('No lock allowed during capture');}};f.c.SpreadsheetApp.openById=()=>{throw Error('No sheet allowed during capture');};
+ const payload=receiptPayload([receiptStatus('burst.1'),receiptStatus('burst.2')]);
+ assert.equal(f.c.wrqCapturePayload_(payload).created,2);assert.equal(f.c.wrqCapturePayload_(payload).created,0);
+ assert.equal(Object.keys(f.props).filter(k=>k.startsWith('MK_RCPT_EVENT_')).length,2);assert.equal(f.batches(),0);assert.equal(f.sends(),0);
+});
+test('receipt storage failure propagates and cannot become a successful webhook acknowledgement',()=>{
+ const f=receiptFixture(),store={getProperty:()=>null,setProperties:()=>{throw Error('Quota unavailable');}};
+ assert.throws(()=>f.c.wrqCapturePayload_(receiptPayload([receiptStatus('burst.1')]),store),/Quota unavailable/);assert.equal(f.batches(),0);
+});
+test('receipt batch merges duplicate and out-of-order callbacks with one atomic write',()=>{
+ const f=receiptFixture();f.props.MK_RCPT_ENABLED='true';f.issue();const state=f.tables.get('Feedback V2 Orders').values[1];state[16]='batch.1';
+ f.c.wrqCapturePayload_(receiptPayload([receiptStatus('batch.1','read',-10),receiptStatus('batch.1','delivered',-20),receiptStatus('batch.1','sent',-30),receiptStatus('batch.1','read',-10)]));
+ const before=f.batches();f.c.wrqRun_();assert.equal(f.batches()-before,1);
+ const row=f.tables.get('WhatsApp Log').values[1];assert.equal(row[8],'Read');assert.equal(row[7].getTime(),now-10000);
+ assert.equal(f.tables.get('Feedback V2 Orders').values[1][20],new Date(now-10000).toISOString());
+ const committed=f.batches();f.c.wrqRun_();assert.equal(f.batches(),committed);assert.equal(f.sends(),0);
+});
+test('receipt callback-before-registration remains one row after the sender registers acceptance',()=>{
+ const f=receiptFixture();f.props.MK_RCPT_ENABLED='true';f.c.wrqCapturePayload_(receiptPayload([receiptStatus('early.receipt')]));f.c.wrqRun_();
+ f.c.registerWhatsAppOutbound_('early.receipt','ORD-1','delivery_next_eta','61420123456',new Date(now));
+ assert.equal(f.tables.get('WhatsApp Log').values.length,2);assert.equal(f.tables.get('WhatsApp Log').values[1][1],'ORD-1');assert.equal(f.tables.get('WhatsApp Log').values[1][8],'Read');
+});
+test('ambiguous receipt commit keeps work pending and retry does not append another orphan row',()=>{
+ const f=receiptFixture();f.props.MK_RCPT_ENABLED='true';f.c.wrqCapturePayload_(receiptPayload([receiptStatus('ambiguous.receipt')]));f.after();f.c.wrqRun_();
+ const key=Object.keys(f.props).find(k=>k.startsWith('MK_RCPT_EVENT_'));assert.equal(JSON.parse(f.props[key]).doneAt,undefined);assert.equal(f.tables.get('WhatsApp Log').values.length,2);
+ f.c.wrqRun_();assert(JSON.parse(f.props[key]).doneAt);assert.equal(f.tables.get('WhatsApp Log').values.length,2);
+});
+test('receipt batching preserves the current marketing event format and never sends a marketing message',()=>{
+ const f=receiptFixture();f.props.MK_RCPT_ENABLED='true';
+ vm.runInContext("const MKM={events:'WhatsApp Marketing Events'};function mkmMeta_(row){return JSON.parse(row[8]||'{}');}function mkmKey_(c,p,s,t){return[t?'TEST':'LIVE',c,p,s].join('|');}",f.c);
+ f.tables.set('WhatsApp Marketing Events',{name:'WhatsApp Marketing Events',id:91,maxCols:9,maxRows:1000,values:[['Timestamp','Customer ID','Phone','Event Type','Menu Cycle ID','Template','Offer','Message ID','Notes'],[new Date(now),'CUST-1','61420123456','ACCEPTED','MENU-2026-10-15','template','offer','marketing.1',JSON.stringify({stage:'MENU',test:false})]]});
+ f.c.wrqCapturePayload_(receiptPayload([receiptStatus('marketing.1','delivered'),receiptStatus('marketing.1','delivered',-1)]));f.c.wrqRun_();
+ const rows=f.tables.get('WhatsApp Marketing Events').values;assert.equal(rows.length,3);assert.equal(rows[2][3],'STATUS_DELIVERED');assert.equal(rows[2][7],'marketing.1');assert.equal(JSON.parse(rows[2][8]).stage,'MENU');assert.equal(f.sends(),0);
+});
+test('disabled receipt repair makes no worker changes',()=>{
+ const f=receiptFixture(),before=JSON.stringify(f.props);f.c.wrqRun_();assert.equal(JSON.stringify(f.props),before);assert.equal(f.batches(),0);assert.equal(f.sends(),0);
+});
+test('queued receipts are retained when a competing execution holds the shared writer lock',()=>{
+ const f=receiptFixture();f.props.MK_RCPT_ENABLED='true';f.c.wrqCapturePayload_(receiptPayload([receiptStatus('busy.receipt')]));
+ const locks=f.c.LockService;f.c.LockService={getScriptLock:()=>({tryLock:()=>false})};f.c.wrqRun_();f.c.LockService=locks;
+ const key=Object.keys(f.props).find(k=>k.startsWith('MK_RCPT_EVENT_'));assert.equal(JSON.parse(f.props[key]).doneAt,undefined);assert.equal(f.batches(),0);
+ f.c.wrqRun_();assert(JSON.parse(f.props[key]).doneAt);
+});
 test('acceptance uses current Sheets API reservation despite stale SpreadsheetApp state',()=>{
   const f=fixture();
   const link=f.c.fwLock_(()=>f.c.fwCreateLinkLocked_(f.c.fwBook_(),f.c.fwSchema_(f.c.fwBook_()),'ORD-1',true));
@@ -274,4 +343,10 @@ test('draft and direct submission record first interaction in the existing atomi
   assert.equal(f.call(token,action,{revision:read.revision,submission:f.payload(),...(action==='feedback_submit'?{submissionId:read.submissionId}:{})}).ok,true);
   assert.equal(f.batches(),before+1);assert.equal(f.tables.get('Feedback V2 Orders').values[1][9],new Date(now).toISOString());
  }
+});
+test('status callbacks read only the message ledgers and never load the full feedback schema',()=>{
+ const f=fixture();f.c.fwSchema_=()=>{throw Error('Full feedback schema must not load for receipts');};
+ const before=f.reads.tables;
+ assert.equal(f.c.updateWhatsAppLogFromStatus_({id:'wamid.delivery',status:'read',recipient_id:'61420123456',timestamp:String(now/1000)}),true);
+ assert.equal(f.reads.tables-before,2);assert.equal(f.tables.get('WhatsApp Log').values[1][8],'Read');
 });
