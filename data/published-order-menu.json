@@ -1,5 +1,114 @@
 {
   "schemaVersion": 2,
-  "withdrawn": true,
-  "publishedAt": "2026-11-06T07:48:48.720Z"
+  "menuRevision": "ed81057fae5deaa81381c0b0fdf896c5dab3d561eb0a4a51712fc3bdfbc9e190",
+  "minimumOrderItems": 5,
+  "deliveryFeeCents": 1000,
+  "publishedAt": "2026-11-06T07:51:45.016Z",
+  "menuCycleId": "MENU-2026-11-12",
+  "deliveryDate": "2026-11-12",
+  "deliveryDateDisplay": "2026-11-12",
+  "meals": [
+    {
+      "id": "i_2741b408355989f4eeed43c9",
+      "dishName": "Chicken Yakhni Pulao",
+      "price": 17,
+      "imageUrl": "/menu-images/Dish-0092.jpg"
+    },
+    {
+      "id": "i_6215a8861418989b6e3cd3ea",
+      "dishName": "Masar Chawal",
+      "price": 15,
+      "imageUrl": "/menu-images/Dish-0045.jpg"
+    },
+    {
+      "id": "i_fdd97e849d271f80e5bc9090",
+      "dishName": "Hari Bhari Chicken Curry",
+      "price": 17,
+      "imageUrl": "/menu-images/Dish-0093.jpg"
+    },
+    {
+      "id": "i_07d4d7536fdbaf18b822299e",
+      "dishName": "Chatpati Bhindi",
+      "price": 15,
+      "imageUrl": "/menu-images/Dish-0094.jpg"
+    },
+    {
+      "id": "i_84a10c9adef1538898b43fa9",
+      "dishName": "Kali Chat",
+      "price": 10,
+      "imageUrl": "/menu-images/Dish-0095.jpg"
+    },
+    {
+      "id": "i_c7c739f4a39f4beea0de4f3f",
+      "dishName": "Makhandi Halwa",
+      "price": 6,
+      "imageUrl": "/menu-images/Dish-0096.jpeg"
+    },
+    {
+      "id": "i_3674e15ff0afc7802ff68e76",
+      "dishName": "Gajrela",
+      "price": 6,
+      "imageUrl": "/menu-images/Dish-0015.jpg"
+    },
+    {
+      "id": "i_2c0531ce82c3203ad410a60b",
+      "dishName": "Chaska Kebab",
+      "price": 15,
+      "imageUrl": "/menu-images/Dish-0025.webp"
+    },
+    {
+      "id": "i_12227ce90d2b3be6d0f7e47a",
+      "dishName": "Khara Masala Mutton Istu",
+      "price": 17,
+      "imageUrl": "/menu-images/Dish-0087.jpeg"
+    },
+    {
+      "id": "i_f20fb74c42208eff1cb0f4a6",
+      "dishName": "Karachi Bun Kebab",
+      "price": 15,
+      "imageUrl": "/menu-images/Dish-0088.jpeg"
+    },
+    {
+      "id": "i_ada1b6c0d54228c09a29057e",
+      "dishName": "Chicken Steam Roast",
+      "price": 15,
+      "imageUrl": "/menu-images/Dish-0089.jpeg"
+    },
+    {
+      "id": "i_a553ddd275f765b7f9e65818",
+      "dishName": "Russian Salad",
+      "price": 11,
+      "imageUrl": "/menu-images/Dish-0090.jpeg"
+    },
+    {
+      "id": "i_3e62d20facb205990ff4adb4",
+      "dishName": "Espresso Tiramisu",
+      "price": 12,
+      "imageUrl": "/menu-images/Dish-0091.jpeg"
+    },
+    {
+      "id": "i_d483c2096e0a598b32e2353b",
+      "dishName": "Goat Feet (Paya)",
+      "price": 17,
+      "imageUrl": "/menu-images/Dish-0097.jpg"
+    },
+    {
+      "id": "i_61bc4db5987e2549f358ed1a",
+      "dishName": "Sabut Kaly Maa",
+      "price": 12,
+      "imageUrl": "/menu-images/Dish-0098.jpg"
+    },
+    {
+      "id": "i_bf3a50463e413c1a7b80fb1c",
+      "dishName": "Aloo Baingan",
+      "price": 12,
+      "imageUrl": "/menu-images/Dish-0077.jpg"
+    },
+    {
+      "id": "i_97076d1a1696106defd15da8",
+      "dishName": "Palak Chicken",
+      "price": 15,
+      "imageUrl": "/menu-images/Dish-0100.jpg"
+    }
+  ]
 }
