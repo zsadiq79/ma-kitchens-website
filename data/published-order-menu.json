@@ -1,114 +1,96 @@
 {
   "schemaVersion": 2,
-  "menuRevision": "ed81057fae5deaa81381c0b0fdf896c5dab3d561eb0a4a51712fc3bdfbc9e190",
+  "menuRevision": "d9deb18b1e5efe03c60b23d1f0b69c112b34ea36ee145b6b86ab6f0c5ba6375b",
   "minimumOrderItems": 5,
   "deliveryFeeCents": 1000,
-  "publishedAt": "2026-11-06T07:51:45.016Z",
-  "menuCycleId": "MENU-2026-11-12",
-  "deliveryDate": "2026-11-12",
-  "deliveryDateDisplay": "2026-11-12",
+  "publishedAt": "2026-11-13T08:58:42.808Z",
+  "menuCycleId": "MENU-2026-11-19",
+  "deliveryDate": "2026-11-19",
+  "deliveryDateDisplay": "2026-11-19",
   "meals": [
     {
-      "id": "i_2741b408355989f4eeed43c9",
-      "dishName": "Chicken Yakhni Pulao",
+      "id": "i_ba8dc4ffb17889aecae68f64",
+      "dishName": "Beef Bihari Boti",
+      "price": 18,
+      "imageUrl": "/menu-images/Dish-0101.jpeg"
+    },
+    {
+      "id": "i_672b9417375349db20219d45",
+      "dishName": "Reshmi Kabab Handi",
       "price": 17,
-      "imageUrl": "/menu-images/Dish-0092.jpg"
+      "imageUrl": "/menu-images/Dish-0105.jpeg"
     },
     {
-      "id": "i_6215a8861418989b6e3cd3ea",
-      "dishName": "Masar Chawal",
-      "price": 15,
-      "imageUrl": "/menu-images/Dish-0045.jpg"
+      "id": "i_cbd1b1078d3ce547909e2df4",
+      "dishName": "Shami Pulao Box",
+      "price": 12,
+      "imageUrl": "/menu-images/Dish-0104.jpeg"
     },
     {
-      "id": "i_fdd97e849d271f80e5bc9090",
-      "dishName": "Hari Bhari Chicken Curry",
-      "price": 17,
-      "imageUrl": "/menu-images/Dish-0093.jpg"
+      "id": "i_230f6455c16c3b54bb78370b",
+      "dishName": "Lauki Chana Daal",
+      "price": 12,
+      "imageUrl": "/menu-images/Dish-0103.jpeg"
     },
     {
-      "id": "i_07d4d7536fdbaf18b822299e",
-      "dishName": "Chatpati Bhindi",
-      "price": 15,
-      "imageUrl": "/menu-images/Dish-0094.jpg"
-    },
-    {
-      "id": "i_84a10c9adef1538898b43fa9",
-      "dishName": "Kali Chat",
+      "id": "i_9a478e51130cc0d2604b5de7",
+      "dishName": "Tres Leches Cake",
       "price": 10,
-      "imageUrl": "/menu-images/Dish-0095.jpg"
+      "imageUrl": "/menu-images/Dish-0106.jpeg"
     },
     {
-      "id": "i_c7c739f4a39f4beea0de4f3f",
-      "dishName": "Makhandi Halwa",
-      "price": 6,
-      "imageUrl": "/menu-images/Dish-0096.jpeg"
-    },
-    {
-      "id": "i_3674e15ff0afc7802ff68e76",
-      "dishName": "Gajrela",
-      "price": 6,
-      "imageUrl": "/menu-images/Dish-0015.jpg"
-    },
-    {
-      "id": "i_2c0531ce82c3203ad410a60b",
-      "dishName": "Chaska Kebab",
-      "price": 15,
-      "imageUrl": "/menu-images/Dish-0025.webp"
-    },
-    {
-      "id": "i_12227ce90d2b3be6d0f7e47a",
-      "dishName": "Khara Masala Mutton Istu",
+      "id": "i_a4622f41d297e91fd3122a2f",
+      "dishName": "Chicken Shashlik with White Rice",
       "price": 17,
-      "imageUrl": "/menu-images/Dish-0087.jpeg"
+      "imageUrl": "/menu-images/Dish-0061.jpg"
     },
     {
-      "id": "i_f20fb74c42208eff1cb0f4a6",
-      "dishName": "Karachi Bun Kebab",
-      "price": 15,
-      "imageUrl": "/menu-images/Dish-0088.jpeg"
-    },
-    {
-      "id": "i_ada1b6c0d54228c09a29057e",
-      "dishName": "Chicken Steam Roast",
-      "price": 15,
-      "imageUrl": "/menu-images/Dish-0089.jpeg"
-    },
-    {
-      "id": "i_a553ddd275f765b7f9e65818",
-      "dishName": "Russian Salad",
-      "price": 11,
-      "imageUrl": "/menu-images/Dish-0090.jpeg"
-    },
-    {
-      "id": "i_3e62d20facb205990ff4adb4",
-      "dishName": "Espresso Tiramisu",
-      "price": 12,
-      "imageUrl": "/menu-images/Dish-0091.jpeg"
-    },
-    {
-      "id": "i_d483c2096e0a598b32e2353b",
-      "dishName": "Goat Feet (Paya)",
+      "id": "i_9b46d8ea0296a32918f4f322",
+      "dishName": "Patakha Chicken with White Rice",
       "price": 17,
-      "imageUrl": "/menu-images/Dish-0097.jpg"
+      "imageUrl": "/menu-images/Dish-0107.jpg"
     },
     {
-      "id": "i_61bc4db5987e2549f358ed1a",
-      "dishName": "Sabut Kaly Maa",
-      "price": 12,
-      "imageUrl": "/menu-images/Dish-0098.jpg"
-    },
-    {
-      "id": "i_bf3a50463e413c1a7b80fb1c",
-      "dishName": "Aloo Baingan",
-      "price": 12,
-      "imageUrl": "/menu-images/Dish-0077.jpg"
-    },
-    {
-      "id": "i_97076d1a1696106defd15da8",
-      "dishName": "Palak Chicken",
+      "id": "i_3629a8a08e5e4b7c666210b8",
+      "dishName": "Qeema Dillema",
       "price": 15,
-      "imageUrl": "/menu-images/Dish-0100.jpg"
+      "imageUrl": "/menu-images/Dish-0059.jpg"
+    },
+    {
+      "id": "i_017e802f4ba2b85f56a69740",
+      "dishName": "Tarka Daal Chawal",
+      "price": 14,
+      "imageUrl": "/menu-images/Dish-0109.jpg"
+    },
+    {
+      "id": "i_85e24436a2ff3ddf93dad97a",
+      "dishName": "Pineapple Delight",
+      "price": 10,
+      "imageUrl": "/menu-images/Dish-0075.jpg"
+    },
+    {
+      "id": "i_8b87cd05bb627c8066513f00",
+      "dishName": "Chicken Biryani",
+      "price": 17,
+      "imageUrl": "/menu-images/Dish-0012.jpg"
+    },
+    {
+      "id": "i_d419e76b4d614c2b3923c1c7",
+      "dishName": "Lamb Achari Keema",
+      "price": 17,
+      "imageUrl": "/menu-images/Dish-0038.jpeg"
+    },
+    {
+      "id": "i_726c7e0accf84bec3dbb4991",
+      "dishName": "Aalo Methi",
+      "price": 14,
+      "imageUrl": "/menu-images/Dish-0018.jpg"
+    },
+    {
+      "id": "i_4d3d070d541f35c3737bbb52",
+      "dishName": "Chanay Ki Daal",
+      "price": 14,
+      "imageUrl": "/menu-images/Dish-0110.jpg"
     }
   ]
 }
